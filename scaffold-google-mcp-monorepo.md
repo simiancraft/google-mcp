@@ -4,22 +4,36 @@
 **Scope:** project-meta
 **Date:** 2026-06-04
 **Last reviewed:** 2026-06-04
-**Context:** Per-service Google MCP servers each re-implement OAuth; a shared-auth monorepo lets every new service be a thin operation-set instead of a fresh auth implementation.
+**Context:** Stand up a private Bun-workspace monorepo for per-account, per-service Google MCP servers, matching the simiancraft OSS canon (chromonym / unitforge), with shared auth lifted out and the Gmail server brought in fresh as the reference service.
 
 ## Goal
 
-Today each Google MCP server (so far only the standalone Gmail server) carries its own OAuth code, so commanding several accounts across several services means duplicated auth in every repo. This plan stands up a Bun-workspace monorepo at `google-mcp` whose shared `packages/google-auth` owns authentication once: a shared OAuth client plus per-account, all-scopes tokens selected by env var. No service is built here; this plan delivers only the workspace skeleton and the auth package. Done looks like: the repo has a root workspace config, Biome, and a base tsconfig; `packages/google-auth` builds, lints clean, and exposes an API a future service can import to obtain an authorized Google client for a named account. Drive and the rest land in their own downstream plans that depend on this one.
+Commanding several Google accounts across several services means one thin MCP server per service, each authorized per account, with auth implemented once instead of re-copied. This plan prepares the empty `google-mcp` repo: the simiancraft community-health and tooling canon at the root, a Bun workspace splitting `packages/` (shared code) from `services/` (one server each), a `packages/google-auth` that owns OAuth, and the existing Gmail server copied in fresh (no git history) as `services/gmail` — the canary whose patterns get abstracted into later services. Done looks like: the repo lints, typechecks, builds, and tests green from the root; `services/gmail` runs as an MCP server consuming `@google-mcp/auth` with no auth code of its own; the repo presents the full canon (README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, NOTICE, AGENTS, CI, scorecard, dependabot). Publishing stays out of scope; the repo is private until prime time.
 
 ## Domain context
 
-- **Monorepo shape.** One repo, `packages/` for shared code and `services/` (later) for one thin MCP server per Google service. Bun workspaces; Biome and tsc mirror the existing Gmail server's tooling.
-- **Account's authorized command surface.** The repo's organizing entity is a Google *account*; its children are *services*, each exposing *operations*. `google-auth` is about an account's *authorization*; its children are *scoped credentials*.
-- **B1 token model.** One OAuth client (`client_secret`) shared across all services. One token per account, granted the full front-loaded scope union, so each account is authorized exactly once for all current and planned services. A service reads `GOOGLE_MCP_ACCOUNT` to pick which token to load.
-- **Identity by instance.** Multi-account is achieved by running one server instance per account, each with `GOOGLE_MCP_ACCOUNT` set; the running binary, not a per-call argument, fixes the identity.
+- **Account's authorized command surface.** Organizing entity is a Google *account*; its children are *services* (Gmail, Drive, ...), each exposing *operations*. `google-auth` is about an account's *authorization*; its children are *scoped credentials*.
+- **Canary service.** `services/gmail` is the live reference implementation. Patterns proven there (server bootstrap, schema/handler split, auth consumption) are abstracted into each new service, not reinvented.
+- **B1 token model.** One shared OAuth client (`client_secret`); one token per account granted the front-loaded scope union; a running instance picks its account via `GOOGLE_MCP_ACCOUNT`. Identity is fixed by which instance runs, not by a per-call argument.
+- **Canon, adapted.** Community-health and tooling mirror chromonym / unitforge. Publish machinery (semantic-release, npm, publint/attw, demo, codecov) is deliberately omitted; these are executables in a private repo, not published libraries.
+- **Two real rewrites.** `SECURITY.md` Scope describes auth/credential/filesystem surface (not "pure function"); `NOTICE.md` disclaims Google / Gmail / Drive / Workspace trademarks as nominative use.
 
 ## Current surface area
 
-Empty repository. Remote `origin` = `git@github.com:simiancraft/google-mcp.git`; no commits, no branches, no files but `.git/`.
+| Path | State |
+|---|---|
+| `google-mcp/` | Empty repo; one commit (`docs: add monorepo scaffolding plan`) on `main`; this plan file only. Private. Remote `git@github.com:simiancraft/google-mcp.git`. |
+| `../Gmail-MCP-Server/` | Standalone published server (own git, semantic-release, biome). Source of the fresh `services/gmail` copy and the lifted auth. Not modified by this plan. |
+
+Canon reference (read-only sources): `../../Simiancraft/chromonym`, `../../Simiancraft/unitforge`.
+
+## File structure: before
+
+```
+google-mcp/
+├── .git/
+└── scaffold-google-mcp-monorepo.md
+```
 
 ## File structure: after
 
@@ -27,67 +41,130 @@ Empty repository. Remote `origin` = `git@github.com:simiancraft/google-mcp.git`;
 
 ```
 google-mcp/
-├── + package.json            // workspace root: { workspaces: ["packages/*", "services/*"] }
-├── + tsconfig.base.json      // shared compiler options; packages extend this
-├── + biome.json              // lifted from Gmail server
-├── + .gitignore              // node_modules, dist, credential dirs
-├── + README.md               // repo purpose, layout, auth setup
-└── + packages/
-    └── + google-auth/
-        ├── + package.json     // name @google-mcp/auth, build/lint scripts
-        ├── + tsconfig.json    // extends ../../tsconfig.base.json
-        └── + src/
-            ├── + index.ts      // public API: authorized-client + auth-flow entry
-            ├── + config.ts     // canonical paths, GOOGLE_MCP_ACCOUNT resolution, scope union
-            └── + oauth.ts      // load client secret, run consent flow, persist/restore token
+├── + package.json              // private workspace root: workspaces ["packages/*","services/*"]
+├── + tsconfig.base.json        // strict shared compiler options; packages/services extend
+├── + biome.json                // root; includes packages/** services/** *.ts *.json
+├── + bunfig.toml
+├── + knip.json                 // workspace entries
+├── + .gitignore                // node_modules, dist, credential dirs
+├── + LICENSE                   // MIT
+├── + NOTICE.md                 // Google/Gmail/Drive/Workspace trademark disclaimers
+├── + README.md
+├── + CONTRIBUTING.md
+├── + CODE_OF_CONDUCT.md        // Contributor Covenant 2.1, verbatim
+├── + SECURITY.md               // scope rewritten: OAuth/credentials/filesystem surface
+├── + CODEOWNERS                // * @the-simian
+├── + AGENTS.md                 // monorepo orientation + per-service pattern + auth convention
+├── + .github/
+│   ├── + FUNDING.yml           // ko_fi: the_simian0604
+│   ├── + dependabot.yml        // github-actions, weekly, grouped
+│   ├── + PULL_REQUEST_TEMPLATE.md
+│   ├── + ISSUE_TEMPLATE/
+│   │   ├── + bug_report.yml
+│   │   ├── + feature_request.yml
+│   │   └── + config.yml
+│   └── + workflows/
+│       ├── + ci.yml            // lint, typecheck, build, test, knip (no publish job)
+│       └── + scorecard.yml
+├── + packages/
+│   └── + google-auth/
+│       ├── + package.json      // @google-mcp/auth
+│       ├── + tsconfig.json     // extends ../../tsconfig.base.json
+│       └── + src/
+│           ├── + index.ts      // public API: authorizedClient(account) + auth-flow entry
+│           ├── + config.ts     // canonical paths, GOOGLE_MCP_ACCOUNT, scope union
+│           └── + oauth.ts      // load client secret, run consent, persist/restore per-account token
+└── + services/
+    └── + gmail/
+        ├── + package.json      // gmail server; depends @google-mcp/auth
+        ├── + tsconfig.json
+        ├── + README.md
+        └── + src/              // from Gmail-MCP-Server/src, auth.ts removed, wired to @google-mcp/auth
+            ├── + index.ts
+            ├── + schemas.ts
+            ├── + handlers/
+            └── + ...
 ```
 
 ## Commits
 
-### Commit 1: Initialize workspace root
+### Commit 1: Initialize workspace root and tooling
 
 **Files created:**
-- `package.json`: private root, `"workspaces": ["packages/*", "services/*"]`, type module.
-- `tsconfig.base.json`: shared strict compiler options targeting Node 18+, ESM.
-- `biome.json`: copied from the Gmail server.
-- `.gitignore`: `node_modules`, `dist`, local credential dirs.
-- `README.md`: one-paragraph repo purpose and layout.
+- `package.json`: private root, `"workspaces": ["packages/*", "services/*"]`, type module, root scripts (`lint`, `typecheck`, `test`, `check`) fanning across workspaces, devDeps (`@biomejs/biome`, `knip`, `@types/bun`, typescript/tsgo per canon).
+- `tsconfig.base.json`: strict options from the canon (`target` ES2022, NodeNext, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, etc.).
+- `biome.json`: from canon, `files.includes` widened to `packages/**`, `services/**`.
+- `bunfig.toml`, `knip.json`, `.gitignore`, `LICENSE` (MIT, the-simian).
 
-**Gate:** `bun install` succeeds at root; `biome check .` is clean.
+**Gate:** `bun install` at root succeeds; `biome check .` clean.
 
-### Commit 2: Scaffold the google-auth package shell
-
-**Files created:**
-- `packages/google-auth/package.json`: `@google-mcp/auth`, build (`tsc`), lint scripts.
-- `packages/google-auth/tsconfig.json`: extends the base.
-- `packages/google-auth/src/index.ts`: exported API surface (signatures only at first).
-- `packages/google-auth/src/config.ts`: canonical credential paths, `GOOGLE_MCP_ACCOUNT` resolution, the front-loaded scope union.
-
-**Gate:** `bun run build` in the package emits `dist/`; `biome check` clean.
-
-### Commit 3: Implement the OAuth flow
+### Commit 2: Add community-health prose
 
 **Files created:**
-- `packages/google-auth/src/oauth.ts`: lift the Gmail server's `loadCredentials`/`authenticate`, generalized to per-account token paths and the shared client secret.
+- `README.md`: repo purpose, layout, multi-account model, auth setup.
+- `CONTRIBUTING.md`: adapted commands for the workspace; Conventional Commits; no-AI-coauthor.
+- `CODE_OF_CONDUCT.md`: Contributor Covenant 2.1 verbatim, `info@simiancraft.com`.
+- `SECURITY.md`: **rewritten** Scope (token storage, scope over-grant, credential leakage, path traversal in file ops, supply chain); private-advisory reporting.
+- `NOTICE.md`: **rewritten** for Google / Gmail / Drive / Workspace nominative-use disclaimers; upstream deps note.
+- `CODEOWNERS`: `* @the-simian`.
+- `AGENTS.md`: monorepo orientation, per-service pattern, the shared-auth convention, no-AI-coauthor.
 
-**Gate:** package builds and lints; a smoke import resolves an `OAuth2Client` for a named account.
+**Gate:** `biome check .` clean (markdown unaffected); links resolve.
 
-### Commit N+1: Delete this plan
+### Commit 3: Add .github automation
+
+**Files created:**
+- `.github/FUNDING.yml`, `.github/dependabot.yml` (github-actions weekly grouped), `.github/PULL_REQUEST_TEMPLATE.md`, `.github/ISSUE_TEMPLATE/{bug_report.yml,feature_request.yml,config.yml}`.
+- `.github/workflows/ci.yml`: Bun setup, frozen install, lint, typecheck, build, test, knip. **No release job** (private, unpublished).
+- `.github/workflows/scorecard.yml`: from canon, SHA-pinned actions.
+
+**Gate:** workflows parse (`actionlint` if available, else YAML lint); `biome check` clean.
+
+### Commit 4: Scaffold the google-auth package shell
+
+**Files created:**
+- `packages/google-auth/package.json` (`@google-mcp/auth`, build/lint/typecheck scripts).
+- `packages/google-auth/tsconfig.json` (extends base).
+- `packages/google-auth/src/{index.ts,config.ts}`: API signatures and canonical config (paths, `GOOGLE_MCP_ACCOUNT` resolution, scope union) — implementation stubbed.
+
+**Gate:** `bun run typecheck` and `bun run build` for the package succeed; `biome check` clean.
+
+### Commit 5: Implement the OAuth flow in google-auth
+
+**Files created:**
+- `packages/google-auth/src/oauth.ts`: lift `loadCredentials` / `authenticate` from `../Gmail-MCP-Server/src/auth.ts`, generalized to the shared client secret and per-account token paths; `index.ts` exports `authorizedClient(account)`.
+
+**Gate:** package builds, lints, typechecks; a smoke import resolves an `OAuth2Client` for a named account from a saved token.
+
+### Commit 6: Bring Gmail in fresh as the canary service
+
+**Files created:**
+- `services/gmail/`: copy `../Gmail-MCP-Server/src` (excluding `auth.ts`, `.git`, `dist`, `node_modules`, lockfile, repo-local `biome.json`/`.releaserc`), plus a service `package.json` (depends `@google-mcp/auth`), `tsconfig.json`, `README.md`. No git history carried.
+
+**Files rewritten:**
+- `services/gmail/src/index.ts`: replace `./auth.js` import with `@google-mcp/auth`; obtain the client via `authorizedClient(account)`.
+
+**Gate:** `bun run check` at root green (lint, typecheck, build, test, knip); `services/gmail` starts as an MCP server and lists tools.
+
+### Commit 7: Delete this plan
 
 - Delete `scaffold-google-mcp-monorepo.md`.
-- Extract any durable auth/setup convention into `README.md` first.
+- Extract any durable convention (auth setup, per-service recipe) into `AGENTS.md` / `README.md` first.
 
-**Gate:** project validation passes; repo contains no references to the plan file.
+**Gate:** `bun run check` green; repo contains no references to the plan file.
 
 ## Verification checklist
 
-- [ ] Root `bun install` and `biome check .` clean.
-- [ ] `packages/google-auth` builds to `dist/` and lints clean.
-- [ ] Auth API resolves an authorized client for a named account from a saved token.
-- [ ] A throwaway consumer can `import` the package and obtain a client.
+- [ ] Root `bun install`, `biome check .`, `bun run typecheck`, `bun test` all clean.
+- [ ] Canon present: README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY (rewritten scope), NOTICE (Google marks), CODEOWNERS, AGENTS, LICENSE.
+- [ ] `.github` CI runs lint/typecheck/build/test/knip; scorecard + dependabot present; no publish job.
+- [ ] `packages/google-auth` resolves an authorized client for a named account.
+- [ ] `services/gmail` runs as an MCP server, lists tools, has no auth code of its own.
+- [ ] Gmail brought in without git history (fresh, evergreen).
 - [ ] Plan file deleted (Inspector Gadget Rule: no orphan plans).
 
 ## References
 
-- `../Gmail-MCP-Server/src/auth.ts` — source of the OAuth flow being lifted.
-- `../Gmail-MCP-Server/src/index.ts` — server-bootstrap shape each future service mirrors.
+- `../../Simiancraft/chromonym`, `../../Simiancraft/unitforge` — the simiancraft OSS canon.
+- `../Gmail-MCP-Server/src/auth.ts` — source of the lifted OAuth flow.
+- `../Gmail-MCP-Server/src/index.ts` — server-bootstrap shape each service mirrors.
