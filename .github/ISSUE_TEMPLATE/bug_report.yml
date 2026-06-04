@@ -1,0 +1,39 @@
+name: Bug report
+description: Something in a server or the shared auth misbehaves.
+labels: [bug]
+body:
+  - type: dropdown
+    id: workspace
+    attributes:
+      label: Workspace
+      description: Which package or service is affected?
+      options:
+        - packages/google-auth
+        - services/gmail
+        - tooling / repo-wide
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: Steps to reproduce, expected vs. actual.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Bun version, OS, MCP client (Claude Desktop, Cursor, etc.).
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant output. **Redact any tokens, authorization codes, or message contents.**
+      render: shell
+    validations:
+      required: false
