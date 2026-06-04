@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# Local OAuth material — never commit. The shared client secret and
+# per-account tokens live outside the repo (see README auth setup).
+.google-mcp/
+*credentials*.json
+gcp-oauth.keys.json

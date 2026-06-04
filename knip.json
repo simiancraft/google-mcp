@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": ["typescript"]
+    },
+    "packages/*": {
+      "entry": ["src/index.ts!"]
+    },
+    "services/*": {
+      "entry": ["src/index.ts!"]
+    }
+  }
+}
