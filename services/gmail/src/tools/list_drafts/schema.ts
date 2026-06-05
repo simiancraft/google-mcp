@@ -4,7 +4,8 @@ import { Draft } from '../../entities/Draft.js';
 /** Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/list_drafts */
 export const input = z.object({
   query: z.string().optional(),
-  pageSize: z.number().int().max(50).optional(),
+  /** Each result is hydrated with one fetch; bounded to keep the call count sensible. */
+  pageSize: z.number().int().max(25).optional(),
   pageToken: z.string().optional(),
 });
 

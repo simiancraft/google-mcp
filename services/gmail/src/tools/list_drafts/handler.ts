@@ -16,7 +16,7 @@ export const list_drafts = defineTool({
     const list = await gmail.users.drafts.list({
       userId: 'me',
       q: args.query,
-      maxResults: args.pageSize ?? 20,
+      maxResults: args.pageSize ?? 10,
       pageToken: args.pageToken,
     });
 

@@ -15,7 +15,7 @@ export const list_messages = defineMethod({
     const list = await gmail.users.messages.list({
       userId: 'me',
       q: args.query,
-      maxResults: args.pageSize ?? 20,
+      maxResults: args.pageSize ?? 10,
       pageToken: args.pageToken,
       includeSpamTrash: args.includeTrash ?? false,
     });

@@ -1,20 +1,19 @@
 import { defineTool } from '../../defineTool.js';
-import { projectMessage } from '../../lib/message.js';
 import { input, output } from './schema.js';
 
 /**
  * Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/search_threads
  *
- * `users.threads.list` returns thread stubs; each thread is fetched with
- * `metadata` format (headers + snippet, no bodies) to keep search cheap. Use
- * `get_thread` for full bodies and attachments.
+ * One `users.threads.list` call: returns thread ids and the snippet the list
+ * response already carries, with no per-thread fetch. Use `get_thread(id)` to
+ * hydrate a thread's full messages on demand.
  */
 export const search_threads = defineTool({
-  description: 'Search threads using Gmail query syntax.',
+  description: 'Search threads. Returns thread ids and snippets; use get_thread for messages.',
   input,
   output,
   handler: async (gmail, args) => {
-    const list = await gmail.users.threads.list({
+    const { data } = await gmail.users.threads.list({
       userId: 'me',
       q: args.query,
       maxResults: args.pageSize ?? 20,
@@ -22,24 +21,12 @@ export const search_threads = defineTool({
       includeSpamTrash: args.includeTrash ?? false,
     });
 
-    const stubs = list.data.threads ?? [];
-    const threads = await Promise.all(
-      stubs.map(async (stub) => {
-        const { data } = await gmail.users.threads.get({
-          userId: 'me',
-          id: stub.id ?? undefined,
-          format: 'metadata',
-        });
-        return {
-          id: data.id ?? stub.id ?? '',
-          messages: (data.messages ?? []).map(projectMessage),
-        };
-      }),
-    );
+    const threads = (data.threads ?? []).map((thread) => ({
+      id: thread.id ?? '',
+      snippet: thread.snippet ?? undefined,
+      messages: [],
+    }));
 
-    return {
-      threads,
-      nextPageToken: list.data.nextPageToken ?? undefined,
-    };
+    return { threads, nextPageToken: data.nextPageToken ?? undefined };
   },
 });

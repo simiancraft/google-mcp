@@ -13,6 +13,8 @@ import { Message } from './Message.js';
 export const Thread = z.object({
   /** The unique identifier of the thread. */
   id: z.string(),
+  /** A short preview of the thread (present on search results; use get_thread for messages). */
+  snippet: z.string().optional(),
   /** The messages in the thread, chronologically ordered. */
   messages: z.array(Message).default([]),
 });
