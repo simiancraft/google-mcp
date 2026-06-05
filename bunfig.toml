@@ -5,6 +5,6 @@
 # either unit-tested or explicitly waived.
 coverageSkipTestFiles = true
 coveragePathIgnorePatterns = ["**/dist/**", "**/*.test.ts"]
-# All logic is covered; the ~1% gap is the OAuth browser flow and the stdio
-# transport wiring (verified live, waived in code). Gate guards against regression.
-coverageThreshold = 0.95
+# 100% coverage, pinned. The OAuth flow and the server wiring are covered via an
+# injected browser-opener/port and the MCP SDK's InMemoryTransport. Keep it here.
+coverageThreshold = 1.0

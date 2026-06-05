@@ -4,7 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 import open from 'open';
 import { clientSecretPath, resolveAccount, SCOPES, tokenPath, tokensDir } from './config.js';
 
-const REDIRECT_URI = 'http://localhost:3000/oauth2callback';
+const redirectUri = (port: number) => `http://localhost:${port}/oauth2callback`;
 
 type ClientSecret = { client_id: string; client_secret: string };
 
@@ -21,9 +21,9 @@ function loadClientSecret(): ClientSecret {
   return { client_id: keys.client_id, client_secret: keys.client_secret };
 }
 
-function newClient(): OAuth2Client {
+function newClient(port = 3000): OAuth2Client {
   const { client_id, client_secret } = loadClientSecret();
-  return new OAuth2Client(client_id, client_secret, REDIRECT_URI);
+  return new OAuth2Client(client_id, client_secret, redirectUri(port));
 }
 
 /**
@@ -41,14 +41,18 @@ export async function authorizedClient(account?: string): Promise<OAuth2Client> 
 /**
  * Run the browser consent flow for `account` and persist its token. The token
  * file is written 0600 inside a 0700 tokens dir; the consent requests offline
- * access and forces the screen so a refresh token is always returned.
- *
- * Not unit-tested: it opens a browser and runs a local OAuth callback server.
- * Covered by live verification; its sibling `authorizedClient` is unit-tested.
+ * access and forces the screen so a refresh token is always returned. `port` and
+ * `openBrowser` are injectable for testing; the callback server is closed on
+ * every exit path.
  */
-export async function runAuthFlow(account?: string): Promise<void> {
+export async function runAuthFlow(
+  account?: string,
+  options: { port?: number; openBrowser?: (url: string) => unknown } = {},
+): Promise<void> {
+  const port = options.port ?? 3000;
+  const openBrowser = options.openBrowser ?? open;
   const acct = resolveAccount(account);
-  const client = newClient();
+  const client = newClient(port);
   const authUrl = client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
@@ -59,29 +63,36 @@ export async function runAuthFlow(account?: string): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
       if (!req.url?.startsWith('/oauth2callback')) return;
-      const code = new URL(req.url, REDIRECT_URI).searchParams.get('code');
+      const finish = (status: number, body: string, err?: unknown) => {
+        res.writeHead(status);
+        res.end(body);
+        server.close();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      };
+      const code = new URL(req.url, redirectUri(port)).searchParams.get('code');
       if (!code) {
-        res.writeHead(400);
-        res.end('No authorization code provided.');
-        reject(new Error('No authorization code provided.'));
+        finish(
+          400,
+          'No authorization code provided.',
+          new Error('No authorization code provided.'),
+        );
         return;
       }
       try {
         const { tokens } = await client.getToken(code);
         mkdirSync(tokensDir(), { recursive: true, mode: 0o700 });
         writeFileSync(tokenPath(acct), JSON.stringify(tokens), { mode: 0o600 });
-        res.writeHead(200);
-        res.end(`Authorized ${acct}. You can close this window.`);
-        server.close();
-        resolve();
+        finish(200, `Authorized ${acct}. You can close this window.`);
       } catch (error) {
-        res.writeHead(500);
-        res.end('Authentication failed.');
-        reject(error);
+        finish(500, 'Authentication failed.', error);
       }
     });
-    server.listen(3000);
+    server.listen(port);
     console.error(`Visit this URL to authorize ${acct}:\n${authUrl}`);
-    void open(authUrl);
+    void openBrowser(authUrl);
   });
 }

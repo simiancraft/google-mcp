@@ -1,5 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import {
   CallToolRequestSchema,
   type CallToolResult,
@@ -22,6 +23,8 @@ export type CreateServerOptions<Client> = {
   client: (account: string | undefined) => Promise<Client>;
   /** Optional consent flow, invoked by the `auth` subcommand. */
   runAuth?: (account: string | undefined) => Promise<void>;
+  /** Transport to connect; defaults to stdio. Injectable for tests. */
+  transport?: Transport;
 };
 
 function errorResult(message: string): CallToolResult {
@@ -84,10 +87,6 @@ export async function callTool<Client>(
  * and error wrapping. `tools` (MCP-sourced) and `methods` (REST-sourced) are
  * merged into one wire surface.
  */
-// The wiring below (auth subcommand, account binding, stdio connect) is not
-// unit-tested: it spawns the OAuth flow and a long-lived stdio transport. Its
-// logic is extracted into `toolDefinitions` and `callTool` (both unit-tested);
-// the transport wiring is covered by live verification.
 export async function createServer<Client>(options: CreateServerOptions<Client>): Promise<void> {
   const { name, version = '0.0.0', tools, methods, client, runAuth } = options;
   const registry: Record<string, AnyTool<Client>> = { ...tools, ...methods };
@@ -112,5 +111,5 @@ export async function createServer<Client>(options: CreateServerOptions<Client>)
     callTool(registry, authed, request.params.name, request.params.arguments),
   );
 
-  await server.connect(new StdioServerTransport());
+  await server.connect(options.transport ?? new StdioServerTransport());
 }
