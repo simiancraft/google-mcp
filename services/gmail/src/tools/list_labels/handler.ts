@@ -1,4 +1,5 @@
 import { defineTool } from '../../defineTool.js';
+import { projectLabel } from '../../lib/label.js';
 import { input, output } from './schema.js';
 
 /**
@@ -14,18 +15,6 @@ export const list_labels = defineTool({
   output,
   handler: async (gmail) => {
     const { data } = await gmail.users.labels.list({ userId: 'me' });
-    const labels = (data.labels ?? []).map((label) => ({
-      labelId: label.id ?? '',
-      name: label.name ?? '',
-      color: label.color
-        ? {
-            textColor: label.color.textColor ?? '',
-            backgroundColor: label.color.backgroundColor ?? '',
-          }
-        : undefined,
-      threadsTotal: label.threadsTotal ?? undefined,
-      threadsUnread: label.threadsUnread ?? undefined,
-    }));
-    return { labels };
+    return { labels: (data.labels ?? []).map(projectLabel) };
   },
 });
