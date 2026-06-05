@@ -43,4 +43,34 @@ describe('create_draft', () => {
     expect(result).toMatchObject({ id: 'D1', threadId: 'T1', subject: 'Hello' });
     expect(() => output.parse(result)).not.toThrow();
   });
+
+  it('threads a reply: fetches the original for thread + In-Reply-To', async () => {
+    const captured: { raw?: string; threadId?: string } = {};
+    const gmail = {
+      users: {
+        messages: {
+          get: async () => ({
+            data: {
+              threadId: 'T9',
+              payload: { headers: [{ name: 'Message-ID', value: '<orig@x>' }] },
+            },
+          }),
+        },
+        drafts: {
+          create: async (params: gmail_v1.Params$Resource$Users$Drafts$Create) => {
+            captured.raw = params.requestBody?.message?.raw ?? undefined;
+            captured.threadId = params.requestBody?.message?.threadId ?? undefined;
+            return { data: { id: 'D2' } };
+          },
+          get: async () => ({ data: { id: 'D2', message: { threadId: 'T9' } } }),
+        },
+      },
+    } as unknown as gmail_v1.Gmail;
+
+    await create_draft.handler(gmail, { to: ['x@example.com'], replyToMessageId: 'M1' });
+    expect(captured.threadId).toBe('T9');
+    expect(Buffer.from(captured.raw ?? '', 'base64url').toString('utf8')).toContain(
+      'In-Reply-To: <orig@x>',
+    );
+  });
 });

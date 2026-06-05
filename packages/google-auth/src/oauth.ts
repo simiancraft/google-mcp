@@ -42,6 +42,9 @@ export async function authorizedClient(account?: string): Promise<OAuth2Client> 
  * Run the browser consent flow for `account` and persist its token. The token
  * file is written 0600 inside a 0700 tokens dir; the consent requests offline
  * access and forces the screen so a refresh token is always returned.
+ *
+ * Not unit-tested: it opens a browser and runs a local OAuth callback server.
+ * Covered by live verification; its sibling `authorizedClient` is unit-tested.
  */
 export async function runAuthFlow(account?: string): Promise<void> {
   const acct = resolveAccount(account);

@@ -29,6 +29,20 @@ function errorResult(message: string): CallToolResult {
 }
 
 /**
+ * Build the MCP tool listing for a registry: each tool's input and output JSON
+ * Schema, plus a destructive hint for irreversible ops. Pure; exported for tests.
+ */
+export function toolDefinitions<Client>(registry: Record<string, AnyTool<Client>>) {
+  return Object.entries(registry).map(([name, tool]) => ({
+    name,
+    description: tool.description,
+    inputSchema: zodToJsonSchema(tool.input) as Record<string, unknown>,
+    outputSchema: zodToJsonSchema(tool.output) as Record<string, unknown>,
+    ...(tool.destructive ? { annotations: { destructiveHint: true } } : {}),
+  }));
+}
+
+/**
  * Run one tool by name: resolve it, validate input against its schema, run the
  * handler, validate the output, and return both a structured result and a text
  * rendering (for clients that do not yet read `structuredContent`). All failure
@@ -70,6 +84,10 @@ export async function callTool<Client>(
  * and error wrapping. `tools` (MCP-sourced) and `methods` (REST-sourced) are
  * merged into one wire surface.
  */
+// The wiring below (auth subcommand, account binding, stdio connect) is not
+// unit-tested: it spawns the OAuth flow and a long-lived stdio transport. Its
+// logic is extracted into `toolDefinitions` and `callTool` (both unit-tested);
+// the transport wiring is covered by live verification.
 export async function createServer<Client>(options: CreateServerOptions<Client>): Promise<void> {
   const { name, version = '0.0.0', tools, methods, client, runAuth } = options;
   const registry: Record<string, AnyTool<Client>> = { ...tools, ...methods };
@@ -87,13 +105,7 @@ export async function createServer<Client>(options: CreateServerOptions<Client>)
   const server = new Server({ name, version }, { capabilities: { tools: {} } });
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: Object.entries(registry).map(([toolName, tool]) => ({
-      name: toolName,
-      description: tool.description,
-      inputSchema: zodToJsonSchema(tool.input) as Record<string, unknown>,
-      outputSchema: zodToJsonSchema(tool.output) as Record<string, unknown>,
-      ...(tool.destructive ? { annotations: { destructiveHint: true } } : {}),
-    })),
+    tools: toolDefinitions(registry),
   }));
 
   server.setRequestHandler(CallToolRequestSchema, (request) =>

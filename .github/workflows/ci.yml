@@ -38,8 +38,8 @@ jobs:
       - name: Typecheck (tsc)
         run: bun run typecheck
 
-      - name: Test
-        run: bun test
+      - name: Test (with coverage gate)
+        run: bun test --coverage
 
       - name: Dead code (knip)
         run: bun run check:knip

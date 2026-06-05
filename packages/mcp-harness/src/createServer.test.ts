@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import { z } from 'zod';
-import { callTool } from './createServer.js';
+import { callTool, toolDefinitions } from './createServer.js';
 import { makeDefineTool } from './defineTool.js';
 
 type FakeClient = { upper: (s: string) => string };
@@ -32,5 +32,26 @@ describe('callTool', () => {
   it('returns an error result for invalid input', async () => {
     const result = await callTool(tools, client, 'echo', { text: 42 });
     expect(result.isError).toBe(true);
+  });
+});
+
+describe('toolDefinitions', () => {
+  const danger = defineTool({
+    description: 'Irreversible.',
+    destructive: true,
+    input: z.object({ id: z.string() }),
+    output: z.object({ ok: z.boolean() }),
+    handler: async () => ({ ok: true }),
+  });
+
+  it('emits input and output JSON Schema and a destructive hint only when set', () => {
+    const defs = toolDefinitions({ echo, danger });
+    const echoDef = defs.find((d) => d.name === 'echo');
+    const dangerDef = defs.find((d) => d.name === 'danger');
+
+    expect(echoDef?.inputSchema).toBeDefined();
+    expect(echoDef?.outputSchema).toBeDefined();
+    expect('annotations' in (echoDef ?? {})).toBe(false);
+    expect(dangerDef?.annotations).toEqual({ destructiveHint: true });
   });
 });

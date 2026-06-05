@@ -29,3 +29,13 @@ it('resolves an authorized client from a stored token', async () => {
   expect(client.credentials.access_token).toBe('access');
   expect(client.credentials.refresh_token).toBe('refresh');
 });
+
+it('throws on an invalid client secret file', async () => {
+  const badDir = mkdtempSync(path.join(os.tmpdir(), 'google-auth-bad-'));
+  writeFileSync(path.join(badDir, 'client_secret.json'), JSON.stringify({ nonsense: true }));
+  const saved = process.env.GOOGLE_MCP_CLIENT_SECRET;
+  process.env.GOOGLE_MCP_CLIENT_SECRET = path.join(badDir, 'client_secret.json');
+  await expect(authorizedClient('test')).rejects.toThrow(/Invalid OAuth client secret/);
+  process.env.GOOGLE_MCP_CLIENT_SECRET = saved;
+  rmSync(badDir, { recursive: true, force: true });
+});
