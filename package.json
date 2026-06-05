@@ -28,7 +28,7 @@
     "build": "bun run --filter '*' build",
     "test": "bun test",
     "check:knip": "knip",
-    "check": "bun run lint:fix && bun run typecheck && bun run build && bun run test && bun run check:knip"
+    "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",

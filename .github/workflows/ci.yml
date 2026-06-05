@@ -30,11 +30,13 @@ jobs:
       - name: Biome check
         run: bun run lint
 
-      - name: Typecheck (tsc)
-        run: bun run typecheck
-
+      # Build before typecheck: dependent workspaces typecheck against the
+      # built dist of their workspace dependencies.
       - name: Build
         run: bun run build
+
+      - name: Typecheck (tsc)
+        run: bun run typecheck
 
       - name: Test
         run: bun test

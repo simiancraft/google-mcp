@@ -12,17 +12,21 @@ packages/
   google-auth/    # authorizedClient(account) + runAuthFlow(account)  — never reimplement auth
   mcp-harness/    # makeDefineTool<Client>() + createServer(...)        — never reimplement the server
 services/<svc>/src/
-  index.ts        # createServer({ name, scopes, tools, client })
-  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()
+  index.ts        # createServer({ name, scopes, tools, methods, client })
+  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  — MCP-sourced ops
+  defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  — REST-sourced ops
   scopes.ts       # the service's OAuth scopes
   entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
   lib/            # projection helpers (REST entity -> documented shape)
-  tools/
+  tools/          # mirror the MCP toolset reference
     index.ts      # the registry: { tool_name, ... } (key = wire name)
     <tool_name>/  # snake_case, verbatim from Google
       schema.ts        # export const input, output (zod; compose entities)
       handler.ts       # the work + defineTool(...); exports the tool
       handler.test.ts  # mocked-client unit test
+  methods/        # cover the REST reference (same construction as tools/)
+    index.ts
+    <method_name>/ { schema.ts, handler.ts, handler.test.ts }
 ```
 
 `schema.ts` is the contract (regenerable from the docs); `handler.ts` is the
@@ -43,6 +47,22 @@ work (the REST call + projection). Keep them split.
    `output.parse(result)`.
 6. **Register** it in `tools/index.ts`.
 7. `bun run check`, then verify live against a real account.
+
+## Tools vs methods
+
+`tools/` mirrors Google's **MCP toolset** reference (its word: "tools").
+`methods/` covers the broader **REST** reference (its word: "Methods"), the
+operations the MCP toolset omits. Identical construction; a method imports
+`defineMethod` instead of `defineTool` (same factory, REST vocabulary). The
+server merges both into one wire surface, so the split is organizational, not a
+runtime difference.
+
+Add a method exactly like a tool, but source `schema.ts` from the REST method
+page (`…/reference/rest/v1/<resource>/<method>`) and import `defineMethod`.
+
+Mark irreversible operations (`send`, permanent `delete`, `batchDelete`,
+`obliterate`) with `destructive: true`; the server surfaces them as MCP
+`destructiveHint`. `trash`/`untrash` are reversible, so **not** destructive.
 
 ## Add an entity
 

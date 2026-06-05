@@ -14,8 +14,10 @@ export type CreateServerOptions<Client> = {
   version?: string;
   /** OAuth scopes this service needs; surfaced for the auth flow. */
   scopes: string[];
-  /** The tool registry; keys are the wire tool names. */
+  /** Operations mirrored from the MCP toolset reference. Keys are wire names. */
   tools: Record<string, AnyTool<Client>>;
+  /** Operations sourced from the REST reference. Keys are wire names. */
+  methods?: Record<string, AnyTool<Client>>;
   /** Build the authenticated client for the account this instance is bound to. */
   client: (account: string | undefined) => Promise<Client>;
   /** Optional consent flow, invoked by the `auth` subcommand. */
@@ -62,12 +64,15 @@ export async function callTool<Client>(
 
 /**
  * Turn a tool registry into a running stdio MCP server. This is identical for
- * every service; only the bound `Client` type and the registry differ. Owns the
- * cross-cutting concerns: the `auth` subcommand, account binding, tool listing
- * (input + output JSON Schema), dispatch, validation, and error wrapping.
+ * every service; only the bound `Client` type and the registries differ. Owns
+ * the cross-cutting concerns: the `auth` subcommand, account binding, tool
+ * listing (input + output JSON Schema, destructive hints), dispatch, validation,
+ * and error wrapping. `tools` (MCP-sourced) and `methods` (REST-sourced) are
+ * merged into one wire surface.
  */
 export async function createServer<Client>(options: CreateServerOptions<Client>): Promise<void> {
-  const { name, version = '0.0.0', tools, client, runAuth } = options;
+  const { name, version = '0.0.0', tools, methods, client, runAuth } = options;
+  const registry: Record<string, AnyTool<Client>> = { ...tools, ...methods };
 
   if (process.argv[2] === 'auth') {
     if (!runAuth) {
@@ -82,16 +87,17 @@ export async function createServer<Client>(options: CreateServerOptions<Client>)
   const server = new Server({ name, version }, { capabilities: { tools: {} } });
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: Object.entries(tools).map(([toolName, tool]) => ({
+    tools: Object.entries(registry).map(([toolName, tool]) => ({
       name: toolName,
       description: tool.description,
       inputSchema: zodToJsonSchema(tool.input) as Record<string, unknown>,
       outputSchema: zodToJsonSchema(tool.output) as Record<string, unknown>,
+      ...(tool.destructive ? { annotations: { destructiveHint: true } } : {}),
     })),
   }));
 
   server.setRequestHandler(CallToolRequestSchema, (request) =>
-    callTool(tools, authed, request.params.name, request.params.arguments),
+    callTool(registry, authed, request.params.name, request.params.arguments),
   );
 
   await server.connect(new StdioServerTransport());

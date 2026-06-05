@@ -12,6 +12,8 @@ export type Tool<Client, Input extends z.ZodType, Output extends z.ZodType> = {
   input: Input;
   output: Output;
   handler: (client: Client, args: z.infer<Input>) => Promise<z.infer<Output>>;
+  /** Irreversible operation (send, permanent delete); surfaced as MCP destructiveHint. */
+  destructive?: boolean;
 };
 
 /** A tool with its schemas erased; the shape the registry and server work with. */
