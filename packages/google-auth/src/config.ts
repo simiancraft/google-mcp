@@ -47,9 +47,18 @@ export function resolveAccount(account?: string): string {
  * services land, so each account is authorized once for everything.
  */
 export const SCOPES = [
-  // Full mailbox access: read, write, send, and permanent delete. The last
-  // (messages.delete / threads.delete) requires this scope; gmail.modify cannot
-  // permanently delete. settings.basic covers filters/forwarding/vacation/etc.
+  // Front-loaded union across all planned services, so each account is authorized
+  // once for everything (the B1 model). The consent screen must list these too.
+  // Gmail — mail.google.com is full access incl. permanent delete (gmail.modify
+  // cannot delete); settings.basic covers filters/forwarding/vacation/aliases.
   'https://mail.google.com/',
   'https://www.googleapis.com/auth/gmail.settings.basic',
+  // Drive
+  'https://www.googleapis.com/auth/drive',
+  // Sheets
+  'https://www.googleapis.com/auth/spreadsheets',
+  // Docs
+  'https://www.googleapis.com/auth/documents',
+  // Calendar
+  'https://www.googleapis.com/auth/calendar',
 ];
