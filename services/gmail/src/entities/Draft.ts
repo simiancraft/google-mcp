@@ -24,6 +24,8 @@ export const Draft = z.object({
   bccRecipients: z.array(z.string()).optional(),
   /** The plain-text body. */
   plaintextBody: z.string().optional(),
+  /** The HTML body. Extracted alongside the plain-text body. */
+  htmlBody: z.string().optional(),
   /** The draft date, ISO 8601. */
   date: z.string().optional(),
 });

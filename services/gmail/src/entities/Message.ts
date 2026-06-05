@@ -26,6 +26,8 @@ export const Message = z.object({
   date: z.string().optional(),
   /** The plain-text body (FULL_CONTENT only). */
   plaintextBody: z.string().optional(),
+  /** The HTML body (FULL_CONTENT only). Extracted alongside the plain-text body. */
+  htmlBody: z.string().optional(),
   /** Attachment identifiers (FULL_CONTENT only). */
   attachmentIds: z.array(z.string()).optional(),
 });

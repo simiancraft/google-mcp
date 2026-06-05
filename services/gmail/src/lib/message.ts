@@ -27,21 +27,27 @@ function decodeBody(data?: string | null): string {
   return data ? Buffer.from(data, 'base64url').toString('utf8') : '';
 }
 
-/** Walk the MIME tree for the first text/plain part. */
-function collectPlaintext(part?: gmail_v1.Schema$MessagePart): string {
+type Bodies = { plain?: string; html?: string };
+
+/**
+ * Walk the MIME tree collecting the first text/plain and first text/html parts.
+ * Both are surfaced (an intentional extension beyond Google's plaintext-only
+ * projection): callers need plain and HTML bodies extracted reliably.
+ */
+function collectBodies(part: gmail_v1.Schema$MessagePart | undefined, acc: Bodies): void {
   if (!part) {
-    return '';
+    return;
   }
-  if (part.mimeType === 'text/plain' && part.body?.data) {
-    return decodeBody(part.body.data);
-  }
-  for (const child of part.parts ?? []) {
-    const text = collectPlaintext(child);
-    if (text) {
-      return text;
+  if (part.body?.data) {
+    if (part.mimeType === 'text/plain' && acc.plain === undefined) {
+      acc.plain = decodeBody(part.body.data);
+    } else if (part.mimeType === 'text/html' && acc.html === undefined) {
+      acc.html = decodeBody(part.body.data);
     }
   }
-  return '';
+  for (const child of part.parts ?? []) {
+    collectBodies(child, acc);
+  }
 }
 
 /** Walk the MIME tree collecting attachment ids. */
@@ -62,7 +68,8 @@ export function projectMessage(message: gmail_v1.Schema$Message): Message {
   const headers = headerMap(message.payload);
   const attachmentIds: string[] = [];
   collectAttachmentIds(message.payload, attachmentIds);
-  const plaintextBody = collectPlaintext(message.payload);
+  const bodies: Bodies = {};
+  collectBodies(message.payload, bodies);
   return {
     id: message.id ?? '',
     snippet: message.snippet ?? undefined,
@@ -71,7 +78,8 @@ export function projectMessage(message: gmail_v1.Schema$Message): Message {
     toRecipients: addresses(headers.to),
     ccRecipients: addresses(headers.cc),
     date: headers.date,
-    plaintextBody: plaintextBody || undefined,
+    plaintextBody: bodies.plain || undefined,
+    htmlBody: bodies.html || undefined,
     attachmentIds: attachmentIds.length ? attachmentIds : undefined,
   };
 }
@@ -80,7 +88,8 @@ export function projectMessage(message: gmail_v1.Schema$Message): Message {
 export function projectDraft(draft: gmail_v1.Schema$Draft): Draft {
   const message = draft.message;
   const headers = headerMap(message?.payload);
-  const plaintextBody = collectPlaintext(message?.payload);
+  const bodies: Bodies = {};
+  collectBodies(message?.payload, bodies);
   return {
     id: draft.id ?? '',
     threadId: message?.threadId ?? undefined,
@@ -88,7 +97,8 @@ export function projectDraft(draft: gmail_v1.Schema$Draft): Draft {
     toRecipients: addresses(headers.to),
     ccRecipients: addresses(headers.cc),
     bccRecipients: addresses(headers.bcc),
-    plaintextBody: plaintextBody || undefined,
+    plaintextBody: bodies.plain || undefined,
+    htmlBody: bodies.html || undefined,
     date: headers.date,
   };
 }

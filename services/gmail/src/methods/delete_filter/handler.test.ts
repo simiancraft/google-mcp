@@ -1,0 +1,29 @@
+import { describe, expect, it } from 'bun:test';
+import type { gmail_v1 } from 'googleapis';
+import { delete_filter } from './handler.js';
+import { output } from './schema.js';
+
+function fakeGmail(captured: { id?: string }): gmail_v1.Gmail {
+  return {
+    users: {
+      settings: {
+        filters: {
+          delete: async (params: gmail_v1.Params$Resource$Users$Settings$Filters$Delete) => {
+            captured.id = params.id ?? undefined;
+            return { data: {} };
+          },
+        },
+      },
+    },
+  } as unknown as gmail_v1.Gmail;
+}
+
+describe('delete_filter', () => {
+  it('deletes the filter and confirms the id', async () => {
+    const captured: { id?: string } = {};
+    const result = await delete_filter.handler(fakeGmail(captured), { filterId: 'F1' });
+    expect(captured.id).toBe('F1');
+    expect(result).toEqual({ filterId: 'F1' });
+    expect(() => output.parse(result)).not.toThrow();
+  });
+});
