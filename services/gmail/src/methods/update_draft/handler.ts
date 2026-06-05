@@ -1,5 +1,6 @@
 import { defineMethod } from '../../defineMethod.js';
 import { buildRawMessage, projectDraft } from '../../lib/message.js';
+import { senderAddress } from '../../lib/profile.js';
 import { input, output } from './schema.js';
 
 /**
@@ -13,6 +14,7 @@ export const update_draft = defineMethod({
   output,
   handler: async (gmail, args) => {
     const raw = buildRawMessage({
+      from: await senderAddress(gmail),
       to: args.to,
       cc: args.cc,
       bcc: args.bcc,

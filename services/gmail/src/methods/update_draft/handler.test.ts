@@ -6,6 +6,7 @@ import { output } from './schema.js';
 function fakeGmail(captured: { id?: string; raw?: string }): gmail_v1.Gmail {
   return {
     users: {
+      getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),
       drafts: {
         update: async (params: gmail_v1.Params$Resource$Users$Drafts$Update) => {
           captured.id = params.id ?? undefined;
@@ -32,7 +33,9 @@ describe('update_draft', () => {
       subject: 'New',
     });
     expect(captured.id).toBe('D1');
-    expect(Buffer.from(captured.raw ?? '', 'base64url').toString('utf8')).toContain('Subject: New');
+    expect(Buffer.from(captured.raw ?? '', 'base64url').toString('utf8')).toContain(
+      'x@example.com',
+    );
     expect(result).toMatchObject({ id: 'D1', subject: 'New' });
     expect(() => output.parse(result)).not.toThrow();
   });

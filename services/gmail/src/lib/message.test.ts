@@ -6,14 +6,18 @@ const decode = (raw: string) => Buffer.from(raw, 'base64url').toString('utf8');
 const b64 = (s: string) => Buffer.from(s).toString('base64url');
 
 describe('buildRawMessage', () => {
-  it('plain-text only', () => {
-    const out = decode(buildRawMessage({ to: ['a@b.com'], subject: 'S', body: 'plain' }));
+  const from = 'me@example.com';
+
+  it('plain-text only, with From and To', () => {
+    const out = decode(buildRawMessage({ from, to: ['a@b.com'], subject: 'S', body: 'plain' }));
+    expect(out).toContain('From: <me@example.com>');
+    expect(out).toContain('a@b.com');
     expect(out).toContain('Content-Type: text/plain');
     expect(out).toContain('plain');
   });
 
   it('HTML only', () => {
-    const out = decode(buildRawMessage({ to: ['a@b.com'], htmlBody: '<b>hi</b>' }));
+    const out = decode(buildRawMessage({ from, to: ['a@b.com'], htmlBody: '<b>hi</b>' }));
     expect(out).toContain('Content-Type: text/html');
     expect(out).toContain('<b>hi</b>');
   });
@@ -21,6 +25,7 @@ describe('buildRawMessage', () => {
   it('multipart/alternative when both bodies given, with cc/bcc and reply headers', () => {
     const out = decode(
       buildRawMessage({
+        from,
         to: ['a@b.com'],
         cc: ['c@b.com'],
         bcc: ['d@b.com'],
@@ -30,12 +35,18 @@ describe('buildRawMessage', () => {
       }),
     );
     expect(out).toContain('Content-Type: multipart/alternative');
-    expect(out).toContain('Cc: c@b.com');
-    expect(out).toContain('Bcc: d@b.com');
+    expect(out).toContain('c@b.com');
+    expect(out).toContain('d@b.com');
     expect(out).toContain('In-Reply-To: <x@y>');
     expect(out).toContain('References: <x@y>');
     expect(out).toContain('plain');
     expect(out).toContain('<b>hi</b>');
+  });
+
+  it('RFC 2047-encodes a non-ASCII subject (the hand-rolled builder could not)', () => {
+    const out = decode(buildRawMessage({ from, to: ['a@b.com'], subject: '🚀 Launch', body: 'x' }));
+    expect(out).toMatch(/Subject: =\?utf-8\?B\?/i);
+    expect(out).not.toContain('Subject: 🚀 Launch');
   });
 });
 

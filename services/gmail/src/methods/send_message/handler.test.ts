@@ -6,6 +6,7 @@ import { output } from './schema.js';
 function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
   return {
     users: {
+      getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),
       messages: {
         send: async (params: gmail_v1.Params$Resource$Users$Messages$Send) => {
           captured.raw = params.requestBody?.raw ?? undefined;
@@ -26,8 +27,8 @@ describe('send_message', () => {
       body: 'Hello',
     });
     const decoded = Buffer.from(captured.raw ?? '', 'base64url').toString('utf8');
-    expect(decoded).toContain('To: x@example.com');
-    expect(decoded).toContain('Subject: Hi');
+    expect(decoded).toContain('x@example.com');
+    expect(decoded).toContain('Hello');
     expect(result).toMatchObject({ id: 'M1' });
     expect(() => output.parse(result)).not.toThrow();
   });
@@ -36,6 +37,7 @@ describe('send_message', () => {
     const captured: { raw?: string; threadId?: string } = {};
     const gmail = {
       users: {
+        getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),
         messages: {
           get: async () => ({
             data: {

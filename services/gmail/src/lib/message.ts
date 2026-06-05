@@ -1,4 +1,5 @@
 import type { gmail_v1 } from 'googleapis';
+import { createMimeMessage } from 'mail-mime-builder';
 import type { Draft } from '../entities/Draft.js';
 import type { Message } from '../entities/Message.js';
 
@@ -103,8 +104,14 @@ export function projectDraft(draft: gmail_v1.Schema$Draft): Draft {
   };
 }
 
-/** Build an RFC 822 message and base64url-encode it for the Gmail API. */
+/**
+ * Build an RFC 822 message and base64url-encode it for the Gmail API, via
+ * mail-mime-builder (RFC 2822/2045/2049 compliant: encoded-word headers,
+ * multipart, transfer encoding). `from` is required by the builder; pass the
+ * authenticated account's address.
+ */
 export function buildRawMessage(args: {
+  from: string;
   to: string[];
   cc?: string[];
   bcc?: string[];
@@ -113,47 +120,31 @@ export function buildRawMessage(args: {
   htmlBody?: string;
   inReplyTo?: string;
 }): string {
-  const headers: string[] = [`To: ${args.to.join(', ')}`];
+  const msg = createMimeMessage();
+  msg.setSender(args.from);
+  msg.setTo(args.to);
   if (args.cc?.length) {
-    headers.push(`Cc: ${args.cc.join(', ')}`);
+    msg.setCc(args.cc);
   }
   if (args.bcc?.length) {
-    headers.push(`Bcc: ${args.bcc.join(', ')}`);
+    msg.setBcc(args.bcc);
   }
-  if (args.subject) {
-    headers.push(`Subject: ${args.subject}`);
-  }
+  // Subject is a required header for the builder; default to empty when omitted.
+  msg.setSubject(args.subject ?? '');
   if (args.inReplyTo) {
-    headers.push(`In-Reply-To: ${args.inReplyTo}`);
-    headers.push(`References: ${args.inReplyTo}`);
+    msg.setHeader('In-Reply-To', args.inReplyTo);
+    msg.setHeader('References', args.inReplyTo);
   }
-  headers.push('MIME-Version: 1.0');
-
-  let body: string;
-  if (args.htmlBody && args.body) {
-    const boundary = `bnd_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
-    headers.push(`Content-Type: multipart/alternative; boundary="${boundary}"`);
-    body = [
-      `--${boundary}`,
-      'Content-Type: text/plain; charset="UTF-8"',
-      '',
-      args.body,
-      '',
-      `--${boundary}`,
-      'Content-Type: text/html; charset="UTF-8"',
-      '',
-      args.htmlBody,
-      '',
-      `--${boundary}--`,
-      '',
-    ].join('\r\n');
-  } else if (args.htmlBody) {
-    headers.push('Content-Type: text/html; charset="UTF-8"');
-    body = args.htmlBody;
-  } else {
-    headers.push('Content-Type: text/plain; charset="UTF-8"');
-    body = args.body ?? '';
+  if (args.body !== undefined) {
+    msg.addMessage({ contentType: 'text/plain', data: args.body });
   }
-
-  return Buffer.from(`${headers.join('\r\n')}\r\n\r\n${body}`).toString('base64url');
+  if (args.htmlBody !== undefined) {
+    msg.addMessage({ contentType: 'text/html', data: args.htmlBody });
+  }
+  if (args.body === undefined && args.htmlBody === undefined) {
+    msg.addMessage({ contentType: 'text/plain', data: '' });
+  }
+  // Base64url the RFC 822 text ourselves (the format the Gmail API expects),
+  // rather than the library's asEncoded(), whose output is not URL-safe base64.
+  return Buffer.from(msg.asRaw()).toString('base64url');
 }
