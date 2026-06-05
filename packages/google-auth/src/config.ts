@@ -47,6 +47,9 @@ export function resolveAccount(account?: string): string {
  * services land, so each account is authorized once for everything.
  */
 export const SCOPES = [
-  'https://www.googleapis.com/auth/gmail.modify',
+  // Full mailbox access: read, write, send, and permanent delete. The last
+  // (messages.delete / threads.delete) requires this scope; gmail.modify cannot
+  // permanently delete. settings.basic covers filters/forwarding/vacation/etc.
+  'https://mail.google.com/',
   'https://www.googleapis.com/auth/gmail.settings.basic',
 ];
