@@ -38,6 +38,7 @@
         "@google-mcp/auth": "workspace:*",
         "@google-mcp/harness": "workspace:*",
         "googleapis": "^129.0.0",
+        "zod": "^3.22.4",
       },
     },
   },
