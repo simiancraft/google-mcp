@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-/** Source: object (Draft) on the Gmail MCP reference. An unsent draft, projected. */
+/**
+ * An unsent message. The message contained within a draft can be replaced.
+ * Sending a draft automatically deletes the draft and creates a message with the
+ * SENT system label.
+ *
+ * Fields here are the MCP-projected shape of the REST `drafts` resource.
+ *
+ * @see https://developers.google.com/workspace/gmail/api/guides
+ */
 export const Draft = z.object({
   /** The unique identifier of the draft. */
   id: z.string(),

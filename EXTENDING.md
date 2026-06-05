@@ -57,6 +57,11 @@ export type X = z.infer<typeof X>;
 Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
 `entities/` and it should be the complete catalog of the service's nouns.
 
+**Doc comments are sourced too.** Give the entity a TSDoc comment from the API
+guides **Concepts** page (Google's own definition of the noun) with an `@see`
+link; field-level comments come from the tool/REST reference. The definition is
+then discoverable on hover, straight from the docs.
+
 ## Add a service
 
 1. `services/<svc>/` with `package.json` (deps `@google-mcp/auth`,

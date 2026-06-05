@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-/** Source: object (Message) on the Gmail MCP reference. A single message, projected. */
+/**
+ * An email message containing the sender, recipients, subject, and body. Once a
+ * message is created, it cannot be changed.
+ *
+ * Fields here are the MCP-projected shape (a flattened subset of the REST
+ * `messages` resource).
+ *
+ * @see https://developers.google.com/workspace/gmail/api/guides
+ */
 export const Message = z.object({
   /** The unique identifier of the message. */
   id: z.string(),
