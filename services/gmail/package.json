@@ -1,0 +1,20 @@
+{
+  "name": "@google-mcp/gmail",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "google-mcp-gmail": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check"
+  },
+  "dependencies": {
+    "@google-mcp/auth": "workspace:*",
+    "@google-mcp/harness": "workspace:*",
+    "googleapis": "^129.0.0"
+  }
+}
