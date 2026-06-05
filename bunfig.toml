@@ -1,5 +1,7 @@
 [test]
-# Coverage reports reflect source accuracy; test files themselves are excluded.
-# No hard threshold yet — the imported Gmail canary sets the initial baseline;
-# a per-workspace target is raised deliberately once services stabilize.
+# Coverage reports reflect source accuracy; test files and build output excluded.
+# No hard threshold yet — a target is raised deliberately once the server-wiring
+# and OAuth-flow code (currently covered by live verification, not unit tests) is
+# either unit-tested or explicitly waived.
 coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["**/dist/**", "**/*.test.ts"]
