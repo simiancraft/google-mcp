@@ -15,8 +15,8 @@
   "dependencies": {
     "@google-mcp/auth": "workspace:*",
     "@google-mcp/harness": "workspace:*",
+    "@googleapis/gmail": "^17.0.0",
     "addressparser": "^1.0.1",
-    "googleapis": "^129.0.0",
     "mail-mime-builder": "^1.0.1",
     "zod": "^3.22.4"
   }

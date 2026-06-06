@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { list_labels } from './handler.js';
 import { output } from './schema.js';
 

@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { OAuth2Client } from 'google-auth-library';
 import open from 'open';
@@ -85,7 +85,11 @@ export async function runAuthFlow(
       try {
         const { tokens } = await client.getToken(code);
         mkdirSync(tokensDir(), { recursive: true, mode: 0o700 });
-        writeFileSync(tokenPath(acct), JSON.stringify(tokens), { mode: 0o600 });
+        const file = tokenPath(acct);
+        writeFileSync(file, JSON.stringify(tokens), { mode: 0o600 });
+        // mode on writeFileSync only applies when creating the file; tighten an
+        // existing (possibly looser) token file explicitly.
+        chmodSync(file, 0o600);
         finish(200, `Authorized ${acct}. You can close this window.`);
       } catch (error) {
         finish(500, 'Authentication failed.', error);

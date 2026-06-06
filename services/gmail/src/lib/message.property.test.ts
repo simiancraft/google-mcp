@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
+import type { gmail_v1 } from '@googleapis/gmail';
 import fc from 'fast-check';
-import type { gmail_v1 } from 'googleapis';
 import { Message } from '../entities/Message.js';
 import { projectMessage } from './message.js';
 

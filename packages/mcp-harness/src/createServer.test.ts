@@ -78,7 +78,6 @@ describe('createServer', () => {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     await createServer({
       name: 'test',
-      scopes: [],
       tools: { echo },
       client: async () => client,
       transport: serverTransport,
@@ -105,7 +104,7 @@ describe('createServer', () => {
     const runAuth = mock(async () => {});
     try {
       await expect(
-        createServer({ name: 'test', scopes: [], tools: {}, client: async () => client, runAuth }),
+        createServer({ name: 'test', tools: {}, client: async () => client, runAuth }),
       ).rejects.toThrow('exit:0');
       expect(runAuth).toHaveBeenCalledWith('someone@example.com');
     } finally {
@@ -123,7 +122,7 @@ describe('createServer', () => {
     const errSpy = spyOn(console, 'error').mockImplementation(() => {});
     try {
       await expect(
-        createServer({ name: 'test', scopes: [], tools: {}, client: async () => client }),
+        createServer({ name: 'test', tools: {}, client: async () => client }),
       ).rejects.toThrow('exit:1');
     } finally {
       process.argv = argv;

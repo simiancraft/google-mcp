@@ -1,5 +1,5 @@
 import type { AnyTool } from '@google-mcp/harness';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { batch_delete_messages } from './batch_delete_messages/handler.js';
 import { batch_modify_messages } from './batch_modify_messages/handler.js';
 import { create_filter } from './create_filter/handler.js';

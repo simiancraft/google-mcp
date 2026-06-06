@@ -33,10 +33,22 @@ export function tokenPath(account: string): string {
   return process.env.GOOGLE_MCP_TOKEN ?? path.join(tokensDir(), `${account}.json`);
 }
 
+/**
+ * Account names become path segments (`tokens/<account>.json`), so they must not
+ * contain path separators or traversal sequences. Allow letters, digits, and the
+ * handful of punctuation marks that appear in email addresses and simple slugs.
+ */
+const SAFE_ACCOUNT = /^[A-Za-z0-9._%+@-]+$/;
+
 export function resolveAccount(account?: string): string {
   const resolved = account ?? process.env.GOOGLE_MCP_ACCOUNT;
   if (!resolved) {
     throw new Error('No account selected; set GOOGLE_MCP_ACCOUNT or pass an account.');
+  }
+  if (!SAFE_ACCOUNT.test(resolved) || resolved.includes('..')) {
+    throw new Error(
+      `Invalid account name "${resolved}": only letters, digits, and . _ % + @ - are allowed.`,
+    );
   }
   return resolved;
 }

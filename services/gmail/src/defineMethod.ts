@@ -1,5 +1,5 @@
 import { makeDefineTool } from '@google-mcp/harness';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 
 /**
  * The Gmail method factory: for operations sourced from the REST reference

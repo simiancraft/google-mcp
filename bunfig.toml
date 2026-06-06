@@ -1,8 +1,5 @@
 [test]
 # Coverage reports reflect source accuracy; test files and build output excluded.
-# No hard threshold yet — a target is raised deliberately once the server-wiring
-# and OAuth-flow code (currently covered by live verification, not unit tests) is
-# either unit-tested or explicitly waived.
 coverageSkipTestFiles = true
 coveragePathIgnorePatterns = ["**/dist/**", "**/*.test.ts"]
 # 100% coverage, pinned. The OAuth flow and the server wiring are covered via an

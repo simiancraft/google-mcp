@@ -1,4 +1,4 @@
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 
 /**
  * The authenticated account's email address, for the `From` header when

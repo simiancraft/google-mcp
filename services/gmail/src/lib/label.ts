@@ -1,4 +1,4 @@
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import type { Label } from '../entities/Label.js';
 
 /** Project a raw Gmail label onto the documented Label shape (id -> labelId). */

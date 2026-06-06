@@ -13,8 +13,6 @@ export type CreateServerOptions<Client> = {
   /** MCP server name (the service, e.g. 'gmail'). */
   name: string;
   version?: string;
-  /** OAuth scopes this service needs; surfaced for the auth flow. */
-  scopes: string[];
   /** Operations mirrored from the MCP toolset reference. Keys are wire names. */
   tools: Record<string, AnyTool<Client>>;
   /** Operations sourced from the REST reference. Keys are wire names. */

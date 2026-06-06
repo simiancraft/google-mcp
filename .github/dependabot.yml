@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Runtime deps (googleapis, google-auth-library, MCP SDK) live in the
+  # Runtime deps (@googleapis/*, google-auth-library, MCP SDK) live in the
   # workspace manifests; the glob covers root plus every package and service.
   - package-ecosystem: npm
     directories:

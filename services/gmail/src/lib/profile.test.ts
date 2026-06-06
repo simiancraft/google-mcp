@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { senderAddress } from './profile.js';
 
 function fakeGmail(counter: { calls: number }): gmail_v1.Gmail {

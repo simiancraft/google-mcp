@@ -12,10 +12,9 @@ google-mcp/
 └── services/
     └── gmail/          # the canary: reference server; new services mirror it
         └── src/
-            ├── index.ts        # createServer({ name, scopes, tools, methods, client })
+            ├── index.ts        # createServer({ name, tools, methods, client })
             ├── defineTool.ts   # makeDefineTool<gmail_v1.Gmail>()  (MCP-sourced ops)
             ├── defineMethod.ts # makeDefineTool<gmail_v1.Gmail>()  (REST-sourced ops)
-            ├── scopes.ts
             ├── entities/       # PascalCase zod nouns (Label, Thread, Draft, ...)
             ├── lib/            # projection helpers (REST entity -> documented shape)
             ├── tools/          # MCP-toolset operations, one folder each:
@@ -49,7 +48,7 @@ bun run typecheck           # tsc --noEmit across workspaces
 bun run lint                # biome check
 bun run lint:fix            # biome check --write
 bun run build               # tsc across workspaces
-bun run check               # full pre-PR gate (lint-fix, typecheck, build, test, knip)
+bun run check               # full pre-PR gate (lint-fix, build, typecheck, test, knip)
 ```
 
 ## Adding a tool, method, entity, or service
@@ -58,9 +57,9 @@ See **`EXTENDING.md`** for the full recipe. In short: source the operation from
 its Google reference page, make a `tools/<name>/` or `methods/<name>/` folder
 (`schema.ts` + `handler.ts` + `handler.test.ts`), register it in that folder's
 `index.ts`, and add any new `entities/`. A new service binds
-`makeDefineTool<Client>()` once (as `defineTool`/`defineMethod`), lists its
-scopes (also added to the shared `SCOPES` union in `packages/google-auth`), and
-calls `createServer`.
+`makeDefineTool<Client>()` once (as `defineTool`/`defineMethod`), adds its scopes
+to the shared `SCOPES` union in `packages/google-auth` (services do not declare
+scopes locally), and calls `createServer`.
 
 ## Things that will trip you up
 

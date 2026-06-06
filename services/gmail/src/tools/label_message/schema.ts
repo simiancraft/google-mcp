@@ -6,7 +6,7 @@ export const input = z.object({
   labelIds: z.array(z.string()).describe('The ids of the labels to add.'),
 });
 
-/** The MCP reference documents no output body; we return the resulting state. */
+/** The MCP reference documents no output body; we confirm the applied labels. */
 export const output = z.object({
   messageId: z.string(),
   labelIds: z.array(z.string()),

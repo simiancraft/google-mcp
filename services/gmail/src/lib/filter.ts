@@ -1,4 +1,4 @@
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import type { Filter } from '../entities/Filter.js';
 
 /** Project a raw Gmail filter onto the Filter shape, dropping nulls. */

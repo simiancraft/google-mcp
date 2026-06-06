@@ -12,10 +12,9 @@ packages/
   google-auth/    # authorizedClient(account) + runAuthFlow(account)  — never reimplement auth
   mcp-harness/    # makeDefineTool<Client>() + createServer(...)        — never reimplement the server
 services/<svc>/src/
-  index.ts        # createServer({ name, scopes, tools, methods, client })
+  index.ts        # createServer({ name, tools, methods, client })
   defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  — MCP-sourced ops
   defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  — REST-sourced ops
-  scopes.ts       # the service's OAuth scopes
   entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
   lib/            # projection helpers (REST entity -> documented shape)
   tools/          # mirror the MCP toolset reference
@@ -85,12 +84,17 @@ then discoverable on hover, straight from the docs.
 ## Add a service
 
 1. `services/<svc>/` with `package.json` (deps `@google-mcp/auth`,
-   `@google-mcp/harness`, `googleapis`, `zod`; bin `google-mcp-<svc>`), `tsconfig.json`.
-2. `defineTool.ts`: `export const defineTool = makeDefineTool<<svc>_vN.Client>()`.
-3. `scopes.ts`: the service's scopes. Add them to the shared `SCOPES` union in
+   `@google-mcp/harness`, `@googleapis/<svc>`, `zod`; bin `google-mcp-<svc>`),
+   `tsconfig.json`. Depend on the per-API `@googleapis/<svc>` package, not the
+   `googleapis` monolith; the monolith loads ~900 modules per process at startup.
+2. `defineTool.ts`: `export const defineTool = makeDefineTool<<svc>_vN.Client>()`
+   (`import type { <svc>_vN } from '@googleapis/<svc>'`).
+3. Add the service's scopes to the shared `SCOPES` union in
    `packages/google-auth/src/config.ts` so each account is authorized once.
-4. `index.ts`: `createServer({ name, scopes, tools, client: async (a) =>
-   google.<svc>({ version, auth: await authorizedClient(a) }) })`.
+   Services do not declare scopes locally.
+4. `index.ts`: `createServer({ name, tools, client: async (a) =>
+   <svc>({ version, auth: await authorizedClient(a) }) })` (`import { <svc> } from
+   '@googleapis/<svc>'`).
 5. Stamp tools (above), one per page on the service's MCP reference (or, where
    Google publishes no MCP page, from the REST reference). Track gaps in a
    `COVERAGE.md`.

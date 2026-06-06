@@ -18,7 +18,8 @@ services/
 ```
 
 - **`packages/google-auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
-- **`services/*`** are the MCP servers. Each is `index` (bootstrap + tools) + `schemas` (zod) + `handlers/` (one per operation).
+- **`packages/mcp-harness`** owns the protocol: `makeDefineTool<Client>()` and `createServer(...)`. A service never reimplements the MCP server.
+- **`services/*`** are the MCP servers. Each is `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each folder holding `schema.ts` + `handler.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
 
 ## The multi-account model
 
@@ -39,7 +40,7 @@ Credentials never live in the repo. `.gitignore` blocks the common filenames; ke
 
 ```sh
 bun install
-bun run check     # lint, typecheck, build, test, knip across all workspaces
+bun run check     # lint-fix, build, typecheck, test, knip across all workspaces
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](./AGENTS.md) for the per-service pattern.

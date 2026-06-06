@@ -25,6 +25,17 @@ describe('resolveAccount', () => {
     delete process.env.GOOGLE_MCP_ACCOUNT;
     expect(() => resolveAccount()).toThrow(/No account/);
   });
+
+  it('rejects path-traversal and separator characters', () => {
+    expect(() => resolveAccount('../../etc/passwd')).toThrow(/Invalid account/);
+    expect(() => resolveAccount('a/b')).toThrow(/Invalid account/);
+    expect(() => resolveAccount('..')).toThrow(/Invalid account/);
+  });
+
+  it('accepts emails and simple slugs', () => {
+    expect(resolveAccount('me@example.com')).toBe('me@example.com');
+    expect(resolveAccount('simiancraft')).toBe('simiancraft');
+  });
 });
 
 describe('tokenPath', () => {
