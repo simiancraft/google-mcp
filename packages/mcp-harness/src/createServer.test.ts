@@ -2,7 +2,7 @@ import { describe, expect, it, mock, spyOn } from 'bun:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { z } from 'zod';
-import { callTool, createServer, toolDefinitions } from './createServer.js';
+import { callTool, createServer, renderCapabilities, toolDefinitions } from './createServer.js';
 import { makeDefineTool } from './defineTool.js';
 
 type FakeClient = { upper: (s: string) => string };
@@ -70,6 +70,24 @@ describe('toolDefinitions', () => {
     expect(echoDef?.outputSchema).toBeDefined();
     expect('annotations' in (echoDef ?? {})).toBe(false);
     expect(dangerDef?.annotations).toEqual({ destructiveHint: true });
+  });
+});
+
+describe('renderCapabilities', () => {
+  const danger = defineTool({
+    description: 'Irreversible.',
+    destructive: true,
+    input: z.object({ id: z.string() }),
+    output: z.object({ ok: z.boolean() }),
+    handler: async () => ({ ok: true }),
+  });
+
+  it('renders a Markdown table, marking only destructive operations', () => {
+    const md = renderCapabilities('Test capabilities', { echo, danger });
+    expect(md).toContain('# Test capabilities');
+    expect(md).toContain('2 operations.');
+    expect(md).toContain('| `echo` | Uppercase a string. |');
+    expect(md).toContain('| `danger` ⚠️ | Irreversible. |');
   });
 });
 

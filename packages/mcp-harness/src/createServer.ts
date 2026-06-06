@@ -44,6 +44,32 @@ export function toolDefinitions<Client>(registry: Record<string, AnyTool<Client>
 }
 
 /**
+ * Render a registry as a Markdown capability table (operation name, description,
+ * and an irreversible marker), derived from the same registry the server lists
+ * and dispatches. A static, human-readable mirror of the surface; agents that
+ * speak MCP should discover the live, fully-schema'd surface via `tools/list`.
+ * Pure; a service regenerates its CAPABILITIES.md from this so the doc cannot
+ * drift from the code.
+ */
+export function renderCapabilities<Client>(
+  title: string,
+  registry: Record<string, AnyTool<Client>>,
+): string {
+  const rows = Object.entries(registry).map(
+    ([name, tool]) => `| \`${name}\`${tool.destructive ? ' ⚠️' : ''} | ${tool.description} |`,
+  );
+  return `${[
+    `# ${title}`,
+    '',
+    `${rows.length} operations. ⚠️ marks irreversible operations (MCP \`destructiveHint\`).`,
+    '',
+    '| Operation | Description |',
+    '| --- | --- |',
+    ...rows,
+  ].join('\n')}\n`;
+}
+
+/**
  * Run one tool by name: resolve it, validate input against its schema, run the
  * handler, validate the output, and return both a structured result and a text
  * rendering (for clients that do not yet read `structuredContent`). All failure
