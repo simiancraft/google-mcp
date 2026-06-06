@@ -16,6 +16,9 @@ function headerMap(payload?: gmail_v1.Schema$MessagePart): Record<string, string
   return map;
 }
 
+// addressparser's address node: `name` is always a string ('' when absent), and
+// a node may instead be a `group` of members. Distinct from our entity
+// EmailAddress (../entities/EmailAddress), whose `name` is optional.
 type ParsedAddress = ReturnType<typeof addressparser>[number];
 
 /**
@@ -35,6 +38,8 @@ function addresses(value?: string): EmailAddress[] {
       if (entry.group) {
         collect(entry.group);
       } else if (entry.address) {
+        // addressparser yields name:'' (not undefined) for nameless addresses; ''
+        // is falsy, so we omit the key and keep the projected object clean.
         out.push(
           entry.name ? { name: entry.name, address: entry.address } : { address: entry.address },
         );
@@ -45,8 +50,8 @@ function addresses(value?: string): EmailAddress[] {
   return out;
 }
 
-/** The single sender (name and address), or undefined. */
-function senderAddress(value?: string): EmailAddress | undefined {
+/** The first address parsed from a header (e.g. the sender from `From`), or undefined. */
+function firstAddress(value?: string): EmailAddress | undefined {
   return addresses(value)[0];
 }
 
@@ -101,7 +106,7 @@ export function projectMessage(message: gmail_v1.Schema$Message): Message {
     id: message.id ?? '',
     snippet: message.snippet ?? undefined,
     subject: headers.subject,
-    sender: senderAddress(headers.from),
+    sender: firstAddress(headers.from),
     toRecipients: addresses(headers.to),
     ccRecipients: addresses(headers.cc),
     date: headers.date,

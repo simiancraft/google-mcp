@@ -144,6 +144,14 @@ describe('projectMessage body extraction', () => {
     );
     expect(result.plaintextBody).toBe(body);
   });
+
+  it('handles a message with no payload', () => {
+    const result = projectMessage({ id: 'M1' });
+    expect(result.attachmentIds).toBeUndefined();
+    expect(result.plaintextBody).toBeUndefined();
+    expect(result.toRecipients).toEqual([]);
+    expect(result.sender).toBeUndefined();
+  });
 });
 
 describe('projectMessage address parsing', () => {
