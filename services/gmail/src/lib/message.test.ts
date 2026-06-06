@@ -80,6 +80,37 @@ describe('projectMessage', () => {
   });
 });
 
+describe('projectMessage address parsing', () => {
+  const withHeaders = (headers: { name: string; value: string }[]): gmail_v1.Schema$Message => ({
+    id: 'M1',
+    payload: { headers },
+  });
+
+  it('keeps a comma in a quoted display name as one address', () => {
+    const result = projectMessage(
+      withHeaders([{ name: 'To', value: '"Doe, John" <john@x.com>, jane@y.com' }]),
+    );
+    expect(result.toRecipients).toEqual(['john@x.com', 'jane@y.com']);
+  });
+
+  it('projects the sender to a bare address, dropping the display name', () => {
+    const result = projectMessage(withHeaders([{ name: 'From', value: 'Jane Roe <jane@y.com>' }]));
+    expect(result.sender).toBe('jane@y.com');
+  });
+
+  it('flattens an RFC 5322 group into its member addresses', () => {
+    const result = projectMessage(withHeaders([{ name: 'Cc', value: 'Team: a@x.com, b@y.com;' }]));
+    expect(result.ccRecipients).toEqual(['a@x.com', 'b@y.com']);
+  });
+
+  it('yields empty recipient lists for absent headers', () => {
+    const result = projectMessage(withHeaders([]));
+    expect(result.toRecipients).toEqual([]);
+    expect(result.ccRecipients).toEqual([]);
+    expect(result.sender).toBeUndefined();
+  });
+});
+
 describe('projectDraft', () => {
   it('handles a missing message gracefully', () => {
     expect(projectDraft({ id: 'D1' })).toMatchObject({

@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
+    "@types/addressparser": "^1.0.3",
     "@types/bun": "^1.3.13",
     "knip": "^6.14.0",
     "typescript": "^5.9.0"
