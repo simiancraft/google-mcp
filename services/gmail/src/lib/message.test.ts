@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { buildRawMessage, projectDraft, projectMessage } from './message.js';
 
 const decode = (raw: string) => Buffer.from(raw, 'base64url').toString('utf8');
@@ -72,7 +72,7 @@ describe('projectMessage', () => {
     const result = projectMessage(message);
     expect(result).toMatchObject({
       id: 'M1',
-      sender: 'a@b.com',
+      sender: { address: 'a@b.com' },
       plaintextBody: 'plain',
       htmlBody: '<p>html</p>',
       attachmentIds: ['ATT1'],
@@ -156,17 +156,20 @@ describe('projectMessage address parsing', () => {
     const result = projectMessage(
       withHeaders([{ name: 'To', value: '"Doe, John" <john@x.com>, jane@y.com' }]),
     );
-    expect(result.toRecipients).toEqual(['john@x.com', 'jane@y.com']);
+    expect(result.toRecipients).toEqual([
+      { name: 'Doe, John', address: 'john@x.com' },
+      { address: 'jane@y.com' },
+    ]);
   });
 
-  it('projects the sender to a bare address, dropping the display name', () => {
+  it('keeps the sender display name alongside the address', () => {
     const result = projectMessage(withHeaders([{ name: 'From', value: 'Jane Roe <jane@y.com>' }]));
-    expect(result.sender).toBe('jane@y.com');
+    expect(result.sender).toEqual({ name: 'Jane Roe', address: 'jane@y.com' });
   });
 
   it('flattens an RFC 5322 group into its member addresses', () => {
     const result = projectMessage(withHeaders([{ name: 'Cc', value: 'Team: a@x.com, b@y.com;' }]));
-    expect(result.ccRecipients).toEqual(['a@x.com', 'b@y.com']);
+    expect(result.ccRecipients).toEqual([{ address: 'a@x.com' }, { address: 'b@y.com' }]);
   });
 
   it('yields empty recipient lists for absent headers', () => {

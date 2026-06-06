@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { list_drafts } from './handler.js';
 import { output } from './schema.js';
 
@@ -35,7 +35,7 @@ describe('list_drafts', () => {
       id: 'D1',
       threadId: 'T9',
       subject: 'Draft subject',
-      toRecipients: ['x@example.com', 'y@example.com'],
+      toRecipients: [{ address: 'x@example.com' }, { address: 'y@example.com' }],
     });
     expect(() => output.parse(result)).not.toThrow();
   });

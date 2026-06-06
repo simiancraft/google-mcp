@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EmailAddress } from './EmailAddress.js';
 
 /**
  * An unsent message. The message contained within a draft can be replaced.
@@ -16,12 +17,12 @@ export const Draft = z.object({
   subject: z.string().optional(),
   /** The thread the draft belongs to. */
   threadId: z.string().optional(),
-  /** To recipient addresses. */
-  toRecipients: z.array(z.string()).optional(),
-  /** Cc recipient addresses. */
-  ccRecipients: z.array(z.string()).optional(),
-  /** Bcc recipient addresses. */
-  bccRecipients: z.array(z.string()).optional(),
+  /** To recipients (name and address). */
+  toRecipients: z.array(EmailAddress).optional(),
+  /** Cc recipients (name and address). */
+  ccRecipients: z.array(EmailAddress).optional(),
+  /** Bcc recipients (name and address). */
+  bccRecipients: z.array(EmailAddress).optional(),
   /** The plain-text body. */
   plaintextBody: z.string().optional(),
   /** The HTML body. Extracted alongside the plain-text body. */

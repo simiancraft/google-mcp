@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EmailAddress } from './EmailAddress.js';
 
 /**
  * An email message containing the sender, recipients, subject, and body. Once a
@@ -16,12 +17,12 @@ export const Message = z.object({
   snippet: z.string().optional(),
   /** The subject, from headers. */
   subject: z.string().optional(),
-  /** The sender email address, from headers. */
-  sender: z.string().optional(),
-  /** To recipient addresses, from headers. */
-  toRecipients: z.array(z.string()).optional(),
-  /** Cc recipient addresses, from headers. */
-  ccRecipients: z.array(z.string()).optional(),
+  /** The sender (name and address), from headers. */
+  sender: EmailAddress.optional(),
+  /** To recipients (name and address), from headers. */
+  toRecipients: z.array(EmailAddress).optional(),
+  /** Cc recipients (name and address), from headers. */
+  ccRecipients: z.array(EmailAddress).optional(),
   /** The message date, ISO 8601. */
   date: z.string().optional(),
   /** The plain-text body (FULL_CONTENT only). */

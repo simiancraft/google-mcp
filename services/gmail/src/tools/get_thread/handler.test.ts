@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { gmail_v1 } from 'googleapis';
+import type { gmail_v1 } from '@googleapis/gmail';
 import { get_thread } from './handler.js';
 import { output } from './schema.js';
 
@@ -38,7 +38,7 @@ describe('get_thread', () => {
     expect(result.messages[0]).toMatchObject({
       id: 'M1',
       subject: 'Re: Hello',
-      sender: 'a@example.com',
+      sender: { address: 'a@example.com' },
       plaintextBody: 'Full body',
     });
     expect(() => output.parse(result)).not.toThrow();

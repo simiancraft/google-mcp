@@ -1,7 +1,8 @@
+import type { gmail_v1 } from '@googleapis/gmail';
 import addressparser from 'addressparser';
-import type { gmail_v1 } from 'googleapis';
 import { createMimeMessage } from 'mail-mime-builder';
 import type { Draft } from '../entities/Draft.js';
+import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
 
 /** Lowercased header name -> value, from a message payload. */
@@ -18,23 +19,25 @@ function headerMap(payload?: gmail_v1.Schema$MessagePart): Record<string, string
 type ParsedAddress = ReturnType<typeof addressparser>[number];
 
 /**
- * Parse an address-list header into bare email addresses. RFC 5322 tokenization
- * (quoted display names, escaped commas, group syntax) is deferred to
- * addressparser; a naive `.split(',')` mis-parses `"Doe, John" <j@x.com>` into
- * two broken tokens. Display names are dropped: the field is documented as
- * addresses, and bare addresses are the unambiguous, deterministic projection.
+ * Parse an address-list header into structured addresses (display name + bare
+ * address). RFC 5322 tokenization (quoted display names, escaped commas, group
+ * syntax) is deferred to addressparser; a naive `.split(',')` mis-parses
+ * `"Doe, John" <j@x.com>` into two broken tokens. Group syntax is flattened to
+ * its member addresses; a name is included only when the header carried one.
  */
-function addresses(value?: string): string[] {
+function addresses(value?: string): EmailAddress[] {
   if (!value) {
     return [];
   }
-  const out: string[] = [];
+  const out: EmailAddress[] = [];
   const collect = (entries: ParsedAddress[]): void => {
     for (const entry of entries) {
       if (entry.group) {
         collect(entry.group);
       } else if (entry.address) {
-        out.push(entry.address);
+        out.push(
+          entry.name ? { name: entry.name, address: entry.address } : { address: entry.address },
+        );
       }
     }
   };
@@ -42,8 +45,8 @@ function addresses(value?: string): string[] {
   return out;
 }
 
-/** The single sender's bare email address (display name dropped), or undefined. */
-function senderAddress(value?: string): string | undefined {
+/** The single sender (name and address), or undefined. */
+function senderAddress(value?: string): EmailAddress | undefined {
   return addresses(value)[0];
 }
 

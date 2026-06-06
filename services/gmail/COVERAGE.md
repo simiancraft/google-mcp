@@ -36,6 +36,11 @@ The `Message` and `Draft` shapes carry **both** `plaintextBody` and `htmlBody`
 (Google's MCP projection documents only `plaintextBody`). Both are extracted from
 the MIME tree; this is a deliberate, documented deviation.
 
+`sender` and the `to`/`cc`/`bcc` recipient fields are structured `EmailAddress`
+objects (`{ name?, address }`), not bare strings, so callers can act on the
+display name rather than infer it from the address. Address headers are parsed
+with `addressparser` (RFC 5322: quoted names, escaped commas, groups).
+
 ## Deferred
 
 Tracked as issues, not missing by accident:
