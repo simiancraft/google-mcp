@@ -154,6 +154,33 @@ describe('projectMessage body extraction', () => {
   });
 });
 
+describe('projectMessage hostile-input guards', () => {
+  it('bounds an oversized address header instead of parsing all of it', () => {
+    const value = 'a@b.com,'.repeat(20_000); // ~160KB, over the 100KB cap
+    const result = projectMessage({ id: 'M1', payload: { headers: [{ name: 'To', value }] } });
+    expect(result.toRecipients?.length).toBeLessThan(20_000); // truncated before parse
+    expect(result.toRecipients?.[0]).toEqual({ address: 'a@b.com' });
+  });
+
+  it('stops flattening pathologically nested address groups', () => {
+    const value = `${'g:'.repeat(200)}a@b.com${';'.repeat(200)}`;
+    const result = projectMessage({ id: 'M1', payload: { headers: [{ name: 'To', value }] } });
+    expect(result.toRecipients).toEqual([]); // leaf is past the group-depth cap
+  });
+
+  it('stops walking a pathologically deep MIME tree', () => {
+    let part: gmail_v1.Schema$MessagePart = {
+      mimeType: 'application/pdf',
+      body: { attachmentId: 'DEEP' },
+    };
+    for (let i = 0; i < 150; i += 1) {
+      part = { mimeType: 'multipart/mixed', parts: [part] };
+    }
+    const result = projectMessage({ id: 'M1', payload: part });
+    expect(result.attachmentIds).toBeUndefined(); // leaf is past the depth cap
+  });
+});
+
 describe('projectMessage address parsing', () => {
   const withHeaders = (headers: { name: string; value: string }[]): gmail_v1.Schema$Message => ({
     id: 'M1',

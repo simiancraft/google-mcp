@@ -21,6 +21,16 @@ function headerMap(payload?: gmail_v1.Schema$MessagePart): Record<string, string
 // EmailAddress (../entities/EmailAddress), whose `name` is optional.
 type ParsedAddress = ReturnType<typeof addressparser>[number];
 
+// Bounds against hostile inbound mail; a sender controls header text and MIME
+// structure. Best-effort: cap the work and project what fits rather than block
+// the server (addressparser is O(n^2) in entry count) or overflow the stack on a
+// deeply nested tree. A header longer than this, or nesting deeper, is not
+// legitimate mail to act on. (A deep RFC 5322 group can still overflow inside
+// addressparser before we see it; that surfaces as a harness-caught per-call
+// error, not a crash.)
+const MAX_HEADER_LENGTH = 100_000;
+const MAX_DEPTH = 100;
+
 /**
  * Parse an address-list header into structured addresses (display name + bare
  * address). RFC 5322 tokenization (quoted display names, escaped commas, group
@@ -32,11 +42,15 @@ function addresses(value?: string): EmailAddress[] {
   if (!value) {
     return [];
   }
+  const bounded = value.length > MAX_HEADER_LENGTH ? value.slice(0, MAX_HEADER_LENGTH) : value;
   const out: EmailAddress[] = [];
-  const collect = (entries: ParsedAddress[]): void => {
+  const collect = (entries: ParsedAddress[], depth: number): void => {
+    if (depth > MAX_DEPTH) {
+      return;
+    }
     for (const entry of entries) {
       if (entry.group) {
-        collect(entry.group);
+        collect(entry.group, depth + 1);
       } else if (entry.address) {
         // addressparser yields name:'' (not undefined) for nameless addresses; ''
         // is falsy, so we omit the key and keep the projected object clean.
@@ -46,7 +60,7 @@ function addresses(value?: string): EmailAddress[] {
       }
     }
   };
-  collect(addressparser(value));
+  collect(addressparser(bounded), 0);
   return out;
 }
 
@@ -66,8 +80,12 @@ type Bodies = { plain?: string; html?: string };
  * Both are surfaced (an intentional extension beyond Google's plaintext-only
  * projection): callers need plain and HTML bodies extracted reliably.
  */
-function collectBodies(part: gmail_v1.Schema$MessagePart | undefined, acc: Bodies): void {
-  if (!part) {
+function collectBodies(
+  part: gmail_v1.Schema$MessagePart | undefined,
+  acc: Bodies,
+  depth = 0,
+): void {
+  if (!part || depth > MAX_DEPTH) {
     return;
   }
   if (part.body?.data) {
@@ -78,20 +96,24 @@ function collectBodies(part: gmail_v1.Schema$MessagePart | undefined, acc: Bodie
     }
   }
   for (const child of part.parts ?? []) {
-    collectBodies(child, acc);
+    collectBodies(child, acc, depth + 1);
   }
 }
 
 /** Walk the MIME tree collecting attachment ids. */
-function collectAttachmentIds(part: gmail_v1.Schema$MessagePart | undefined, ids: string[]): void {
-  if (!part) {
+function collectAttachmentIds(
+  part: gmail_v1.Schema$MessagePart | undefined,
+  ids: string[],
+  depth = 0,
+): void {
+  if (!part || depth > MAX_DEPTH) {
     return;
   }
   if (part.body?.attachmentId) {
     ids.push(part.body.attachmentId);
   }
   for (const child of part.parts ?? []) {
-    collectAttachmentIds(child, ids);
+    collectAttachmentIds(child, ids, depth + 1);
   }
 }
 

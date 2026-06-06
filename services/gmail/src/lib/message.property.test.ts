@@ -71,3 +71,23 @@ describe('projectMessage (property)', () => {
     );
   });
 });
+
+describe('projectMessage address projection (property)', () => {
+  /** A display name safe to drop into a header without breaking address syntax. */
+  const safeName = fc.string().map((s) => s.replace(/[",<>@:;()\\]/g, '').trim());
+
+  it('every recipient has a non-empty address and never an empty name', () => {
+    fc.assert(
+      fc.property(fc.array(fc.tuple(safeName, fc.emailAddress()), { maxLength: 20 }), (entries) => {
+        const value = entries
+          .map(([name, email]) => (name ? `${name} <${email}>` : email))
+          .join(', ');
+        const result = projectMessage({ id: 'M1', payload: { headers: [{ name: 'To', value }] } });
+        for (const recipient of result.toRecipients ?? []) {
+          expect(recipient.address.length).toBeGreaterThan(0);
+          expect(recipient.name).not.toBe('');
+        }
+      }),
+    );
+  });
+});

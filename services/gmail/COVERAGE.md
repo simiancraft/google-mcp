@@ -41,6 +41,12 @@ objects (`{ name?, address }`), not bare strings, so callers can act on the
 display name rather than infer it from the address. Address headers are parsed
 with `addressparser` (RFC 5322: quoted names, escaped commas, groups).
 
+The address shape is asymmetric by direction: compose **inputs** (`to`/`cc`/`bcc`
+on send/draft tools) are plain address strings handed to the MIME builder, while
+projected **outputs** (`toRecipients`/`ccRecipients`/`bccRecipients`, `sender`)
+are structured `EmailAddress`. Inbound parsing and outbound assembly are
+different operations and intentionally do not share a type.
+
 ## Deferred
 
 Tracked as issues, not missing by accident:
