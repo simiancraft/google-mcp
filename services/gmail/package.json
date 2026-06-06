@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check"
+    "lint": "biome check",
+    "capabilities": "bun run src/capabilities.ts"
   },
   "dependencies": {
     "@google-mcp/auth": "workspace:*",

@@ -6,6 +6,20 @@ The Gmail MCP server, and the reference (canary) implementation for the
 [`@google-mcp/harness`](../../packages/mcp-harness) factory over a
 [`@google-mcp/auth`](../../packages/google-auth) client.
 
+## Capabilities
+
+33 operations across threads, messages, drafts, labels, and filters: search and
+read (`search_threads`, `get_thread`, `get_message`, `list_messages`), compose
+and send (`create_draft`, `send_message`, `send_draft`), organize (labels,
+`batch_modify_messages`, trash/untrash), attachments (`download_attachment`), and
+account filters. Irreversible operations (send, permanent delete) carry the MCP
+`destructiveHint`.
+
+The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
+regenerated from the registries with `bun run capabilities`. An MCP client
+discovers the live surface, with input and output JSON Schema, from the server's
+`tools/list`.
+
 ## Layout
 
 ```
