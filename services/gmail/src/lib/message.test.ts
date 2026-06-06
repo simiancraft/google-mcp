@@ -80,6 +80,72 @@ describe('projectMessage', () => {
   });
 });
 
+describe('projectMessage body extraction', () => {
+  const withPayload = (payload: gmail_v1.Schema$MessagePart): gmail_v1.Schema$Message => ({
+    id: 'M1',
+    payload,
+  });
+
+  it('extracts an html-only message with no plaintext part', () => {
+    const result = projectMessage(
+      withPayload({ mimeType: 'text/html', body: { data: b64('<p>only html</p>') } }),
+    );
+    expect(result.htmlBody).toBe('<p>only html</p>');
+    expect(result.plaintextBody).toBeUndefined();
+  });
+
+  it('collects attachment ids with no text body present', () => {
+    const result = projectMessage(
+      withPayload({
+        mimeType: 'multipart/mixed',
+        parts: [{ mimeType: 'application/pdf', body: { attachmentId: 'ATT1' } }],
+      }),
+    );
+    expect(result.attachmentIds).toEqual(['ATT1']);
+    expect(result.plaintextBody).toBeUndefined();
+    expect(result.htmlBody).toBeUndefined();
+  });
+
+  it('treats an empty body as no body', () => {
+    const result = projectMessage(withPayload({ mimeType: 'text/plain', body: { data: b64('') } }));
+    expect(result.plaintextBody).toBeUndefined();
+  });
+
+  it('ignores a part whose mimeType is absent', () => {
+    const result = projectMessage(withPayload({ body: { data: b64('orphan') } }));
+    expect(result.plaintextBody).toBeUndefined();
+    expect(result.htmlBody).toBeUndefined();
+  });
+
+  it('finds a text/plain part nested several levels deep', () => {
+    const result = projectMessage(
+      withPayload({
+        mimeType: 'multipart/mixed',
+        parts: [
+          {
+            mimeType: 'multipart/related',
+            parts: [
+              {
+                mimeType: 'multipart/alternative',
+                parts: [{ mimeType: 'text/plain', body: { data: b64('deep') } }],
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    expect(result.plaintextBody).toBe('deep');
+  });
+
+  it('round-trips a non-ASCII body through base64url decoding', () => {
+    const body = 'café ☕ 日本語';
+    const result = projectMessage(
+      withPayload({ mimeType: 'text/plain', body: { data: b64(body) } }),
+    );
+    expect(result.plaintextBody).toBe(body);
+  });
+});
+
 describe('projectMessage address parsing', () => {
   const withHeaders = (headers: { name: string; value: string }[]): gmail_v1.Schema$Message => ({
     id: 'M1',
