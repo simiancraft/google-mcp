@@ -2,7 +2,7 @@
 
 One [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, built to command **several Google accounts at once**. Each server is thin, authorized per account, and shares a single OAuth implementation.
 
-> **Status:** private and pre-release. Interfaces and layout will move until the first tagged release.
+> **Status:** pre-release. Interfaces and layout will move until the first tagged release.
 
 ## Why
 

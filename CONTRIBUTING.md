@@ -17,8 +17,8 @@ bun install
 
 ## Layout
 
-- `packages/*` — shared code. `packages/google-auth` owns OAuth; services depend on it.
-- `services/*` — one thin MCP server per Google service. `services/gmail` is the reference (canary) implementation; new services mirror its shape.
+- `packages/*`: shared code. `packages/google-auth` owns OAuth; services depend on it.
+- `services/*`: one thin MCP server per Google service. `services/gmail` is the reference (canary) implementation; new services mirror its shape.
 
 ## Common tasks
 
@@ -53,7 +53,7 @@ Commits are authored by humans. **Do not** attribute AI co-authorship.
 ## Reporting issues
 
 - Bugs: [open an issue](https://github.com/simiancraft/google-mcp/issues/new/choose).
-- Security: see [SECURITY.md](./SECURITY.md). **Do not** file public issues for vulnerabilities — use GitHub Security Advisories or email info@simiancraft.com.
+- Security: see [SECURITY.md](./SECURITY.md). **Do not** file public issues for vulnerabilities; use GitHub Security Advisories or email info@simiancraft.com.
 
 ## Code of conduct
 

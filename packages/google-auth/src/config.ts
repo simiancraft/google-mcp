@@ -61,7 +61,7 @@ export function resolveAccount(account?: string): string {
 export const SCOPES = [
   // Front-loaded union across all planned services, so each account is authorized
   // once for everything (the B1 model). The consent screen must list these too.
-  // Gmail — mail.google.com is full access incl. permanent delete (gmail.modify
+  // Gmail: mail.google.com is full access incl. permanent delete (gmail.modify
   // cannot delete); settings.basic covers filters/forwarding/vacation/aliases.
   'https://mail.google.com/',
   'https://www.googleapis.com/auth/gmail.settings.basic',

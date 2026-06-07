@@ -9,12 +9,12 @@ worked reference.
 
 ```
 packages/
-  google-auth/    # authorizedClient(account) + runAuthFlow(account)  — never reimplement auth
-  mcp-harness/    # makeDefineTool<Client>() + createServer(...)        — never reimplement the server
+  google-auth/    # authorizedClient(account) + runAuthFlow(account); never reimplement auth
+  mcp-harness/    # makeDefineTool<Client>() + createServer(...); never reimplement the server
 services/<svc>/src/
   index.ts        # createServer({ name, tools, methods, client })
-  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  — MCP-sourced ops
-  defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  — REST-sourced ops
+  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  (MCP-sourced ops)
+  defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  (REST-sourced ops)
   entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
   lib/            # projection helpers (REST entity -> documented shape)
   tools/          # mirror the MCP toolset reference

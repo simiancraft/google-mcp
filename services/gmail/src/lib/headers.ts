@@ -5,7 +5,7 @@ import { z } from 'zod';
 // line (e.g. a silent `Bcc:`) when the message is assembled. Inputs are rejected
 // at the schema, and stripped defensively where headers are built.
 
-/** C0 control characters (incl. CR/LF) and DEL — never valid in a header value. */
+/** True for C0 control characters (incl. CR/LF) and DEL, which are never valid in a header. */
 function isControl(ch: string): boolean {
   const code = ch.charCodeAt(0);
   return code < 0x20 || code === 0x7f;
