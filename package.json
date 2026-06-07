@@ -24,8 +24,8 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write .",
-    "typecheck": "bun run --filter '*' typecheck",
-    "build": "bun run --filter '*' build",
+    "typecheck": "bun run --filter './packages/*' typecheck && bun run --filter './services/*' typecheck",
+    "build": "bun run --filter './packages/*' build && bun run --filter './services/*' build",
     "test": "bun test",
     "check:knip": "knip",
     "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip"
