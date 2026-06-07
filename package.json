@@ -1,17 +1,17 @@
 {
-  "name": "google-mcp",
+  "name": "google-mcp-suite",
   "private": true,
   "type": "module",
   "description": "Per-account, per-service Google MCP servers sharing one auth implementation.",
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",
-  "homepage": "https://github.com/simiancraft/google-mcp#readme",
+  "homepage": "https://github.com/simiancraft/google-mcp-suite#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simiancraft/google-mcp.git"
+    "url": "git+https://github.com/simiancraft/google-mcp-suite.git"
   },
   "bugs": {
-    "url": "https://github.com/simiancraft/google-mcp/issues"
+    "url": "https://github.com/simiancraft/google-mcp-suite/issues"
   },
   "workspaces": [
     "packages/*",

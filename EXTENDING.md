@@ -1,4 +1,4 @@
-# Extending google-mcp
+# Extending google-mcp-suite
 
 How to add a tool, an entity, or a whole service. The pattern is fixed on
 purpose: every tool is a folder, every service is the same shape, and all

@@ -1,7 +1,7 @@
 # @google-mcp/gmail
 
 The Gmail MCP server, and the reference (canary) implementation for the
-[google-mcp](../../README.md) pattern: `tools/` and `methods/` (verbs) over
+[google-mcp-suite](../../README.md) pattern: `tools/` and `methods/` (verbs) over
 `entities/` (nouns), all zod, composed by the shared
 [`@google-mcp/harness`](../../packages/mcp-harness) factory over a
 [`@google-mcp/auth`](../../packages/google-auth) client.

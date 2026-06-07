@@ -10,7 +10,7 @@ This repository is pre-release. Until a tagged release exists, only `main` recei
 
 ## Reporting a vulnerability
 
-Report security issues **privately** via GitHub Security Advisories: open [a new advisory](https://github.com/simiancraft/google-mcp/security/advisories/new) on this repository. If that route is not available to you, email **info@simiancraft.com**.
+Report security issues **privately** via GitHub Security Advisories: open [a new advisory](https://github.com/simiancraft/google-mcp-suite/security/advisories/new) on this repository. If that route is not available to you, email **info@simiancraft.com**.
 
 Please do **not** open a public GitHub issue for security reports.
 
@@ -30,6 +30,6 @@ Unlike a pure-function library, these servers hold real credential, filesystem, 
 
 ### Out of scope
 
-- **Incorrect API results or missing operations.** These are bugs; file a regular [GitHub issue](https://github.com/simiancraft/google-mcp/issues).
+- **Incorrect API results or missing operations.** These are bugs; file a regular [GitHub issue](https://github.com/simiancraft/google-mcp-suite/issues).
 - **Vulnerabilities in Google's APIs or the `googleapis` / `google-auth-library` packages.** Report upstream; we will track and bump.
 - **Misconfiguration of your own Google Cloud OAuth app, scopes, or credentials** outside what this repo's code controls.

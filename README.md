@@ -1,8 +1,8 @@
-# google-mcp
+# google-mcp-suite
 
-[![CI](https://github.com/simiancraft/google-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/simiancraft/google-mcp/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/simiancraft/google-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/simiancraft/google-mcp)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/simiancraft/google-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/simiancraft/google-mcp)
+[![CI](https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/simiancraft/google-mcp-suite/branch/main/graph/badge.svg)](https://codecov.io/gh/simiancraft/google-mcp-suite)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/simiancraft/google-mcp-suite/badge)](https://securityscorecards.dev/viewer/?uri=github.com/simiancraft/google-mcp-suite)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 One [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, built to command **several Google accounts at once**. Each server is thin, authorized per account, and shares a single OAuth implementation.

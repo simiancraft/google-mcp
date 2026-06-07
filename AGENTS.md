@@ -1,11 +1,11 @@
-# google-mcp: Agent Instructions
+# google-mcp-suite: Agent Instructions
 
 A Bun-workspace monorepo of **Google MCP servers**: one thin [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, each authorized per account, all sharing one auth implementation. The organizing entity is a Google **account**; its children are **services** (Gmail, Drive, ...); each service exposes **operations**.
 
 ## Quick orientation
 
 ```
-google-mcp/
+google-mcp-suite/
 ├── packages/
 │   ├── google-auth/    # shared OAuth: authorizedClient(account), runAuthFlow(account)
 │   └── mcp-harness/    # makeDefineTool<Client>() + createServer(...)

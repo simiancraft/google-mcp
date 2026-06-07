@@ -1,4 +1,4 @@
-# Contributing to google-mcp
+# Contributing to google-mcp-suite
 
 Thanks for considering a contribution. This is a Bun-workspace monorepo of Google MCP servers; it is small and opinionated, the bar for merging is high, and the review is friendly.
 
@@ -10,8 +10,8 @@ Thanks for considering a contribution. This is a Bun-workspace monorepo of Googl
 ## Setup
 
 ```sh
-git clone https://github.com/simiancraft/google-mcp.git
-cd google-mcp
+git clone https://github.com/simiancraft/google-mcp-suite.git
+cd google-mcp-suite
 bun install
 ```
 
@@ -52,7 +52,7 @@ Commits are authored by humans. **Do not** attribute AI co-authorship.
 
 ## Reporting issues
 
-- Bugs: [open an issue](https://github.com/simiancraft/google-mcp/issues/new/choose).
+- Bugs: [open an issue](https://github.com/simiancraft/google-mcp-suite/issues/new/choose).
 - Security: see [SECURITY.md](./SECURITY.md). **Do not** file public issues for vulnerabilities; use GitHub Security Advisories or email info@simiancraft.com.
 
 ## Code of conduct
