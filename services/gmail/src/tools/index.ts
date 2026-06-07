@@ -15,7 +15,7 @@ import { unlabel_thread } from './unlabel_thread/handler.js';
  * The tool registry: keys are the wire tool names. Each tool is imported from
  * its folder's handler and spread in here; the server lists and dispatches this.
  */
-export const tools: Record<string, AnyTool<gmail_v1.Gmail>> = {
+export const tools = {
   search_threads,
   get_thread,
   list_drafts,
@@ -26,4 +26,4 @@ export const tools: Record<string, AnyTool<gmail_v1.Gmail>> = {
   label_thread,
   unlabel_message,
   unlabel_thread,
-};
+} satisfies Record<string, AnyTool<gmail_v1.Gmail>>;

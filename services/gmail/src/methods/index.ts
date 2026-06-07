@@ -30,7 +30,7 @@ import { update_label } from './update_label/handler.js';
  * as tools; merged into the registry by the server. Irreversible ones (send,
  * permanent delete) carry `destructive`.
  */
-export const methods: Record<string, AnyTool<gmail_v1.Gmail>> = {
+export const methods = {
   // messages
   get_message,
   list_messages,
@@ -59,4 +59,4 @@ export const methods: Record<string, AnyTool<gmail_v1.Gmail>> = {
   get_filter,
   list_filters,
   delete_filter,
-};
+} satisfies Record<string, AnyTool<gmail_v1.Gmail>>;

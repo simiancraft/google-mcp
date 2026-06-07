@@ -66,6 +66,12 @@ acting on mail after the call). The server surfaces these as MCP
 `destructiveHint`. `trash`/`untrash` are reversible with no standing effect, so
 **not** destructive.
 
+**Output crosses the wire as JSON.** Every result is JSON-serialized (a `text`
+block plus `structuredContent`); there is no binary or streaming channel. Binary
+payloads (e.g. attachment bytes from `download_attachment`) are base64url-encoded
+into a JSON string field, by design. A service that needs native blob output
+extends the harness (`createServer`/`callTool`), not a single operation.
+
 ## Add an entity
 
 When a tool's schema references `object (X)`, add `entities/X.ts`:
