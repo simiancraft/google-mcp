@@ -7,7 +7,7 @@ Two reference surfaces: the **MCP toolset** (Google's curated tool list) and the
 - MCP reference: `https://developers.google.com/workspace/gmail/api/reference/mcp`
 - Discovery: `https://gmail.googleapis.com/$discovery/rest?version=v1`
 
-## Tools — MCP toolset (10 / 10)
+## Tools: MCP toolset (10 / 10)
 
 Every tool on the MCP reference is implemented (`tools/`). Each `schema.ts` cites
 its page.
@@ -16,7 +16,7 @@ its page.
 `create_label`, `label_message`, `label_thread`, `unlabel_message`,
 `unlabel_thread`.
 
-## Methods — REST reference (`methods/`)
+## Methods: REST reference (`methods/`)
 
 Operations beyond the MCP toolset, sourced from the REST reference.
 
@@ -26,15 +26,16 @@ Operations beyond the MCP toolset, sourced from the REST reference.
 | drafts | `get_draft`, `update_draft`, `delete_draft`, `send_draft` ⚠ |
 | labels | `get_label`, `update_label`, `delete_label` |
 | threads | `trash_thread`, `untrash_thread`, `delete_thread` ⚠ |
-| filters | `create_filter`, `get_filter`, `list_filters`, `delete_filter` |
+| filters | `create_filter` ⚠, `get_filter`, `list_filters`, `delete_filter` |
 
-⚠ = irreversible (`destructiveHint`); requires the `https://mail.google.com/` scope.
+⚠ = destructive (`destructiveHint`): irreversible, or a standing side effect like a
+forwarding filter. Permanent deletes also require the `https://mail.google.com/` scope.
 
 ### Extension beyond the documented projection
 
 The `Message` and `Draft` shapes carry **both** `plaintextBody` and `htmlBody`
 (Google's MCP projection documents only `plaintextBody`). Both are extracted from
-the MIME tree; this is a deliberate, documented deviation.
+the MIME tree.
 
 `sender` and the `to`/`cc`/`bcc` recipient fields are structured `EmailAddress`
 objects (`{ name?, address }`), not bare strings, so callers can act on the
