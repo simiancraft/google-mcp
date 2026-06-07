@@ -16,8 +16,18 @@ export type Tool<Client, Input extends z.ZodType, Output extends z.ZodType> = {
   destructive?: boolean;
 };
 
-/** A tool with its schemas erased; the shape the registry and server work with. */
-export type AnyTool<Client> = Tool<Client, z.ZodType, z.ZodType>;
+/**
+ * A tool with its schemas erased; the shape the registry and server work with.
+ *
+ * The handler parameter is widened to `never` (not `z.infer<z.ZodType>`) so that
+ * any concrete `Tool<Client, In, Out>` is assignable here: a handler accepting a
+ * specific input type is assignable to one accepting `never` by contravariance.
+ * Under zod 4, `z.infer<z.ZodType>` resolves to `unknown`, which would break that
+ * assignability; `never` restores the erased-shape behavior zod 3 gave for free.
+ */
+export type AnyTool<Client> = Omit<Tool<Client, z.ZodType, z.ZodType>, 'handler'> & {
+  handler: (client: Client, args: never) => Promise<unknown>;
+};
 
 /**
  * Bind the tool factory to one service's client type. Every service calls this

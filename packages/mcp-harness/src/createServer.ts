@@ -6,7 +6,7 @@ import {
   type CallToolResult,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { z } from 'zod';
 import type { AnyTool } from './defineTool.js';
 
 export type CreateServerOptions<Client> = {
@@ -37,8 +37,8 @@ export function toolDefinitions<Client>(registry: Record<string, AnyTool<Client>
   return Object.entries(registry).map(([name, tool]) => ({
     name,
     description: tool.description,
-    inputSchema: zodToJsonSchema(tool.input) as Record<string, unknown>,
-    outputSchema: zodToJsonSchema(tool.output) as Record<string, unknown>,
+    inputSchema: z.toJSONSchema(tool.input, { io: 'input' }) as Record<string, unknown>,
+    outputSchema: z.toJSONSchema(tool.output, { io: 'output' }) as Record<string, unknown>,
     ...(tool.destructive ? { annotations: { destructiveHint: true } } : {}),
   }));
 }
@@ -92,7 +92,7 @@ export async function callTool<Client>(
   }
 
   try {
-    const result = await tool.handler(client, parsed.data);
+    const result = await tool.handler(client, parsed.data as never);
     const validated = tool.output.parse(result);
     return {
       content: [{ type: 'text', text: JSON.stringify(validated, null, 2) }],
