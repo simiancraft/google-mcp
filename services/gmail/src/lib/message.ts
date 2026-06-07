@@ -4,6 +4,7 @@ import { createMimeMessage } from 'mail-mime-builder';
 import type { Draft } from '../entities/Draft.js';
 import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
+import { stripBreaks } from './headers.js';
 
 /** Lowercased header name -> value, from a message payload. */
 function headerMap(payload?: gmail_v1.Schema$MessagePart): Record<string, string> {
@@ -173,20 +174,24 @@ export function buildRawMessage(args: {
   htmlBody?: string;
   inReplyTo?: string;
 }): string {
+  // Strip CR/LF and control characters from every header-bound field: a line
+  // break in an address or subject would otherwise inject a new header (e.g. a
+  // silent Bcc). Schemas reject these too; this is the choke-point guarantee.
   const msg = createMimeMessage();
-  msg.setSender(args.from);
-  msg.setTo(args.to);
+  msg.setSender(stripBreaks(args.from));
+  msg.setTo(args.to.map(stripBreaks));
   if (args.cc?.length) {
-    msg.setCc(args.cc);
+    msg.setCc(args.cc.map(stripBreaks));
   }
   if (args.bcc?.length) {
-    msg.setBcc(args.bcc);
+    msg.setBcc(args.bcc.map(stripBreaks));
   }
   // Subject is a required header for the builder; default to empty when omitted.
-  msg.setSubject(args.subject ?? '');
+  msg.setSubject(stripBreaks(args.subject ?? ''));
   if (args.inReplyTo) {
-    msg.setHeader('In-Reply-To', args.inReplyTo);
-    msg.setHeader('References', args.inReplyTo);
+    const inReplyTo = stripBreaks(args.inReplyTo);
+    msg.setHeader('In-Reply-To', inReplyTo);
+    msg.setHeader('References', inReplyTo);
   }
   if (args.body !== undefined) {
     msg.addMessage({ contentType: 'text/plain', data: args.body });

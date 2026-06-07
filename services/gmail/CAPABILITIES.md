@@ -33,7 +33,7 @@
 | `trash_thread` | Move a thread to the trash. |
 | `untrash_thread` | Remove a thread from the trash. |
 | `delete_thread` ⚠️ | Permanently delete a thread and all its messages (bypasses the trash). |
-| `create_filter` | Create a filter (criteria plus actions). |
+| `create_filter` ⚠️ | Create a filter (criteria plus actions). |
 | `get_filter` | Get a filter by id. |
 | `list_filters` | List all filters for the account. |
 | `delete_filter` | Delete a filter. |

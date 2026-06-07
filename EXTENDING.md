@@ -59,9 +59,12 @@ runtime difference.
 Add a method exactly like a tool, but source `schema.ts` from the REST method
 page (`…/reference/rest/v1/<resource>/<method>`) and import `defineMethod`.
 
-Mark irreversible operations (`send`, permanent `delete`, `batchDelete`,
-`obliterate`) with `destructive: true`; the server surfaces them as MCP
-`destructiveHint`. `trash`/`untrash` are reversible, so **not** destructive.
+Mark with `destructive: true` any operation that is irreversible (`send`,
+permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent
+dangerous side effect (e.g. `create_filter`: a forward/auto-delete filter keeps
+acting on mail after the call). The server surfaces these as MCP
+`destructiveHint`. `trash`/`untrash` are reversible with no standing effect, so
+**not** destructive.
 
 ## Add an entity
 

@@ -48,6 +48,19 @@ describe('buildRawMessage', () => {
     expect(out).toMatch(/Subject: =\?utf-8\?B\?/i);
     expect(out).not.toContain('Subject: 🚀 Launch');
   });
+
+  it('strips CR/LF from header fields to block header injection', () => {
+    const out = decode(
+      buildRawMessage({
+        from,
+        to: ['"V" <v@x.com>\r\nBcc: attacker@evil.com'],
+        subject: 'hi\r\nX-Evil: yes',
+        body: 'b',
+      }),
+    );
+    expect(out).not.toMatch(/^Bcc:/im);
+    expect(out).not.toMatch(/^X-Evil:/im);
+  });
 });
 
 describe('projectMessage', () => {
