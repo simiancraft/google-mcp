@@ -72,7 +72,7 @@ When a tool's schema references `object (X)`, add `entities/X.ts`:
 
 ```ts
 import { z } from 'zod';
-export const X = z.object({ /* fields, verbatim from the docs, with comments */ });
+export const X = z.object({ id: z.string().describe('…, from the docs') });
 export type X = z.infer<typeof X>;
 ```
 
@@ -81,8 +81,10 @@ Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
 
 **Doc comments are sourced too.** Give the entity a TSDoc comment from the API
 guides **Concepts** page (Google's own definition of the noun) with an `@see`
-link; field-level comments come from the tool/REST reference. The definition is
-then discoverable on hover, straight from the docs.
+link. Put **field-level** docs in `.describe()`, not JSDoc: `zodToJsonSchema`
+emits `.describe()` text into the wire JSON Schema, so an MCP client (and the LLM
+reading it at tool-selection time) sees the field docs; JSDoc on a field never
+reaches the wire. Source the field text from the tool/REST reference.
 
 ## Add a service
 

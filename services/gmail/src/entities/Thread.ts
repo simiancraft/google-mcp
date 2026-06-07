@@ -6,17 +6,23 @@ import { Message } from './Message.js';
  * a thread is formed when one or more recipients respond to a message with their
  * own message.
  *
- * Fields here are the MCP-projected shape of the REST `threads` resource.
+ * Fields here are the MCP-projected shape of the REST `threads` resource. Field
+ * docs use `.describe()` so they reach the wire JSON Schema an MCP client reads.
  *
  * @see https://developers.google.com/workspace/gmail/api/guides
  */
 export const Thread = z.object({
-  /** The unique identifier of the thread. */
-  id: z.string(),
-  /** A short preview of the thread (present on search results; use get_thread for messages). */
-  snippet: z.string().optional(),
-  /** The messages in the thread, chronologically ordered. */
-  messages: z.array(Message).default([]),
+  id: z.string().describe('The unique identifier of the thread.'),
+  snippet: z
+    .string()
+    .optional()
+    .describe(
+      'A short preview of the thread (present on search results; use get_thread for messages).',
+    ),
+  messages: z
+    .array(Message)
+    .default([])
+    .describe('The messages in the thread, chronologically ordered.'),
 });
 
 export type Thread = z.infer<typeof Thread>;
