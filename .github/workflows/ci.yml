@@ -38,8 +38,16 @@ jobs:
       - name: Typecheck (tsc)
         run: bun run typecheck
 
-      - name: Test (with coverage gate)
-        run: bun test --coverage
+      - name: Test (with coverage)
+        run: bun test --coverage --coverage-reporter=lcov --coverage-reporter=text
+
+      - name: Upload coverage to Codecov
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
 
       - name: Dead code (knip)
         run: bun run check:knip

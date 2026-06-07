@@ -1,8 +1,13 @@
 # google-mcp
 
+[![CI](https://github.com/simiancraft/google-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/simiancraft/google-mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/simiancraft/google-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/simiancraft/google-mcp)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/simiancraft/google-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/simiancraft/google-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 One [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, built to command **several Google accounts at once**. Each server is thin, authorized per account, and shares a single OAuth implementation.
 
-> **Status:** pre-release. Interfaces and layout will move until the first tagged release.
+> **Status:** Gmail is implemented and usable today; Drive, Sheets, Docs, and Calendar are next. Interfaces may still move before the first tagged release.
 
 ## Why
 
@@ -47,13 +52,15 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 
 ## Services
 
-| Service | Status |
-|---|---|
-| Gmail | reference / canary |
-| Drive | planned |
-| Sheets | planned |
-| Docs | planned |
-| Calendar | planned |
+| Service | Status | Coverage |
+|---|---|---|
+| **Gmail** | ✅ Implemented | [33 operations](./services/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
+| Drive | 🔜 Planned | files, folders, sharing, revisions |
+| Sheets | 🔜 Planned | spreadsheets, values, formatting |
+| Docs | 🔜 Planned | documents, structured content |
+| Calendar | 🔜 Planned | events, calendars, availability |
+
+Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./services/gmail/CAPABILITIES.md) for the full operation set.
 
 ## License
 
