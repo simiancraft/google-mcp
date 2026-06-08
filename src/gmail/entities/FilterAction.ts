@@ -8,7 +8,7 @@ export const FilterAction = z.object({
     .optional()
     .describe('Label ids to remove from matching messages.'),
   forward: z
-    .string()
+    .email()
     .optional()
     .describe('A verified forwarding address to forward matching messages to.'),
 });
