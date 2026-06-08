@@ -1,5 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
+import { forGoogle } from '../../../lib/google.js';
 import { projectLabel } from '../../lib/label.js';
 import type { schema } from './schema.js';
 
@@ -10,7 +11,7 @@ export async function handler(
   const { data } = await gmail.users.labels.patch({
     userId: 'me',
     id: args.labelId,
-    requestBody: { name: args.name, color: args.color },
+    requestBody: forGoogle({ name: args.name, color: args.color }),
   });
   return projectLabel(data);
 }

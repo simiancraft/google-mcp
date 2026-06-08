@@ -1,5 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
+import { forGoogle } from '../../../lib/google.js';
 import { buildRawMessage, projectDraft, resolveReplyContext } from '../../lib/message.js';
 import { senderAddress } from '../../lib/profile.js';
 import type { schema } from './schema.js';
@@ -23,13 +24,11 @@ export async function handler(
 
   const created = await gmail.users.drafts.create({
     userId: 'me',
-    requestBody: { message: { raw, threadId } },
+    requestBody: { message: forGoogle({ raw, threadId }) },
   });
 
-  const { data } = await gmail.users.drafts.get({
-    userId: 'me',
-    id: created.data.id ?? undefined,
-    format: 'full',
-  });
+  const { data } = await gmail.users.drafts.get(
+    forGoogle({ userId: 'me', id: created.data.id ?? undefined, format: 'full' }),
+  );
   return projectDraft(data);
 }

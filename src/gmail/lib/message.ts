@@ -1,6 +1,7 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import addressparser from 'addressparser';
 import { createMimeMessage } from 'mail-mime-builder';
+import type { Optional } from '../../lib/types.js';
 import type { Draft } from '../entities/Draft.js';
 import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
@@ -167,12 +168,12 @@ export function projectDraft(draft: gmail_v1.Schema$Draft): Draft {
 export function buildRawMessage(args: {
   from: string;
   to: string[];
-  cc?: string[];
-  bcc?: string[];
-  subject?: string;
-  body?: string;
-  htmlBody?: string;
-  inReplyTo?: string;
+  cc?: Optional<string[]>;
+  bcc?: Optional<string[]>;
+  subject?: Optional<string>;
+  body?: Optional<string>;
+  htmlBody?: Optional<string>;
+  inReplyTo?: Optional<string>;
 }): string {
   // Strip CR/LF and control characters from every header-bound field: a line
   // break in an address or subject would otherwise inject a new header (e.g. a

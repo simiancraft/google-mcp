@@ -1,5 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
+import { forGoogle } from '../../../lib/google.js';
 import { buildRawMessage, projectMessage, resolveReplyContext } from '../../lib/message.js';
 import { senderAddress } from '../../lib/profile.js';
 import type { schema } from './schema.js';
@@ -21,9 +22,8 @@ export async function handler(
     inReplyTo,
   });
 
-  const { data } = await gmail.users.messages.send({
-    userId: 'me',
-    requestBody: { raw, threadId },
-  });
+  const { data } = await gmail.users.messages.send(
+    forGoogle({ userId: 'me', requestBody: forGoogle({ raw, threadId }) }),
+  );
   return projectMessage(data);
 }
