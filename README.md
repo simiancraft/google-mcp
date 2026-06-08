@@ -13,6 +13,15 @@ One [Model Context Protocol](https://modelcontextprotocol.io/) server per Google
 
 Commanding multiple Google accounts means running one server instance per account, and covering multiple services (Gmail, Drive, Sheets, Docs, Calendar) means one server each. Writing OAuth once and sharing it keeps every server a thin set of operations instead of a re-implemented auth client.
 
+### MCP, and then some
+
+This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
+
+- **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
+- **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
+
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of the operation list is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate makes the suite self-documenting and enables **documentation-driven updates**: point at a Google reference page and generate the matching `schema.ts`/`handler.ts`/`index.ts`, with each source page bounding the context of one unit of work.
+
 ## Layout
 
 ```

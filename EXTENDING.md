@@ -60,9 +60,19 @@ with `operation()`. Keep them split.
 `tools/` mirrors Google's **MCP toolset** reference (its word: "tools").
 `methods/` covers the broader **REST** reference (its word: "Methods"), the
 operations the MCP toolset omits. Identical construction; both are `operation()`
-definitions. The server merges both into one wire surface (`operations: {
-...tools, ...methods }`), so the split is organizational, not a runtime
-difference; on the MCP wire everything is a "tool".
+definitions. The server merges both into one wire surface (via
+`mergeOperations(tools, methods)`), so on the MCP wire everything is a "tool".
+
+The split is **intentional and load-bearing, not just organizational.** MCP's
+toolset alone cannot fully drive a Google service; `methods/` is how the suite
+goes past it to fully instrument an account. The two folders mirror Google's own
+two reference trees (MCP vs REST), which keeps provenance obvious and makes the
+surface self-documenting. It also enables **documentation-driven updates**: a
+reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple,
+so "here is the page, make the files" is a bounded, repeatable unit of work. The
+merge throws on a duplicate wire name (`mergeOperations`), so the only real hazard
+of the split, a tool and a method colliding on one key, fails loudly rather than
+silently dropping an operation.
 
 Add a method exactly like a tool, but source `schema.ts` from the REST method
 page (`…/reference/rest/v1/<resource>/<method>`).
@@ -109,19 +119,26 @@ the tool/REST reference.
    `bin` entry `"google-mcp-<svc>": "./dist/<svc>/index.js"`.
 2. Add the service's scopes to the shared `SCOPES` union in `src/auth/config.ts`
    so each account is authorized once. Services do not declare scopes locally.
-3. `index.ts`: `server({ name, operations: { ...tools, ...methods }, client:
-   async (a) => <svc>({ version, auth: await authorizedClient(a) }), runAuth:
-   runAuthFlow })`
+3. `index.ts`: `server({ name, operations: mergeOperations(tools, methods),
+   client: async (a) => <svc>({ version, auth: await authorizedClient(a) }),
+   runAuth: runAuthFlow })`
    (`import { server } from '../lib/server.js'`,
+   `import { mergeOperations } from '../lib/operation.js'`,
    `import { authorizedClient, runAuthFlow } from '../auth/oauth.js'`,
    `import { <svc> } from '@googleapis/<svc>'`,
    `import { tools } from './tools/registry.js'`,
    `import { methods } from './methods/registry.js'`). The operation's client
    type is inferred from each handler's first parameter; there is no per-service
-   factory to bind.
+   factory to bind. `mergeOperations` throws if a tool and a method share a wire
+   name. The server's `version` defaults to the package version, so do not pass it.
 4. Stamp tools (above), one per page on the service's MCP reference (or, where
    Google publishes no MCP page, from the REST reference). Track gaps in a
    `COVERAGE.md`.
+
+**Per-client identity is a solved pattern; do not re-solve it.** A service that
+needs "who am I" (Gmail's sender address) should look it up once and memoize per
+client, as `src/gmail/lib/profile.ts` does with a `WeakMap`, rather than fetching
+it on every operation.
 
 ## Run
 
