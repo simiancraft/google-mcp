@@ -206,3 +206,30 @@ export function buildRawMessage(args: {
   // rather than the library's asEncoded(), whose output is not URL-safe base64.
   return Buffer.from(msg.asRaw()).toString('base64url');
 }
+
+/**
+ * Resolve a reply's threading context: fetch the original message for its thread
+ * id and `Message-ID` so the new draft/message lands in the same thread with a
+ * correct `In-Reply-To`. Returns empty fields when not replying. Shared by the
+ * compose handlers (create_draft, send_message) so the threading fetch lives once.
+ */
+export async function resolveReplyContext(
+  gmail: gmail_v1.Gmail,
+  replyToMessageId: string | undefined,
+): Promise<{ threadId: string | undefined; inReplyTo: string | undefined }> {
+  if (!replyToMessageId) {
+    return { threadId: undefined, inReplyTo: undefined };
+  }
+  const { data } = await gmail.users.messages.get({
+    userId: 'me',
+    id: replyToMessageId,
+    format: 'metadata',
+    metadataHeaders: ['Message-ID'],
+  });
+  return {
+    threadId: data.threadId ?? undefined,
+    inReplyTo:
+      data.payload?.headers?.find((header) => header.name?.toLowerCase() === 'message-id')?.value ??
+      undefined,
+  };
+}
