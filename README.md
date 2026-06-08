@@ -1,6 +1,24 @@
-# google-mcp
+<h1 align="center">google-mcp</h1>
 
-One [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, built to command **several Google accounts at once**. Each server is thin, authorized per account, and shares a single OAuth implementation.
+<p align="center">
+  One <a href="https://modelcontextprotocol.io/">Model Context Protocol</a> server per Google service, built to command <strong>several Google accounts at once</strong>. Each server is thin, authorized per account, and shares a single OAuth implementation.
+</p>
+
+<p align="center">
+  <img src=".github/assets/gmail.svg" height="44" alt="Gmail" title="Gmail (shipping)" />
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/assets/drive.svg" height="44" alt="Drive (planned)" title="Drive (planned)" />
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/assets/sheets.svg" height="44" alt="Sheets (planned)" title="Sheets (planned)" />
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/assets/docs.svg" height="44" alt="Docs (planned)" title="Docs (planned)" />
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/assets/calendar.svg" height="44" alt="Calendar (planned)" title="Calendar (planned)" />
+</p>
+
+<p align="center">
+  <sub><strong>Gmail</strong> ships today; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
+</p>
 
 > **Status:** pre-release. Interfaces and layout will move until the first tagged release.
 
@@ -55,6 +73,16 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 | Docs | planned |
 | Calendar | planned |
 
-## License
+---
 
-[MIT](./LICENSE). Google product names are used nominatively; see [NOTICE.md](./NOTICE.md). This project is not affiliated with Google LLC.
+<p align="center">
+  <a href="https://github.com/simiancraft/google-mcp-suite" title="google-mcp on GitHub"><img src=".github/assets/github.svg" height="18" alt="GitHub" /></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://x.com/5imian" title="Jesse Harlin on X"><img src=".github/assets/x.svg" height="16" alt="X" /></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://ko-fi.com/the_simian0604" title="Tip on Ko-fi"><img src=".github/assets/coffee.svg" height="18" alt="Ko-fi" /></a>
+</p>
+
+<p align="center"><sub><a href="./LICENSE">MIT</a>. Google product names are used nominatively; see <a href="./NOTICE.md">NOTICE.md</a>. Not affiliated with Google LLC.</sub></p>
+
+<p align="center"><sub>Crafted with care by <a href="https://simiancraft.com"><img src=".github/assets/simiancraft.svg" height="13" alt="" />&nbsp;Simiancraft</a>.</sub></p>
