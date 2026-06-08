@@ -27,7 +27,7 @@ type ParsedAddress = ReturnType<typeof addressparser>[number];
 // the server (addressparser is O(n^2) in entry count) or overflow the stack on a
 // deeply nested tree. A header longer than this, or nesting deeper, is not
 // legitimate mail to act on. (A deep RFC 5322 group can still overflow inside
-// addressparser before we see it; that surfaces as a harness-caught per-call
+// addressparser before we see it; that surfaces as a server-caught per-call
 // error, not a crash.)
 const MAX_HEADER_LENGTH = 100_000;
 const MAX_DEPTH = 100;
