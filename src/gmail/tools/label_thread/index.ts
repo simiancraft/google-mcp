@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Adds labels to every message in a thread via `users.threads.modify`
  * (addLabelIds); confirms the applied labels.
  */
-export const label_thread = operation({
+export const label_thread = gmailOperation({
   description: 'Add labels to a thread.',
   schema,
   handler,

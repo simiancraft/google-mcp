@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Deletes a user label and removes it from all messages and threads. Not marked
  * destructive: no mail is lost, and the label is recreatable.
  */
-export const delete_label = operation({
+export const delete_label = gmailOperation({
   description: 'Delete a user label.',
   schema,
   handler,

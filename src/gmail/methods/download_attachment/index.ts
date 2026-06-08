@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -6,7 +6,7 @@ import { schema } from './schema.js';
  * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get
  * Returns the attachment bytes base64url-encoded, as Gmail returns them.
  */
-export const download_attachment = operation({
+export const download_attachment = gmailOperation({
   description: 'Download a message attachment (base64url-encoded bytes).',
   schema,
   handler,

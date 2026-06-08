@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  * Creates a user label via `users.labels.create` and projects the result
  * (id -> labelId). `displayName` maps to the REST `name`.
  */
-export const create_label = operation({
+export const create_label = gmailOperation({
   description: 'Create a new label.',
   schema,
   handler,

@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  * response already carries, with no per-thread fetch. Use `get_thread(id)` to
  * hydrate a thread's full messages on demand.
  */
-export const search_threads = operation({
+export const search_threads = gmailOperation({
   description: 'Search threads. Returns thread ids and snippets; use get_thread for messages.',
   schema,
   handler,

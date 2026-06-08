@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  * basic fields; `color` and the thread counts are populated only when present.
  * The projection renames `id` -> `labelId` to match the documented shape.
  */
-export const list_labels = operation({
+export const list_labels = gmailOperation({
   description: 'List the labels in the mailbox.',
   schema,
   handler,

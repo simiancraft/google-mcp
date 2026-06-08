@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Replaces the draft's content with a freshly assembled message, then re-fetches
  * it `full` for projection.
  */
-export const update_draft = operation({
+export const update_draft = gmailOperation({
   description: 'Replace the content of an existing draft.',
   schema,
   handler,

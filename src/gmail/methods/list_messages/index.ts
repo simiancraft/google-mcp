@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Lists message stubs, then fetches each with `metadata` format (headers +
  * snippet) for the projection. Use get_message for a full body.
  */
-export const list_messages = operation({
+export const list_messages = gmailOperation({
   description: 'List messages using Gmail query syntax.',
   schema,
   handler,

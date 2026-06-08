@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  * Irreversible: sends an existing draft, which deletes the draft and creates a
  * message with the SENT label. Returns the sent message.
  */
-export const send_draft = operation({
+export const send_draft = gmailOperation({
   description: 'Send an existing draft.',
   destructive: true,
   schema,

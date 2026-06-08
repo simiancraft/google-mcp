@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Removes labels from every message in a thread via `users.threads.modify`
  * (removeLabelIds); confirms the removed labels.
  */
-export const unlabel_thread = operation({
+export const unlabel_thread = gmailOperation({
   description: 'Remove labels from a thread.',
   schema,
   handler,

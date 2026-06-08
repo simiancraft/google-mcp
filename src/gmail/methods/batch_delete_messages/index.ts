@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  * Irreversible: permanently deletes many messages at once (bypasses the trash;
  * cannot be undone). Requires the full https://mail.google.com/ scope.
  */
-export const batch_delete_messages = operation({
+export const batch_delete_messages = gmailOperation({
   description: 'Permanently delete many messages at once (bypasses the trash).',
   destructive: true,
   schema,

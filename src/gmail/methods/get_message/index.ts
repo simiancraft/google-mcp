@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -7,7 +7,7 @@ import { schema } from './schema.js';
  * Fetches a single message and projects it. MINIMAL maps to `metadata`,
  * FULL_CONTENT (default) maps to `full` (decoded body + attachment ids).
  */
-export const get_message = operation({
+export const get_message = gmailOperation({
   description: 'Get a single message by id.',
   schema,
   handler,

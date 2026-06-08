@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  * Irreversible: permanently deletes a thread and all its messages (bypasses the
  * trash; cannot be undone). Prefer trash_thread unless permanence is intended.
  */
-export const delete_thread = operation({
+export const delete_thread = gmailOperation({
   description: 'Permanently delete a thread and all its messages (bypasses the trash).',
   destructive: true,
   schema,

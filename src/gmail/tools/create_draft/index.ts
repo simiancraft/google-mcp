@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  * given, the original is fetched for its thread and Message-ID so the draft
  * threads correctly. The created draft is re-fetched `full` for projection.
  */
-export const create_draft = operation({
+export const create_draft = gmailOperation({
   description: 'Create a draft email.',
   schema,
   handler,

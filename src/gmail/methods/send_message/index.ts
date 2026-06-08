@@ -1,4 +1,4 @@
-import { operation } from '../../../lib/operation.js';
+import { gmailOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  * `replyToMessageId` is given, the original is fetched for its thread and
  * Message-ID so the reply threads correctly.
  */
-export const send_message = operation({
+export const send_message = gmailOperation({
   description: 'Send an email immediately.',
   destructive: true,
   schema,
