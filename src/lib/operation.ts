@@ -40,3 +40,24 @@ export type AnyOperation<Client> = {
 export const operation = <Client, In extends z.ZodType, Out extends z.ZodType>(
   def: Operation<Client, In, Out>,
 ): Operation<Client, In, Out> => def;
+
+/**
+ * Merge operation groups (e.g. a service's tools and methods) into the single
+ * registry the server dispatches. Throws on a duplicate wire name: two operations
+ * cannot answer to the same key, and a silent `{ ...a, ...b }` spread would let
+ * one shadow the other and vanish from the wire with no error.
+ */
+export function mergeOperations<Client>(
+  ...groups: Record<string, AnyOperation<Client>>[]
+): Record<string, AnyOperation<Client>> {
+  const merged: Record<string, AnyOperation<Client>> = {};
+  for (const group of groups) {
+    for (const [name, op] of Object.entries(group)) {
+      if (name in merged) {
+        throw new Error(`Duplicate operation name: ${name}`);
+      }
+      merged[name] = op;
+    }
+  }
+  return merged;
+}

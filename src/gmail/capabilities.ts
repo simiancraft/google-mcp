@@ -5,12 +5,13 @@
 // discover the live, fully-schema'd surface via the server's `tools/list`.
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { mergeOperations } from '../lib/operation.js';
 import { renderCapabilities } from '../lib/server.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
 if (import.meta.main) {
-  const operations = { ...tools, ...methods };
+  const operations = mergeOperations(tools, methods);
   const out = fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url));
   writeFileSync(out, renderCapabilities('Gmail capabilities', operations));
   console.error(`Wrote CAPABILITIES.md (${Object.keys(operations).length} operations)`);

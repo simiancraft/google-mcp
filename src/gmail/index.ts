@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { gmail } from '@googleapis/gmail';
 import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
+import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
@@ -12,7 +13,7 @@ import { tools } from './tools/registry.js';
 // references scopes, which is exactly why it is easy to miss.
 await server({
   name: 'gmail',
-  operations: { ...tools, ...methods },
+  operations: mergeOperations(tools, methods),
   client: async (account) => gmail({ version: 'v1', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,
 });

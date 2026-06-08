@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import { z } from 'zod';
-import { type Operation, operation } from './operation.js';
+import { type AnyOperation, mergeOperations, type Operation, operation } from './operation.js';
 
 type FakeClient = { tag: 'fake' };
 
@@ -41,6 +41,32 @@ describe('operation', () => {
       z.ZodObject<{ n: z.ZodNumber }>
     >;
 
+    // Erasure direction: a concrete Operation must stay assignable to the
+    // schema-erased AnyOperation the registry holds. If a zod change made
+    // `z.infer<z.ZodType>` something other than `unknown`, this would stop
+    // compiling and fail CI rather than silently re-opening the `never` hole.
+    const _erased: AnyOperation<FakeClient> = op;
+
     expect(await op.handler({ tag: 'fake' }, { n: 21 })).toEqual({ n: 42 });
+  });
+});
+
+describe('mergeOperations', () => {
+  const make = (description: string) =>
+    operation({
+      description,
+      schema: { input: z.object({}), output: z.object({}) },
+      handler: async (_client: FakeClient) => ({}),
+    });
+
+  it('merges groups into one registry keyed by wire name', () => {
+    const merged = mergeOperations({ a: make('a') }, { b: make('b') });
+    expect(Object.keys(merged).sort()).toEqual(['a', 'b']);
+  });
+
+  it('throws on a duplicate wire name across groups', () => {
+    expect(() => mergeOperations({ dup: make('first') }, { dup: make('second') })).toThrow(
+      'Duplicate operation name: dup',
+    );
   });
 });

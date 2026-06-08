@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test';
+import { mergeOperations } from '../lib/operation.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
-const operations = { ...tools, ...methods };
+const operations = mergeOperations(tools, methods);
 
 describe('gmail operations', () => {
   it('exposes the full surface (10 tools + 23 methods)', () => {
