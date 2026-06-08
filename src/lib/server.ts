@@ -7,6 +7,7 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import pkg from '../../package.json' with { type: 'json' };
 import type { AnyOperation } from './operation.js';
 
 export type ServerOptions<Client> = {
@@ -90,6 +91,11 @@ export async function callOperation<Client>(
   }
 
   try {
+    // `parsed.data` was just validated against this op's input schema, so it is
+    // the handler's real input shape. The `AnyOperation` boundary types the
+    // handler's args as `never` (so any concrete Operation stays assignable; see
+    // operation.ts), and `as never` is the only call form. The validation above
+    // is what makes this safe: do not call the handler before parsing.
     const result = await op.handler(client, parsed.data as never);
     const validated = op.schema.output.parse(result);
     return {
@@ -108,7 +114,7 @@ export async function callOperation<Client>(
  * payload, dispatch, validation, and error wrapping.
  */
 export async function server<Client>(options: ServerOptions<Client>): Promise<void> {
-  const { name, version = '0.0.0', operations, client, runAuth } = options;
+  const { name, version = pkg.version, operations, client, runAuth } = options;
 
   if (process.argv[2] === 'auth') {
     if (!runAuth) {
