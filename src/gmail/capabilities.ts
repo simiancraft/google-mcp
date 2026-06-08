@@ -11,7 +11,7 @@ import { tools } from './tools/registry.js';
 
 if (import.meta.main) {
   const operations = { ...tools, ...methods };
-  const out = fileURLToPath(new URL('../../CAPABILITIES.md', import.meta.url));
+  const out = fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url));
   writeFileSync(out, renderCapabilities('Gmail capabilities', operations));
   console.error(`Wrote CAPABILITIES.md (${Object.keys(operations).length} operations)`);
 }

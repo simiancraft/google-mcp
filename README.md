@@ -58,13 +58,13 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 
 | Service | Status | Coverage |
 |---|---|---|
-| **Gmail** | ✅ Implemented | [33 operations](./CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
+| **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
 | Sheets | 🔜 Planned | spreadsheets, values, formatting |
 | Docs | 🔜 Planned | documents, structured content |
 | Calendar | 🔜 Planned | events, calendars, availability |
 
-Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./CAPABILITIES.md) for the full operation set.
+Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./src/gmail/CAPABILITIES.md) for the full operation set.
 
 ## License
 

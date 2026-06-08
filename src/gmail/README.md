@@ -14,7 +14,7 @@ and send (`create_draft`, `send_message`, `send_draft`), organize (labels,
 account filters. Irreversible operations (send, permanent delete) carry the MCP
 `destructiveHint`.
 
-The full, always-current list is [`CAPABILITIES.md`](../../CAPABILITIES.md),
+The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`. An MCP client
 discovers the live surface, with input and output JSON Schema, from the server's
 `tools/list`.
