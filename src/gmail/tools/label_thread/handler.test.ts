@@ -3,7 +3,7 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { add?: string[] }): gmail_v1.Gmail {
+function fakeGmail(captured: { add?: string[] | undefined }): gmail_v1.Gmail {
   return {
     users: {
       threads: {
@@ -18,7 +18,7 @@ function fakeGmail(captured: { add?: string[] }): gmail_v1.Gmail {
 
 describe('label_thread', () => {
   it('adds labels to a thread and confirms them', async () => {
-    const captured: { add?: string[] } = {};
+    const captured: { add?: string[] | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       threadId: 'T1',
       labelIds: ['IMPORTANT'],

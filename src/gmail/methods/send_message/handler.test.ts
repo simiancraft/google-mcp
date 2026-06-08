@@ -3,7 +3,7 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
+function fakeGmail(captured: { raw?: string | undefined }): gmail_v1.Gmail {
   return {
     users: {
       getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),
@@ -19,7 +19,7 @@ function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
 
 describe('send_message', () => {
   it('is destructive, builds the raw message, and sends it', async () => {
-    const captured: { raw?: string } = {};
+    const captured: { raw?: string | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       to: ['x@example.com'],
       subject: 'Hi',
@@ -33,7 +33,7 @@ describe('send_message', () => {
   });
 
   it('threads a reply: fetches the original for thread + In-Reply-To', async () => {
-    const captured: { raw?: string; threadId?: string } = {};
+    const captured: { raw?: string | undefined; threadId?: string | undefined } = {};
     const gmail = {
       users: {
         getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),

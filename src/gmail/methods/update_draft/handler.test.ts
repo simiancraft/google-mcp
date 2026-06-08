@@ -3,7 +3,10 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { id?: string; raw?: string }): gmail_v1.Gmail {
+function fakeGmail(captured: {
+  id?: string | undefined;
+  raw?: string | undefined;
+}): gmail_v1.Gmail {
   return {
     users: {
       getProfile: async () => ({ data: { emailAddress: 'me@example.com' } }),
@@ -26,7 +29,7 @@ function fakeGmail(captured: { id?: string; raw?: string }): gmail_v1.Gmail {
 
 describe('update_draft', () => {
   it('replaces the draft content and projects it', async () => {
-    const captured: { id?: string; raw?: string } = {};
+    const captured: { id?: string | undefined; raw?: string | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       draftId: 'D1',
       to: ['x@example.com'],

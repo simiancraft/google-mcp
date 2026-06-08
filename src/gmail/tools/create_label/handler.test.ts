@@ -3,7 +3,7 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { name?: string }): gmail_v1.Gmail {
+function fakeGmail(captured: { name?: string | undefined }): gmail_v1.Gmail {
   return {
     users: {
       labels: {
@@ -18,7 +18,7 @@ function fakeGmail(captured: { name?: string }): gmail_v1.Gmail {
 
 describe('create_label', () => {
   it('creates a label from displayName and projects it', async () => {
-    const captured: { name?: string } = {};
+    const captured: { name?: string | undefined } = {};
     const result = await handler(fakeGmail(captured), { displayName: 'Work' });
     expect(captured.name).toBe('Work');
     expect(result).toMatchObject({ labelId: 'Label_42', name: 'Work' });

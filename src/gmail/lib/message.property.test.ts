@@ -13,16 +13,18 @@ const roundTrippable = fc.string().filter((s) => Buffer.from(s, 'utf8').toString
 const { part } = fc.letrec<{ part: gmail_v1.Schema$MessagePart }>((tie) => ({
   part: fc.oneof(
     { maxDepth: 4, depthSize: 'small' },
-    fc.record({
-      mimeType: fc.option(
-        fc.constantFrom('text/plain', 'text/html', 'application/pdf', 'image/png'),
-        { nil: undefined },
-      ),
-      body: fc.oneof(
-        fc.record({ data: roundTrippable.map(b64) }),
-        fc.record({ attachmentId: fc.string({ minLength: 1 }) }),
-      ),
-    }),
+    fc.record(
+      {
+        mimeType: fc.constantFrom('text/plain', 'text/html', 'application/pdf', 'image/png'),
+        body: fc.oneof(
+          fc.record({ data: roundTrippable.map(b64) }),
+          fc.record({ attachmentId: fc.string({ minLength: 1 }) }),
+        ),
+      },
+      // mimeType may be absent (rather than present-and-undefined) so the
+      // arbitrary matches Schema$MessagePart under exactOptionalPropertyTypes.
+      { requiredKeys: ['body'] },
+    ),
     fc.record({
       mimeType: fc.constantFrom('multipart/mixed', 'multipart/alternative', 'multipart/related'),
       parts: fc.array(tie('part'), { maxLength: 4 }),

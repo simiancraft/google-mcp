@@ -4,7 +4,7 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 function fakeGmail(captured: {
-  body?: gmail_v1.Schema$BatchModifyMessagesRequest;
+  body?: gmail_v1.Schema$BatchModifyMessagesRequest | undefined;
 }): gmail_v1.Gmail {
   return {
     users: {
@@ -20,7 +20,7 @@ function fakeGmail(captured: {
 
 describe('batch_modify_messages', () => {
   it('applies label changes across messages and confirms them', async () => {
-    const captured: { body?: gmail_v1.Schema$BatchModifyMessagesRequest } = {};
+    const captured: { body?: gmail_v1.Schema$BatchModifyMessagesRequest | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       messageIds: ['M1', 'M2'],
       addLabelIds: ['IMPORTANT'],

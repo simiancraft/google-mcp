@@ -3,7 +3,7 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { ids?: string[] }): gmail_v1.Gmail {
+function fakeGmail(captured: { ids?: string[] | undefined }): gmail_v1.Gmail {
   return {
     users: {
       messages: {
@@ -18,7 +18,7 @@ function fakeGmail(captured: { ids?: string[] }): gmail_v1.Gmail {
 
 describe('batch_delete_messages', () => {
   it('permanently deletes the given messages', async () => {
-    const captured: { ids?: string[] } = {};
+    const captured: { ids?: string[] | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       messageIds: ['M1', 'M2'],
     });

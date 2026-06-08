@@ -3,7 +3,7 @@ import type { gmail_v1 } from '@googleapis/gmail';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
+function fakeGmail(captured: { remove?: string[] | undefined }): gmail_v1.Gmail {
   return {
     users: {
       messages: {
@@ -18,7 +18,7 @@ function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
 
 describe('unlabel_message', () => {
   it('removes labels and confirms the removed labels', async () => {
-    const captured: { remove?: string[] } = {};
+    const captured: { remove?: string[] | undefined } = {};
     const result = await handler(fakeGmail(captured), {
       messageId: 'M1',
       labelIds: ['IMPORTANT'],
