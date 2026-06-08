@@ -16,15 +16,17 @@ Commanding multiple Google accounts means running one server instance per accoun
 ## Layout
 
 ```
-packages/
-  google-auth/   # shared OAuth: one client secret, per-account tokens
-services/
-  gmail/         # reference (canary) server; new services mirror its shape
+src/
+  auth/      # shared OAuth: one client secret, per-account tokens
+  harness/   # the MCP server factory: makeDefineTool + createServer
+  gmail/     # the Gmail server (reference/canary); new services mirror its shape
 ```
 
-- **`packages/google-auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
-- **`packages/mcp-harness`** owns the protocol: `makeDefineTool<Client>()` and `createServer(...)`. A service never reimplements the MCP server.
-- **`services/*`** are the MCP servers. Each is `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each folder holding `schema.ts` + `handler.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
+One package, one version. `auth`, `harness`, and each service are folders in one `src/` and compile to a single published package.
+
+- **`src/auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
+- **`src/harness`** owns the protocol: `makeDefineTool<Client>()` and `createServer(...)`. A service never reimplements the MCP server.
+- **`src/<service>`** is a server: `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each holding `schema.ts` + `handler.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
 
 ## The multi-account model
 
@@ -35,7 +37,7 @@ services/
 ## Auth setup
 
 1. Create a Google Cloud project, enable the APIs you need (Gmail, Drive, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
-2. Place the client secret where `packages/google-auth` expects it (see its README), outside the repo tree.
+2. Place the client secret where `src/auth` expects it (see [its README](./src/auth/README.md)), outside the repo tree.
 3. Authorize each account once; this opens a browser consent flow and stores that account's token.
 4. Run a service with `GOOGLE_MCP_ACCOUNT=<account>` to act as that account.
 
@@ -45,7 +47,7 @@ Credentials never live in the repo. `.gitignore` blocks the common filenames; ke
 
 ```sh
 bun install
-bun run check     # lint-fix, build, typecheck, test, knip across all workspaces
+bun run check     # lint-fix, build, typecheck, test, knip
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](./AGENTS.md) for the per-service pattern.
@@ -54,13 +56,13 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 
 | Service | Status | Coverage |
 |---|---|---|
-| **Gmail** | ✅ Implemented | [33 operations](./services/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
+| **Gmail** | ✅ Implemented | [33 operations](./CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
 | Sheets | 🔜 Planned | spreadsheets, values, formatting |
 | Docs | 🔜 Planned | documents, structured content |
 | Calendar | 🔜 Planned | events, calendars, availability |
 
-Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./services/gmail/CAPABILITIES.md) for the full operation set.
+Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./CAPABILITIES.md) for the full operation set.
 
 ## License
 

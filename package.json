@@ -1,8 +1,9 @@
 {
   "name": "google-mcp-suite",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Per-account, per-service Google MCP servers sharing one auth implementation.",
+  "description": "Per-account MCP servers for Google services (Gmail, with more to come), sharing one OAuth implementation.",
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",
   "homepage": "https://github.com/simiancraft/google-mcp-suite#readme",
@@ -13,10 +14,9 @@
   "bugs": {
     "url": "https://github.com/simiancraft/google-mcp-suite/issues"
   },
-  "workspaces": [
-    "packages/*",
-    "services/*"
-  ],
+  "bin": {
+    "google-mcp-gmail": "./dist/gmail/index.js"
+  },
   "engines": {
     "node": ">=22"
   },
@@ -24,11 +24,21 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write .",
-    "typecheck": "bun run --filter './packages/*' typecheck && bun run --filter './services/*' typecheck",
-    "build": "bun run --filter './packages/*' build && bun run --filter './services/*' build",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "test": "bun test",
+    "capabilities": "bun run src/gmail/capabilities.ts",
     "check:knip": "knip",
     "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip"
+  },
+  "dependencies": {
+    "@googleapis/gmail": "^17.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "addressparser": "^1.0.1",
+    "google-auth-library": "^10.5.0",
+    "mail-mime-builder": "^1.0.1",
+    "open": "^11.0.0",
+    "zod": "^4"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
