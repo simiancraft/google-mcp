@@ -1,7 +1,8 @@
-<h1 align="center">google-mcp</h1>
+<h1 align="center">google-mcp-suite</h1>
 
 <p align="center">
-  One <a href="https://modelcontextprotocol.io/">Model Context Protocol</a> server per Google service, built to command <strong>several Google accounts at once</strong>. Each server is thin, authorized per account, and shares a single OAuth implementation.
+  <strong>Drive your entire Google Workspace agentically, across every account you have.</strong><br />
+  A suite of independent REST + <a href="https://modelcontextprotocol.io/">MCP</a> servers, one per Google service, that lets an AI agent search, read, write, organize, and send across Gmail, Drive, Sheets, Docs, and Calendar; on as many accounts as you run.
 </p>
 
 <p align="center">
@@ -22,9 +23,23 @@
 
 > **Status:** pre-release. Interfaces and layout will move until the first tagged release.
 
-## Why
+## What it does
 
-Commanding multiple Google accounts means running one server instance per account, and covering multiple services (Gmail, Drive, Sheets, Docs, Calendar) means one server each. Writing OAuth once and sharing it keeps every server a thin set of operations instead of a re-implemented auth client.
+Point an AI agent at your Google Workspace and let it do the work: triage and send mail, manage files, edit spreadsheets and documents, schedule events; across all of your accounts at once. The end goal is an agent that can simply operate your Workspace and hand you results.
+
+- **REST + MCP in one surface.** Each server exposes the curated MCP toolset *and* the full REST method set of its Google API, so an agent gets the maximum capability of the service, not a thin slice. Every server's live surface is generated into a `CAPABILITIES.md`.
+- **Several accounts, in parallel.** Identity is bound to a running instance, not passed per call, so an agent can act across your accounts at once and cannot act on the wrong one.
+- **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
+- **Built to be trusted.** One folder per operation, input and output schemas validated on every call, vocabulary sourced from Google's own docs, and 100% test coverage.
+- **Set up without yak-shaving.** A `google-mcp-doctor` CLI checks your OAuth client, authorizes each account, and wires the servers into your MCP client.
+
+The suite ships as `google-mcp-suite`; each service is also installable on its own as `google-mcp-<service>` (for example `google-mcp-gmail`).
+
+## Quickstart
+
+<!-- QUICKSTART: owned by the doctor/auth onboarding work; fill this in there. -->
+
+> **Quickstart goes here.** Setup is driven by the `google-mcp-doctor` CLI (OAuth client, per-account authorization, and MCP-client wiring); this section lands with the doctor.
 
 ## Layout
 
@@ -76,13 +91,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 ---
 
 <p align="center">
-  <a href="https://github.com/simiancraft/google-mcp-suite" title="google-mcp on GitHub"><img src=".github/assets/github.svg" height="18" alt="GitHub" /></a>
+  <a href="https://github.com/simiancraft/google-mcp-suite" title="google-mcp-suite on GitHub"><img src=".github/assets/github.svg" height="18" alt="GitHub" /></a>
   &nbsp;&nbsp;&nbsp;
   <a href="https://x.com/5imian" title="Jesse Harlin on X"><img src=".github/assets/x.svg" height="16" alt="X" /></a>
   &nbsp;&nbsp;&nbsp;
   <a href="https://ko-fi.com/the_simian0604" title="Tip on Ko-fi"><img src=".github/assets/coffee.svg" height="18" alt="Ko-fi" /></a>
 </p>
 
-<p align="center"><sub><a href="./LICENSE">MIT</a>. Google product names are used nominatively; see <a href="./NOTICE.md">NOTICE.md</a>. Not affiliated with Google LLC.</sub></p>
-
-<p align="center"><sub>Crafted with care by <a href="https://simiancraft.com"><img src=".github/assets/simiancraft.svg" height="13" alt="" />&nbsp;Simiancraft</a>.</sub></p>
+<p align="center"><sub><a href="./LICENSE">MIT</a>. Google product names are used nominatively; see <a href="./NOTICE.md">NOTICE.md</a>; not affiliated with Google LLC. Crafted with care by <a href="https://simiancraft.com"><img src=".github/assets/simiancraft.svg" height="12" alt="" />&nbsp;Simiancraft</a>.</sub></p>
