@@ -70,7 +70,9 @@ describe('runAuthFlow', () => {
   });
 
   it('rejects when the token exchange fails', async () => {
-    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockRejectedValue(new Error('bad code'));
+    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockRejectedValue(
+      new Error('bad code') as never,
+    );
     const flow = runAuthFlow('acct', { port: 31733, openBrowser: () => {} });
     const rejection = flow.then<Error | undefined>(
       () => undefined,

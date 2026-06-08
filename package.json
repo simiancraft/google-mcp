@@ -24,7 +24,7 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write .",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "capabilities": "bun run src/gmail/capabilities.ts",
