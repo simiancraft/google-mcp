@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { send_draft } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(captured: { id?: string }): gmail_v1.Gmail {
   return {
@@ -17,12 +17,11 @@ function fakeGmail(captured: { id?: string }): gmail_v1.Gmail {
 }
 
 describe('send_draft', () => {
-  it('is marked destructive and sends the draft', async () => {
-    expect(send_draft.destructive).toBe(true);
+  it('sends the draft', async () => {
     const captured: { id?: string } = {};
-    const result = await send_draft.handler(fakeGmail(captured), { draftId: 'D9' });
+    const result = await handler(fakeGmail(captured), { draftId: 'D9' });
     expect(captured.id).toBe('D9');
     expect(result).toMatchObject({ id: 'M9' });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 });

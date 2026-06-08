@@ -1,21 +1,16 @@
-import { defineMethod } from '../../defineMethod.js';
+import type { gmail_v1 } from '@googleapis/gmail';
+import type { z } from 'zod';
 import { projectLabel } from '../../lib/label.js';
-import { input, output } from './schema.js';
+import type { schema } from './schema.js';
 
-/**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/patch
- * Patches name and/or color of a user label.
- */
-export const update_label = defineMethod({
-  description: 'Update a label name and/or color.',
-  input,
-  output,
-  handler: async (gmail, args) => {
-    const { data } = await gmail.users.labels.patch({
-      userId: 'me',
-      id: args.labelId,
-      requestBody: { name: args.name, color: args.color },
-    });
-    return projectLabel(data);
-  },
-});
+export async function handler(
+  gmail: gmail_v1.Gmail,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  const { data } = await gmail.users.labels.patch({
+    userId: 'me',
+    id: args.labelId,
+    requestBody: { name: args.name, color: args.color },
+  });
+  return projectLabel(data);
+}

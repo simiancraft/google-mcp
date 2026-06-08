@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { unlabel_thread } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
   return {
@@ -19,12 +19,12 @@ function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
 describe('unlabel_thread', () => {
   it('removes labels from a thread and confirms them', async () => {
     const captured: { remove?: string[] } = {};
-    const result = await unlabel_thread.handler(fakeGmail(captured), {
+    const result = await handler(fakeGmail(captured), {
       threadId: 'T1',
       labelIds: ['IMPORTANT'],
     });
     expect(captured.remove).toEqual(['IMPORTANT']);
     expect(result).toEqual({ threadId: 'T1', labelIds: ['IMPORTANT'] });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 });

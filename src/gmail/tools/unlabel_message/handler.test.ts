@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { unlabel_message } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
   return {
@@ -19,13 +19,13 @@ function fakeGmail(captured: { remove?: string[] }): gmail_v1.Gmail {
 describe('unlabel_message', () => {
   it('removes labels and confirms the removed labels', async () => {
     const captured: { remove?: string[] } = {};
-    const result = await unlabel_message.handler(fakeGmail(captured), {
+    const result = await handler(fakeGmail(captured), {
       messageId: 'M1',
       labelIds: ['IMPORTANT'],
     });
     expect(captured.remove).toEqual(['IMPORTANT']);
     // Confirms the labels acted on, not the message's full resulting label set.
     expect(result).toEqual({ messageId: 'M1', labelIds: ['IMPORTANT'] });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 });

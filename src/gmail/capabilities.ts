@@ -5,13 +5,13 @@
 // discover the live, fully-schema'd surface via the server's `tools/list`.
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { renderCapabilities } from '../harness/index.js';
-import { methods } from './methods/index.js';
-import { tools } from './tools/index.js';
+import { renderCapabilities } from '../lib/server.js';
+import { methods } from './methods/registry.js';
+import { tools } from './tools/registry.js';
 
 if (import.meta.main) {
-  const registry = { ...tools, ...methods };
+  const operations = { ...tools, ...methods };
   const out = fileURLToPath(new URL('../../CAPABILITIES.md', import.meta.url));
-  writeFileSync(out, renderCapabilities('Gmail capabilities', registry));
-  console.error(`Wrote CAPABILITIES.md (${Object.keys(registry).length} operations)`);
+  writeFileSync(out, renderCapabilities('Gmail capabilities', operations));
+  console.error(`Wrote CAPABILITIES.md (${Object.keys(operations).length} operations)`);
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { create_draft } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
   return {
@@ -29,7 +29,7 @@ function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
 describe('create_draft', () => {
   it('builds a raw message, creates the draft, and projects it', async () => {
     const captured: { raw?: string } = {};
-    const result = await create_draft.handler(fakeGmail(captured), {
+    const result = await handler(fakeGmail(captured), {
       to: ['x@example.com'],
       subject: 'Hello',
       body: 'Hi there',
@@ -41,7 +41,7 @@ describe('create_draft', () => {
     expect(decoded).toContain('Hi there');
 
     expect(result).toMatchObject({ id: 'D1', threadId: 'T1', subject: 'Hello' });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 
   it('threads a reply: fetches the original for thread + In-Reply-To', async () => {
@@ -68,7 +68,7 @@ describe('create_draft', () => {
       },
     } as unknown as gmail_v1.Gmail;
 
-    await create_draft.handler(gmail, { to: ['x@example.com'], replyToMessageId: 'M1' });
+    await handler(gmail, { to: ['x@example.com'], replyToMessageId: 'M1' });
     expect(captured.threadId).toBe('T9');
     expect(Buffer.from(captured.raw ?? '', 'base64url').toString('utf8')).toContain(
       'In-Reply-To: <orig@x>',

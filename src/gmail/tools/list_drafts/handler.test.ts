@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { list_drafts } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(): gmail_v1.Gmail {
   return {
@@ -29,7 +29,7 @@ function fakeGmail(): gmail_v1.Gmail {
 
 describe('list_drafts', () => {
   it('fetches and projects each draft', async () => {
-    const result = await list_drafts.handler(fakeGmail(), {});
+    const result = await handler(fakeGmail(), {});
     expect(result.drafts).toHaveLength(1);
     expect(result.drafts[0]).toMatchObject({
       id: 'D1',
@@ -37,6 +37,6 @@ describe('list_drafts', () => {
       subject: 'Draft subject',
       toRecipients: [{ address: 'x@example.com' }, { address: 'y@example.com' }],
     });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 });

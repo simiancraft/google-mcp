@@ -1,14 +1,9 @@
-import { defineMethod } from '../../defineMethod.js';
+import type { gmail_v1 } from '@googleapis/gmail';
+import type { z } from 'zod';
 import { projectFilter } from '../../lib/filter.js';
-import { input, output } from './schema.js';
+import type { schema } from './schema.js';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/list */
-export const list_filters = defineMethod({
-  description: 'List all filters for the account.',
-  input,
-  output,
-  handler: async (gmail) => {
-    const { data } = await gmail.users.settings.filters.list({ userId: 'me' });
-    return { filters: (data.filter ?? []).map(projectFilter) };
-  },
-});
+export async function handler(gmail: gmail_v1.Gmail): Promise<z.infer<typeof schema.output>> {
+  const { data } = await gmail.users.settings.filters.list({ userId: 'me' });
+  return { filters: (data.filter ?? []).map(projectFilter) };
+}

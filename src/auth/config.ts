@@ -73,4 +73,11 @@ export const SCOPES = [
   'https://www.googleapis.com/auth/documents',
   // Calendar
   'https://www.googleapis.com/auth/calendar',
+  // Meet (REST API v2): space.created manages app-created spaces and reads their
+  // conference records; space.readonly reads any accessible space plus conference
+  // records, recordings, transcripts, and participants; space.settings edits space
+  // settings (e.g. moderation).
+  'https://www.googleapis.com/auth/meetings.space.created',
+  'https://www.googleapis.com/auth/meetings.space.readonly',
+  'https://www.googleapis.com/auth/meetings.space.settings',
 ];

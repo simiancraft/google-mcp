@@ -1,17 +1,11 @@
-import { defineMethod } from '../../defineMethod.js';
-import { input, output } from './schema.js';
+import type { gmail_v1 } from '@googleapis/gmail';
+import type { z } from 'zod';
+import type { schema } from './schema.js';
 
-/**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/delete
- * Deletes a user label and removes it from all messages and threads. Not marked
- * destructive: no mail is lost, and the label is recreatable.
- */
-export const delete_label = defineMethod({
-  description: 'Delete a user label.',
-  input,
-  output,
-  handler: async (gmail, args) => {
-    await gmail.users.labels.delete({ userId: 'me', id: args.labelId });
-    return { labelId: args.labelId };
-  },
-});
+export async function handler(
+  gmail: gmail_v1.Gmail,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  await gmail.users.labels.delete({ userId: 'me', id: args.labelId });
+  return { labelId: args.labelId };
+}

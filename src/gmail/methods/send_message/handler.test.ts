@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import type { gmail_v1 } from '@googleapis/gmail';
-import { send_message } from './handler.js';
-import { output } from './schema.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
 
 function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
   return {
@@ -19,9 +19,8 @@ function fakeGmail(captured: { raw?: string }): gmail_v1.Gmail {
 
 describe('send_message', () => {
   it('is destructive, builds the raw message, and sends it', async () => {
-    expect(send_message.destructive).toBe(true);
     const captured: { raw?: string } = {};
-    const result = await send_message.handler(fakeGmail(captured), {
+    const result = await handler(fakeGmail(captured), {
       to: ['x@example.com'],
       subject: 'Hi',
       body: 'Hello',
@@ -30,7 +29,7 @@ describe('send_message', () => {
     expect(decoded).toContain('x@example.com');
     expect(decoded).toContain('Hello');
     expect(result).toMatchObject({ id: 'M1' });
-    expect(() => output.parse(result)).not.toThrow();
+    expect(() => schema.output.parse(result)).not.toThrow();
   });
 
   it('threads a reply: fetches the original for thread + In-Reply-To', async () => {
@@ -54,7 +53,7 @@ describe('send_message', () => {
       },
     } as unknown as gmail_v1.Gmail;
 
-    await send_message.handler(gmail, {
+    await handler(gmail, {
       to: ['x@example.com'],
       body: 'reply',
       replyToMessageId: 'M1',

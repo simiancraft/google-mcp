@@ -1,22 +1,15 @@
-import { defineTool } from '../../defineTool.js';
+import type { gmail_v1 } from '@googleapis/gmail';
+import type { z } from 'zod';
 import { projectLabel } from '../../lib/label.js';
-import { input, output } from './schema.js';
+import type { schema } from './schema.js';
 
-/**
- * Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/create_label
- *
- * Creates a user label via `users.labels.create` and projects the result
- * (id -> labelId). `displayName` maps to the REST `name`.
- */
-export const create_label = defineTool({
-  description: 'Create a new label.',
-  input,
-  output,
-  handler: async (gmail, args) => {
-    const { data } = await gmail.users.labels.create({
-      userId: 'me',
-      requestBody: { name: args.displayName, color: args.color },
-    });
-    return projectLabel(data);
-  },
-});
+export async function handler(
+  gmail: gmail_v1.Gmail,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  const { data } = await gmail.users.labels.create({
+    userId: 'me',
+    requestBody: { name: args.displayName, color: args.color },
+  });
+  return projectLabel(data);
+}
