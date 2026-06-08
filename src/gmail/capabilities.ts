@@ -13,6 +13,12 @@ import { tools } from './tools/registry.js';
 if (import.meta.main) {
   const operations = mergeOperations(tools, methods);
   const out = fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url));
-  writeFileSync(out, renderCapabilities('Gmail capabilities', operations));
+  writeFileSync(
+    out,
+    renderCapabilities('Gmail capabilities', [
+      { kind: 'MCP Tool', operations: tools },
+      { kind: 'REST Method', operations: methods },
+    ]),
+  );
   console.error(`Wrote CAPABILITIES.md (${Object.keys(operations).length} operations)`);
 }

@@ -71,11 +71,14 @@ describe('toolDefinitions', () => {
 
 describe('renderCapabilities', () => {
   it('renders a Markdown table, marking only destructive operations', () => {
-    const md = renderCapabilities('Test capabilities', { echo, danger });
+    const md = renderCapabilities('Test capabilities', [
+      { kind: 'MCP Tool', operations: { echo } },
+      { kind: 'REST Method', operations: { danger } },
+    ]);
     expect(md).toContain('# Test capabilities');
-    expect(md).toContain('2 operations.');
-    expect(md).toContain('| `echo` | Uppercase a string. |');
-    expect(md).toContain('| `danger` ⚠️ | Irreversible. |');
+    expect(md).toContain('2 operations across MCP tools and REST methods.');
+    expect(md).toContain('| `echo` | MCP Tool | Uppercase a string. |');
+    expect(md).toContain('| `danger` ⚠️ | REST Method | Irreversible. |');
   });
 });
 

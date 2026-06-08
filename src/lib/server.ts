@@ -43,27 +43,38 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
   }));
 }
 
+/** A labeled set of operations for the capability table: its provenance + the ops. */
+export type CapabilityGroup<Client> = {
+  /** Provenance shown in the Source column, e.g. 'MCP Tool' or 'REST Method'. */
+  kind: string;
+  operations: Record<string, AnyOperation<Client>>;
+};
+
 /**
- * Render the operations as a Markdown capability table (name, description, and an
- * irreversible marker), derived from the same registry the server dispatches. A
- * static mirror of the surface; agents that speak MCP discover the live,
+ * Render the operations as a Markdown capability table (name, source, description,
+ * and an irreversible marker), derived from the same registries the server
+ * dispatches. The Source column makes the dual surface explicit: the suite is both
+ * an MCP-toolset wrapper and a REST wrapper, because MCP's toolset alone cannot
+ * fully drive a service. A static mirror; agents that speak MCP discover the live,
  * fully-schema'd surface via `tools/list`. Pure; a service regenerates its
  * CAPABILITIES.md from this so the doc cannot drift from the code.
  */
 export function renderCapabilities<Client>(
   title: string,
-  operations: Record<string, AnyOperation<Client>>,
+  groups: CapabilityGroup<Client>[],
 ): string {
-  const rows = Object.entries(operations).map(
-    ([name, op]) => `| \`${name}\`${op.destructive ? ' ⚠️' : ''} | ${op.description} |`,
+  const rows = groups.flatMap(({ kind, operations }) =>
+    Object.entries(operations).map(
+      ([name, op]) => `| \`${name}\`${op.destructive ? ' ⚠️' : ''} | ${kind} | ${op.description} |`,
+    ),
   );
   return `${[
     `# ${title}`,
     '',
-    `${rows.length} operations. ⚠️ marks irreversible operations (MCP \`destructiveHint\`).`,
+    `${rows.length} operations across MCP tools and REST methods. ⚠️ marks irreversible operations (MCP \`destructiveHint\`).`,
     '',
-    '| Operation | Description |',
-    '| --- | --- |',
+    '| Operation | Source | Description |',
+    '| --- | --- | --- |',
     ...rows,
   ].join('\n')}\n`;
 }
