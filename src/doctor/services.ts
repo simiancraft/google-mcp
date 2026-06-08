@@ -82,11 +82,14 @@ export function requiredApis(): string[] {
  * Guard the per-service scope attribution against the canonical `SCOPES` union.
  * Returns the symmetric difference; empty means the two agree.
  */
-export function scopeRegistryDrift(canonical: string[]): { missing: string[]; extra: string[] } {
-  const declared = new Set(requiredScopes());
+export function scopeRegistryDrift(
+  canonical: string[],
+  declared: string[] = requiredScopes(),
+): { missing: string[]; extra: string[] } {
+  const have = new Set(declared);
   const truth = new Set(canonical);
   return {
-    missing: [...truth].filter((s) => !declared.has(s)),
-    extra: [...declared].filter((s) => !truth.has(s)),
+    missing: [...truth].filter((s) => !have.has(s)),
+    extra: [...have].filter((s) => !truth.has(s)),
   };
 }

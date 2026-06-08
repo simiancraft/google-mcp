@@ -1,34 +1,55 @@
-import { spawn } from 'node:child_process';
+import { type spawn as nodeSpawn, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
-function isWsl(): boolean {
-  if (process.env['WSL_DISTRO_NAME']) return true;
+/** True when running under WSL (env hint, or a Microsoft kernel in /proc/version). */
+export function detectWsl(
+  env: NodeJS.ProcessEnv = process.env,
+  readProcVersion: () => string = () => readFileSync('/proc/version', 'utf8'),
+): boolean {
+  if (env['WSL_DISTRO_NAME']) return true;
   try {
-    return readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+    return readProcVersion().toLowerCase().includes('microsoft');
   } catch {
     return false;
   }
 }
 
 /**
- * Open a URL in the host browser, including from inside WSL.
- *
- * On WSL, go through PowerShell's Start-Process rather than `cmd.exe /c start`:
- * an OAuth URL is full of `&`, and cmd.exe treats `&` as a command separator
- * (even quoted), truncating the URL at the first one. PowerShell is spawned
- * directly, so no shell re-tokenizes the URL, and the single-quoted argument
- * keeps every `&` intact. The consent URL is also printed by the auth flow, so a
- * failed open is never a dead end.
+ * The command to open a URL on each host. On WSL, go through PowerShell's
+ * Start-Process rather than `cmd.exe /c start`: an OAuth URL is full of `&`, and
+ * cmd.exe treats `&` as a command separator (even quoted), truncating the URL at
+ * the first one. PowerShell is spawned directly, so no shell re-tokenizes it.
  */
-export function openInBrowser(url: string): void {
-  const wsl = isWsl();
-  const cmd = wsl ? 'powershell.exe' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-  const args: string[] = wsl ? ['-NoProfile', '-Command', `Start-Process '${url}'`] : [url];
+export function browserCommand(
+  url: string,
+  wsl: boolean,
+  platform: NodeJS.Platform,
+): { cmd: string; args: string[] } {
+  if (wsl) {
+    return { cmd: 'powershell.exe', args: ['-NoProfile', '-Command', `Start-Process '${url}'`] };
+  }
+  if (platform === 'darwin') return { cmd: 'open', args: [url] };
+  return { cmd: 'xdg-open', args: [url] };
+}
+
+export type OpenDeps = {
+  spawn?: typeof nodeSpawn;
+  wsl?: boolean;
+  platform?: NodeJS.Platform;
+};
+
+/** Open a URL in the host browser. The consent URL is also printed by the auth
+ * flow, so a failed open is never a dead end. */
+export function openInBrowser(url: string, deps: OpenDeps = {}): void {
+  const spawnFn = deps.spawn ?? spawn;
+  const wsl = deps.wsl ?? detectWsl();
+  const platform = deps.platform ?? process.platform;
+  const { cmd, args } = browserCommand(url, wsl, platform);
   try {
-    const child = spawn(cmd, args, { stdio: 'ignore', detached: true });
+    const child = spawnFn(cmd, args, { stdio: 'ignore', detached: true });
     child.on('error', () => {});
     child.unref();
   } catch {
-    // non-fatal; the URL is printed regardless.
+    // non-fatal.
   }
 }

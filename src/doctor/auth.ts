@@ -10,8 +10,11 @@ import { type Account, loadAccounts, toAccount } from './accounts.js';
 import { openInBrowser } from './browser.js';
 import { statusFor } from './status.js';
 
-function selectTargets(args: string[]): Account[] {
-  const roster = loadAccounts();
+export function selectTargets(
+  args: string[],
+  roster: Account[] = loadAccounts(),
+  now: number = Date.now(),
+): Account[] {
   const flags = new Set(args.filter((a) => a.startsWith('--')));
   const names = args.filter((a) => !a.startsWith('--'));
   if (names.length > 0) return names.map((n) => toAccount(n, roster));
@@ -23,11 +26,17 @@ function selectTargets(args: string[]): Account[] {
     }
     return roster;
   }
-  const now = Date.now();
   return roster.filter((a) => statusFor(a, now).state !== 'fresh');
 }
 
-export async function runAuth(args: string[]): Promise<void> {
+export type RunAuthDeps = {
+  authorize?: typeof runAuthFlow;
+  openBrowser?: (url: string) => void;
+};
+
+export async function runAuth(args: string[], deps: RunAuthDeps = {}): Promise<void> {
+  const authorize = deps.authorize ?? runAuthFlow;
+  const openBrowser = deps.openBrowser ?? openInBrowser;
   const targets = selectTargets(args);
   if (targets.length === 0) {
     console.log('Nothing due; all tokens are fresh. Pass an email/label, or --all to force.');
@@ -36,8 +45,8 @@ export async function runAuth(args: string[]): Promise<void> {
   console.log(`Authorizing: ${targets.map((t) => t.label).join(', ')}\n`);
   for (const acct of targets) {
     console.log(`→ ${acct.label}${acct.email ? ` (${acct.email})` : ''}`);
-    await runAuthFlow(acct.label, {
-      openBrowser: openInBrowser,
+    await authorize(acct.label, {
+      openBrowser,
       ...(acct.email ? { loginHint: acct.email } : {}),
     });
     console.log('  done.\n');

@@ -6,10 +6,10 @@
 import { existsSync } from 'node:fs';
 import { loadConfig, SCOPES } from '../auth/config.js';
 import { type Account, loadAccounts } from './accounts.js';
-import { requiredApis, SERVICES, scopeRegistryDrift } from './services.js';
+import { requiredApis, SERVICES, type ServiceInfo, scopeRegistryDrift } from './services.js';
 import { grantedScopes, humanizeRemaining, ICON, statusFor } from './status.js';
 
-export type DiagnoseOptions = { probe?: boolean };
+export type DiagnoseOptions = { probe?: boolean; services?: ServiceInfo[]; now?: number };
 
 /** `doctor scopes`: the provisioning quick reference, version-accurate. */
 export function renderScopes(): void {
@@ -21,6 +21,8 @@ export function renderScopes(): void {
 
 export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
   const probe = options.probe ?? true;
+  const services = options.services ?? SERVICES;
+  const now = options.now ?? Date.now();
   console.log('google-mcp doctor\n');
 
   // 1. Provisioning
@@ -37,10 +39,13 @@ export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
     for (const s of SCOPES) console.log(`           ${s}`);
     console.log('       → Full walkthrough: PROVISIONING.md');
   }
-  const drift = scopeRegistryDrift([...SCOPES]);
+  const drift = scopeRegistryDrift(
+    [...SCOPES],
+    services.flatMap((s) => s.scopes),
+  );
   const driftClean = drift.missing.length === 0 && drift.extra.length === 0;
   console.log(
-    `  [${driftClean ? '✓' : '✗'}] Scope registry  ${SCOPES.length} scopes across ${SERVICES.length} services`,
+    `  [${driftClean ? '✓' : '✗'}] Scope registry  ${SCOPES.length} scopes across ${services.length} services`,
   );
   if (drift.missing.length)
     console.log(`       unattributed in services.ts: ${drift.missing.join(', ')}`);
@@ -52,7 +57,6 @@ export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
   if (accounts.length === 0) {
     console.log('  none yet — authorize one: google-mcp-doctor auth you@example.com');
   }
-  const now = Date.now();
   const authorized: Account[] = [];
   for (const acct of accounts) {
     const st = statusFor(acct, now);
@@ -79,7 +83,7 @@ export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
 
   // 3. Services (live probe per authorized account)
   console.log('\nServices');
-  for (const svc of SERVICES) {
+  for (const svc of services) {
     if (!svc.implemented) {
       console.log(`  · ${svc.name}  planned`);
       continue;
