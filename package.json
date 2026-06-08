@@ -15,7 +15,8 @@
     "url": "https://github.com/simiancraft/google-mcp-suite/issues"
   },
   "bin": {
-    "google-mcp-gmail": "./dist/gmail/index.js"
+    "google-mcp-gmail": "./dist/gmail/index.js",
+    "google-mcp-doctor": "./dist/doctor/index.js"
   },
   "engines": {
     "node": ">=22"
@@ -28,6 +29,9 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "capabilities": "bun run src/gmail/capabilities.ts",
+    "doctor": "bun run src/doctor/index.ts",
+    "tokens": "bun run src/doctor/index.ts status",
+    "reauth": "bun run src/doctor/index.ts auth",
     "check:knip": "knip",
     "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip"
   },

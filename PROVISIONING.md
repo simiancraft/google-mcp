@@ -123,9 +123,10 @@ Then:
 
 1. **Google Auth Platform > Data access** (old: *OAuth consent screen*, the
    **Scopes** step), <https://console.cloud.google.com/auth/scopes>.
-2. **Add or remove scopes**.
-3. Use the **"Manually add scopes"** text box (the searchable table is often
-   incomplete). Paste the **exact** contents of `SCOPES` from
+2. Click **Add or remove scopes**. This opens a side panel with a 100+ row table
+   and, at the bottom, a **"Manually add scopes"** text box.
+3. In the **manual box** (the table is huge and easy to mis-click; many scopes
+   look almost identical), paste the **exact** contents of `SCOPES` from
    [`src/auth/config.ts`](./src/auth/config.ts), one per line. As of this writing:
 
    ```
@@ -135,14 +136,37 @@ Then:
    https://www.googleapis.com/auth/spreadsheets
    https://www.googleapis.com/auth/documents
    https://www.googleapis.com/auth/calendar
+   https://www.googleapis.com/auth/meetings.space.created
+   https://www.googleapis.com/auth/meetings.space.readonly
+   https://www.googleapis.com/auth/meetings.space.settings
    ```
 
-4. **Add to table**, then **Update**, then **Save**. After saving, Google sorts
-   them into Restricted / Sensitive / Non-sensitive. Expect `mail.google.com` and
-   `drive` under **Restricted**; the rest under **Sensitive**.
+4. Click **Add to table**, then **Update** (this closes the panel and stages your
+   selection).
 
-The list in code is the source of truth. When you add scopes there, mirror them
-here, and re-authorize every account (Phase 5).
+> **You are not done. Click Save.** The Data access page does **not** save like a
+> normal web form. **Update** only stages the selection back onto the page; the
+> page then shows your scopes sorted into Non-sensitive / Sensitive / Restricted,
+> and you must click the **Save** button on that page as a **separate second
+> step** to commit. Navigate away before clicking Save and your scopes are lost
+> with no warning. After saving, expect `mail.google.com` and `drive` under
+> **Restricted**, `meetings.space.settings` under **Non-sensitive**, and the rest
+> under **Sensitive**.
+
+**Watch two traps while picking:**
+- `https://mail.google.com/` has no `googleapis.com/auth` prefix and breaks the
+  pattern, so it is the easy one to miss. It is the full-mailbox scope ("Read,
+  compose, send, and permanently delete all your email"); do not settle for
+  `gmail.modify`, which cannot permanently delete.
+- Full `.../auth/drive` already subsumes every narrower Drive scope
+  (`drive.file`, `drive.readonly`, `drive.metadata*`, `drive.meet.readonly`) and
+  the separate **Drive Labels** scopes (`drive.labels*`, `drive.admin.labels*`).
+  If the table tacks any of those on, remove them; keep only the single
+  `.../auth/drive`. Extra restricted scopes are inert in Testing but enlarge the
+  verification surface if you ever publish.
+
+The list in code is the source of truth. When you change `SCOPES`, mirror it here
+(Add or remove scopes, Update, **Save**) and re-authorize every account (Phase 5).
 
 ### Add test users, and stay in Testing
 

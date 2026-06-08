@@ -9,3 +9,4 @@ coverage/
 .google-mcp/
 *credentials*.json
 gcp-oauth.keys.json
+accounts.json

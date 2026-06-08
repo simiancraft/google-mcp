@@ -1,0 +1,62 @@
+/**
+ * Account roster the doctor drives the OAuth flow across.
+ *
+ * The roster lives outside the repo at `<GOOGLE_MCP_DIR>/accounts.json`, so real
+ * email addresses never land in version control. Shape:
+ *
+ *   [
+ *     { "label": "personal",    "email": "you@gmail.com" },
+ *     { "label": "simiancraft", "email": "you@your-domain.com" }
+ *   ]
+ *
+ * `label` is the GOOGLE_MCP_ACCOUNT value and the token filename
+ * (`tokens/<label>.json`); `email` is optional and used as the consent
+ * `login_hint` so the right Google account is preselected.
+ *
+ * The roster is optional. Single-account auth works with no file at all (the
+ * email is its own label); the roster only powers `--all`, status, and prefill.
+ * When absent, it is inferred from the token files already in `tokens/`.
+ */
+import { readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { loadConfig } from '../auth/config.js';
+
+export type Account = { label: string; email?: string };
+
+export function accountsFile(): string {
+  return path.join(loadConfig().dir, 'accounts.json');
+}
+
+export function loadAccounts(): Account[] {
+  try {
+    const raw = JSON.parse(readFileSync(accountsFile(), 'utf8')) as Account[];
+    if (Array.isArray(raw) && raw.every((a) => typeof a?.label === 'string')) {
+      return raw;
+    }
+    throw new Error('accounts.json must be an array of { label, email? }.');
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return inferFromTokens();
+    throw err;
+  }
+}
+
+/**
+ * Turn a CLI argument into an account, even with no roster: a bare email is its
+ * own label and its own login hint, so `doctor auth you@gmail.com` works from a
+ * cold start. A known label resolves to its roster entry (with email prefill).
+ */
+export function toAccount(arg: string, roster: Account[]): Account {
+  const known = roster.find((a) => a.label === arg || a.email === arg);
+  if (known) return known;
+  return arg.includes('@') ? { label: arg, email: arg } : { label: arg };
+}
+
+function inferFromTokens(): Account[] {
+  try {
+    return readdirSync(loadConfig().tokensDir)
+      .filter((f) => f.endsWith('.json'))
+      .map((f) => ({ label: f.replace(/\.json$/, '') }));
+  } catch {
+    return [];
+  }
+}
