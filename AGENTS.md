@@ -9,14 +9,15 @@ google-mcp-suite/
 └── src/
     ├── auth/        # shared OAuth: authorizedClient(account), runAuthFlow(account), SCOPES
     ├── lib/         # operation() + server(): the two MCP primitives
-    └── gmail/       # the canary server; new services mirror it as src/<service>/
-        ├── index.ts          # server({ name, operations, client }); the bin entry
-        ├── entities/          # PascalCase zod nouns (Label, Thread, Draft, ...)
-        ├── lib/               # projection helpers (REST entity -> documented shape)
-        ├── tools/             # MCP-sourced ops; registry.ts + one folder per tool
-        │   └── <tool>/        # index.ts + handler.ts + schema.ts + handler.test.ts
-        └── methods/           # REST-sourced ops; same construction
-            └── <method>/      # index.ts + handler.ts + schema.ts + handler.test.ts
+    ├── gmail/       # the canary server; new services mirror it as src/<service>/
+    │   ├── index.ts          # server({ name, operations, client }); the bin entry
+    │   ├── entities/          # PascalCase zod nouns (Label, Thread, Draft, ...)
+    │   ├── lib/               # projection helpers (REST entity -> documented shape)
+    │   ├── tools/             # MCP-sourced ops; registry.ts + one folder per tool
+    │   │   └── <tool>/        # index.ts + handler.ts + schema.ts + handler.test.ts
+    │   └── methods/           # REST-sourced ops; same construction
+    │       └── <method>/      # index.ts + handler.ts + schema.ts + handler.test.ts
+    └── doctor/      # provisioning + auth-health CLI (bin: google-mcp-doctor); see src/doctor/README.md
 ```
 
 `auth`, `lib`, and each service are folders that import each other by relative
@@ -31,6 +32,7 @@ emits a self-contained package.
 - **Thin servers, folder-per-operation.** Each operation is a folder with three files: `schema.ts` (a single `schema: { input, output }` zod object, composing `entities/`), `handler.ts` (the work; a standalone `handler(client, args)` function), and `index.ts` (the definition: `export const <name> = operation({ description, schema, handler })`), plus a colocated `handler.test.ts`. Every operation has the same `Operation` shape. The `lib` folder (`src/lib`) provides the two primitives, `operation()` and `server()`; never reimplement the protocol. `src/gmail` is the shape to copy.
 - **Tools vs methods, both operations.** `tools/` mirrors Google's MCP toolset reference; `methods/` covers the broader REST reference (operations the toolset omits). Identical construction; both use `operation()`. The server merges them with `mergeOperations(tools, methods)`, which throws on a duplicate wire name. On the MCP wire there is only "tools". The split is intentional, not incidental: MCP's toolset alone cannot fully drive a service, so `methods/` is how the suite goes past MCP to fully instrument an account, and the two folders mirror Google's own two reference trees (MCP vs REST) to keep provenance obvious and enable documentation-driven updates (a reference page maps onto one `schema`/`handler`/`index` triple). Mark `destructive: true` (→ MCP `destructiveHint`) any operation that is irreversible (`send`, permanent `delete`) or establishes a persistent dangerous side effect (`create_filter`); `trash`/`untrash` are reversible. All vocabulary is sourced from the docs; entity TSDoc from the guides Concepts page, field docs in `.describe()` so they reach the wire schema. See `EXTENDING.md`.
 - **Canary first.** Patterns are proven in `src/gmail`, then lifted into `src/lib`/`src/auth` or replicated into a new service folder. Do not invent a new shape per service.
+- **Provisioning and auth health live in `doctor`.** `src/doctor` is a peer micro-CLI (bin `google-mcp-doctor`) for setup, authorization, and health checks; it **knows the services but no service imports it**, and it touches only `src/auth` plus `@googleapis/*`. Use `doctor scopes`/`doctor check`/`doctor auth` for onboarding. Full reference: `src/doctor/README.md`.
 - **Tests** mirror the source; colocated `*.test.ts`.
 - **Commits**: Conventional Commits (`feat(drive): ...`, `fix(auth): ...`). **Do NOT** attribute AI co-authorship.
 
@@ -52,6 +54,7 @@ bun run lint             # biome check
 bun run lint:fix         # biome check --write
 bun run build            # tsc -> dist
 bun run capabilities     # regenerate CAPABILITIES.md from the registries
+bun run doctor           # provisioning + auth health (also: doctor status | auth | scopes)
 bun run check            # full pre-PR gate (lint-fix, build, typecheck, test, knip)
 ```
 
