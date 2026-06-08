@@ -128,11 +128,11 @@ export function projectMessage(message: gmail_v1.Schema$Message): Message {
   return {
     id: message.id ?? '',
     snippet: message.snippet ?? undefined,
-    subject: headers.subject,
-    sender: firstAddress(headers.from),
-    toRecipients: addresses(headers.to),
-    ccRecipients: addresses(headers.cc),
-    date: headers.date,
+    subject: headers['subject'],
+    sender: firstAddress(headers['from']),
+    toRecipients: addresses(headers['to']),
+    ccRecipients: addresses(headers['cc']),
+    date: headers['date'],
     plaintextBody: bodies.plain || undefined,
     htmlBody: bodies.html || undefined,
     attachmentIds: attachmentIds.length ? attachmentIds : undefined,
@@ -148,13 +148,13 @@ export function projectDraft(draft: gmail_v1.Schema$Draft): Draft {
   return {
     id: draft.id ?? '',
     threadId: message?.threadId ?? undefined,
-    subject: headers.subject,
-    toRecipients: addresses(headers.to),
-    ccRecipients: addresses(headers.cc),
-    bccRecipients: addresses(headers.bcc),
+    subject: headers['subject'],
+    toRecipients: addresses(headers['to']),
+    ccRecipients: addresses(headers['cc']),
+    bccRecipients: addresses(headers['bcc']),
     plaintextBody: bodies.plain || undefined,
     htmlBody: bodies.html || undefined,
-    date: headers.date,
+    date: headers['date'],
   };
 }
 

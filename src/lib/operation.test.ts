@@ -35,17 +35,19 @@ describe('operation', () => {
 
     // The annotation is the assertion: if inference dropped Client or the I/O
     // types, this `satisfies` would fail to compile (tests are typechecked).
-    const _typed = op satisfies Operation<
+    const typed = op satisfies Operation<
       FakeClient,
       z.ZodObject<{ n: z.ZodNumber }>,
       z.ZodObject<{ n: z.ZodNumber }>
     >;
+    expect(typed).toBe(op);
 
     // Erasure direction: a concrete Operation must stay assignable to the
     // schema-erased AnyOperation the registry holds. If a zod change made
     // `z.infer<z.ZodType>` something other than `unknown`, this would stop
     // compiling and fail CI rather than silently re-opening the `never` hole.
-    const _erased: AnyOperation<FakeClient> = op;
+    const erased: AnyOperation<FakeClient> = op;
+    expect(erased).toBe(op);
 
     expect(await op.handler({ tag: 'fake' }, { n: 21 })).toEqual({ n: 42 });
   });

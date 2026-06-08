@@ -132,11 +132,11 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
       console.error(`${name}: no auth flow configured.`);
       process.exit(1);
     }
-    await runAuth(process.argv[3] ?? process.env.GOOGLE_MCP_ACCOUNT);
+    await runAuth(process.argv[3] ?? process.env['GOOGLE_MCP_ACCOUNT']);
     process.exit(0);
   }
 
-  const authed = await client(process.env.GOOGLE_MCP_ACCOUNT);
+  const authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
   const mcp = new Server({ name, version }, { capabilities: { tools: {} } });
 
   mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
