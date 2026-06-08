@@ -1,5 +1,5 @@
-import { makeDefineTool } from '../harness/index.js';
 import type { gmail_v1 } from '@googleapis/gmail';
+import { makeDefineTool } from '../harness/index.js';
 
 /**
  * The Gmail method factory: for operations sourced from the REST reference

@@ -1,6 +1,6 @@
 # Contributing to google-mcp-suite
 
-Thanks for considering a contribution. This is a Bun-workspace monorepo of Google MCP servers; it is small and opinionated, the bar for merging is high, and the review is friendly.
+Thanks for considering a contribution. This is a single Bun package of Google MCP servers (one server per Google service, sharing one auth implementation); it is small and opinionated, the bar for merging is high, and the review is friendly.
 
 ## Prerequisites
 
@@ -17,8 +17,11 @@ bun install
 
 ## Layout
 
-- `packages/*`: shared code. `packages/google-auth` owns OAuth; services depend on it.
-- `services/*`: one thin MCP server per Google service. `services/gmail` is the reference (canary) implementation; new services mirror its shape.
+One package: `auth`, `harness`, and each service are folders under `src/`, compiled to one `dist/`.
+
+- `src/auth`: shared OAuth; every service imports it.
+- `src/harness`: the MCP server factory (`makeDefineTool` + `createServer`).
+- `src/<service>`: one thin MCP server per Google service. `src/gmail` is the reference (canary) implementation; new services mirror its shape.
 
 ## Common tasks
 
@@ -26,7 +29,7 @@ bun install
 |---|---|
 | Install everything | `bun install` |
 | Run all tests | `bun test` |
-| Run one workspace's tests | `bun test services/gmail` |
+| Run one area's tests | `bun test src/gmail` |
 | Typecheck everything | `bun run typecheck` |
 | Lint (Biome) | `bun run lint` |
 | Auto-fix lint | `bun run lint:fix` |
@@ -35,11 +38,11 @@ bun install
 | Find unused exports | `bun run check:knip` |
 | Run every gate end-to-end | `bun run check` |
 
-`bun run check` is the full pre-PR gate: lint-fix, typecheck, build, test, and knip across every workspace. CI runs the same steps; if `check` is green locally, CI usually is too.
+`bun run check` is the full pre-PR gate: lint-fix, build, typecheck, test, and knip. CI runs the same steps; if `check` is green locally, CI usually is too.
 
 ## Commit style
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): imperative subject`. Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`, `perf`, `build`, `style`. Scope is the workspace or area (e.g. `feat(drive):`, `fix(auth):`). This keeps history clean and ready for release automation later.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): imperative subject`. Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`, `perf`, `build`, `style`. Scope is the area (e.g. `feat(drive):`, `fix(auth):`). This keeps history clean and ready for release automation later.
 
 Commits are authored by humans. **Do not** attribute AI co-authorship.
 

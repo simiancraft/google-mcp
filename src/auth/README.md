@@ -1,8 +1,8 @@
-# @google-mcp/auth
+# Auth (`src/auth`)
 
-Shared OAuth for the google-mcp-suite servers: one Google Cloud OAuth client, one token
-per account, authorized once for the front-loaded scope union. Every service
-imports this package instead of reimplementing auth.
+Shared OAuth for the google-mcp-suite servers: one Google Cloud OAuth client, one
+token per account, authorized once for the front-loaded scope union. Every service
+imports this module instead of reimplementing auth.
 
 ## What a service uses
 

@@ -2,34 +2,36 @@
 
 How to add a tool, an entity, or a whole service. The pattern is fixed on
 purpose: every tool is a folder, every service is the same shape, and all
-vocabulary is sourced from Google's docs. Gmail (`services/gmail`) is the
-worked reference.
+vocabulary is sourced from Google's docs. Gmail (`src/gmail`) is the worked
+reference. It is one package: `auth`, `harness`, and each service are folders
+under `src/` that import each other by relative path and compile to one `dist/`.
 
 ## The shape
 
 ```
-packages/
-  google-auth/    # authorizedClient(account) + runAuthFlow(account); never reimplement auth
-  mcp-harness/    # makeDefineTool<Client>() + createServer(...); never reimplement the server
-services/<svc>/src/
-  index.ts        # createServer({ name, tools, methods, client })
-  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  (MCP-sourced ops)
-  defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  (REST-sourced ops)
-  entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
-  lib/            # projection helpers (REST entity -> documented shape)
-  tools/          # mirror the MCP toolset reference
-    index.ts      # the registry: { tool_name, ... } (key = wire name)
-    <tool_name>/  # snake_case, verbatim from Google
-      schema.ts        # export const input, output (zod; compose entities)
-      handler.ts       # the work + defineTool(...); exports the tool
-      handler.test.ts  # mocked-client unit test
-  methods/        # cover the REST reference (same construction as tools/)
-    index.ts
-    <method_name>/ { schema.ts, handler.ts, handler.test.ts }
+src/
+  auth/         # authorizedClient(account) + runAuthFlow(account); never reimplement auth
+  harness/      # makeDefineTool<Client>() + createServer(...); never reimplement the server
+  <svc>/        # one folder per service (gmail, drive, ...)
+    index.ts        # createServer({ name, tools, methods, client }); the bin entry
+    defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  (MCP-sourced ops)
+    defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  (REST-sourced ops)
+    entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
+    lib/            # projection helpers (REST entity -> documented shape)
+    tools/          # mirror the MCP toolset reference
+      index.ts      # the registry: { tool_name, ... } (key = wire name)
+      <tool_name>/  # snake_case, verbatim from Google
+        schema.ts        # export const input, output (zod; compose entities)
+        handler.ts       # the work + defineTool(...); exports the tool
+        handler.test.ts  # mocked-client unit test
+    methods/        # cover the REST reference (same construction as tools/)
+      index.ts
+      <method_name>/ { schema.ts, handler.ts, handler.test.ts }
 ```
 
-`schema.ts` is the contract (regenerable from the docs); `handler.ts` is the
-work (the REST call + projection). Keep them split.
+A service imports the harness and auth by relative path (`../harness/index.js`,
+`../auth/index.js`). `schema.ts` is the contract (regenerable from the docs);
+`handler.ts` is the work (the REST call + projection). Keep them split.
 
 ## Add a tool
 
@@ -87,25 +89,28 @@ Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
 
 **Doc comments are sourced too.** Give the entity a TSDoc comment from the API
 guides **Concepts** page (Google's own definition of the noun) with an `@see`
-link. Put **field-level** docs in `.describe()`, not JSDoc: `zodToJsonSchema`
-emits `.describe()` text into the wire JSON Schema, so an MCP client (and the LLM
-reading it at tool-selection time) sees the field docs; JSDoc on a field never
-reaches the wire. Source the field text from the tool/REST reference.
+link. Put **field-level** docs in `.describe()`, not JSDoc: the harness emits the
+schema with `z.toJSONSchema`, which carries `.describe()` text into the wire JSON
+Schema, so an MCP client (and the LLM reading it at tool-selection time) sees the
+field docs; JSDoc on a field never reaches the wire. Source the field text from
+the tool/REST reference.
 
 ## Add a service
 
-1. `services/<svc>/` with `package.json` (deps `@google-mcp/auth`,
-   `@google-mcp/harness`, `@googleapis/<svc>`, `zod`; bin `google-mcp-<svc>`),
-   `tsconfig.json`. Depend on the per-API `@googleapis/<svc>` package, not the
-   `googleapis` monolith; the monolith loads ~900 modules per process at startup.
+1. **Make the folder** `src/<svc>/`. Add the per-API client
+   `@googleapis/<svc>` to the root `package.json` dependencies (not the
+   `googleapis` monolith; it loads ~900 modules per process at startup), and a
+   `bin` entry `"google-mcp-<svc>": "./dist/<svc>/index.js"`.
 2. `defineTool.ts`: `export const defineTool = makeDefineTool<<svc>_vN.Client>()`
-   (`import type { <svc>_vN } from '@googleapis/<svc>'`).
-3. Add the service's scopes to the shared `SCOPES` union in
-   `packages/google-auth/src/config.ts` so each account is authorized once.
-   Services do not declare scopes locally.
-4. `index.ts`: `createServer({ name, tools, client: async (a) =>
-   <svc>({ version, auth: await authorizedClient(a) }) })` (`import { <svc> } from
-   '@googleapis/<svc>'`).
+   (`import { makeDefineTool } from '../harness/index.js'`,
+   `import type { <svc>_vN } from '@googleapis/<svc>'`). Same for `defineMethod.ts`.
+3. Add the service's scopes to the shared `SCOPES` union in `src/auth/config.ts`
+   so each account is authorized once. Services do not declare scopes locally.
+4. `index.ts`: `createServer({ name, tools, methods, client: async (a) =>
+   <svc>({ version, auth: await authorizedClient(a) }) })`
+   (`import { createServer } from '../harness/index.js'`,
+   `import { authorizedClient, runAuthFlow } from '../auth/index.js'`,
+   `import { <svc> } from '@googleapis/<svc>'`).
 5. Stamp tools (above), one per page on the service's MCP reference (or, where
    Google publishes no MCP page, from the REST reference). Track gaps in a
    `COVERAGE.md`.

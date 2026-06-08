@@ -43,6 +43,8 @@ One package, one version. `auth`, `harness`, and each service are folders in one
 
 Credentials never live in the repo. `.gitignore` blocks the common filenames; keep tokens and the client secret in the canonical config directory.
 
+For the full, step-by-step Google Cloud walkthrough (enabling APIs, declaring scopes, consent-screen and test-user setup, and what an agent can automate), see [PROVISIONING.md](./PROVISIONING.md).
+
 ## Development
 
 ```sh

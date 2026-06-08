@@ -14,4 +14,4 @@ You bring your own Google Cloud OAuth application and credentials; this project 
 
 ## Upstream dependencies
 
-See each workspace's `package.json` for runtime and development dependencies. Runtime dependencies are MIT, ISC, or Apache-2.0 licensed.
+See `package.json` for runtime and development dependencies. Runtime dependencies are MIT, ISC, or Apache-2.0 licensed.

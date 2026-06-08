@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import { gmail } from '@googleapis/gmail';
 import { authorizedClient, runAuthFlow } from '../auth/index.js';
 import { createServer } from '../harness/index.js';
-import { gmail } from '@googleapis/gmail';
 import { methods } from './methods/index.js';
 import { tools } from './tools/index.js';
 
