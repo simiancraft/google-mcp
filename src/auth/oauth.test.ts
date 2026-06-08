@@ -16,8 +16,8 @@ beforeAll(() => {
     path.join(dir, 'token.json'),
     JSON.stringify({ access_token: 'access', refresh_token: 'refresh' }),
   );
-  process.env.GOOGLE_MCP_CLIENT_SECRET = path.join(dir, 'client_secret.json');
-  process.env.GOOGLE_MCP_TOKEN = path.join(dir, 'token.json');
+  process.env['GOOGLE_MCP_CLIENT_SECRET'] = path.join(dir, 'client_secret.json');
+  process.env['GOOGLE_MCP_TOKEN'] = path.join(dir, 'token.json');
 });
 
 afterAll(() => {
@@ -33,9 +33,9 @@ it('resolves an authorized client from a stored token', async () => {
 it('throws on an invalid client secret file', async () => {
   const badDir = mkdtempSync(path.join(os.tmpdir(), 'google-auth-bad-'));
   writeFileSync(path.join(badDir, 'client_secret.json'), JSON.stringify({ nonsense: true }));
-  const saved = process.env.GOOGLE_MCP_CLIENT_SECRET;
-  process.env.GOOGLE_MCP_CLIENT_SECRET = path.join(badDir, 'client_secret.json');
+  const saved = process.env['GOOGLE_MCP_CLIENT_SECRET'];
+  process.env['GOOGLE_MCP_CLIENT_SECRET'] = path.join(badDir, 'client_secret.json');
   await expect(authorizedClient('test')).rejects.toThrow(/Invalid OAuth client secret/);
-  process.env.GOOGLE_MCP_CLIENT_SECRET = saved;
+  process.env['GOOGLE_MCP_CLIENT_SECRET'] = saved;
   rmSync(badDir, { recursive: true, force: true });
 });

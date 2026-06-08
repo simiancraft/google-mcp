@@ -17,9 +17,9 @@ beforeEach(() => {
     JSON.stringify({ installed: { client_id: 'id', client_secret: 'secret' } }),
   );
   for (const k of ENV) saved[k] = process.env[k];
-  process.env.GOOGLE_MCP_DIR = dir;
-  process.env.GOOGLE_MCP_CLIENT_SECRET = path.join(dir, 'client_secret.json');
-  process.env.GOOGLE_MCP_TOKEN = path.join(dir, 'token.json');
+  process.env['GOOGLE_MCP_DIR'] = dir;
+  process.env['GOOGLE_MCP_CLIENT_SECRET'] = path.join(dir, 'client_secret.json');
+  process.env['GOOGLE_MCP_TOKEN'] = path.join(dir, 'token.json');
   errSpy = spyOn(console, 'error').mockImplementation(() => {});
 });
 
@@ -55,6 +55,24 @@ describe('runAuthFlow', () => {
     const token = JSON.parse(readFileSync(path.join(dir, 'token.json'), 'utf8'));
     expect(token.refresh_token).toBe('r');
     expect(statSync(path.join(dir, 'token.json')).mode & 0o777).toBe(0o600);
+    spy.mockRestore();
+  });
+
+  it('uses loginHint to prefill the consent account', async () => {
+    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
+      tokens: { access_token: 'a', refresh_token: 'r' },
+    } as never);
+    let authUrl = '';
+    const flow = runAuthFlow('personal', {
+      port: 31734,
+      openBrowser: (url) => {
+        authUrl = url;
+      },
+      loginHint: 'someone@gmail.com',
+    });
+    await hitCallback(31734, '?code=fake');
+    await flow;
+    expect(authUrl).toContain('login_hint=someone%40gmail.com');
     spy.mockRestore();
   });
 
