@@ -2,8 +2,8 @@
 
 The Gmail MCP server, and the reference (canary) implementation for the
 [google-mcp-suite](../../README.md) pattern: `tools/` and `methods/` (verbs) over
-`entities/` (nouns), all zod, composed by the shared [`harness`](../harness)
-factory over an [`auth`](../auth) client.
+`entities/` (nouns), all zod, each an `operation()` from the shared
+[`lib`](../lib) and served by `server()` over an [`auth`](../auth) client.
 
 ## Capabilities
 
@@ -22,11 +22,10 @@ discovers the live surface, with input and output JSON Schema, from the server's
 ## Layout (`src/gmail/`)
 
 ```
-index.ts        # createServer({ name, tools, methods, client }); the bin entry
-defineTool.ts   # makeDefineTool<gmail_v1.Gmail>()  (MCP-sourced ops)
-defineMethod.ts # makeDefineTool<gmail_v1.Gmail>()  (REST-sourced ops)
-tools/          # one folder per tool:   schema.ts + handler.ts + handler.test.ts
-methods/        # one folder per method: same construction
+index.ts        # server({ name, operations, client }); the bin entry
+tools/          # MCP-sourced ops; registry.ts + one folder per tool
+                #   <tool>/ index.ts + handler.ts + schema.ts + handler.test.ts
+methods/        # REST-sourced ops; same construction
 entities/       # PascalCase zod domain objects (Label, Thread, Draft, ...)
 lib/            # projections: REST entity -> documented shape
 ```

@@ -17,10 +17,10 @@ bun install
 
 ## Layout
 
-One package: `auth`, `harness`, and each service are folders under `src/`, compiled to one `dist/`.
+One package: `auth`, `lib`, and each service are folders under `src/`, compiled to one `dist/`.
 
 - `src/auth`: shared OAuth; every service imports it.
-- `src/harness`: the MCP server factory (`makeDefineTool` + `createServer`).
+- `src/lib`: the two MCP primitives (`operation` + `server`).
 - `src/<service>`: one thin MCP server per Google service. `src/gmail` is the reference (canary) implementation; new services mirror its shape.
 
 ## Common tasks

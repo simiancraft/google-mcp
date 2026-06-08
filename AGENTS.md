@@ -8,18 +8,18 @@ A single package of **Google MCP servers**: one thin [Model Context Protocol](ht
 google-mcp-suite/
 └── src/
     ├── auth/        # shared OAuth: authorizedClient(account), runAuthFlow(account), SCOPES
-    ├── harness/     # makeDefineTool<Client>() + createServer(...): the MCP factory
+    ├── lib/         # operation() + server(): the two MCP primitives
     └── gmail/       # the canary server; new services mirror it as src/<service>/
-        ├── index.ts        # createServer({ name, tools, methods, client }); the bin entry
-        ├── defineTool.ts   # makeDefineTool<gmail_v1.Gmail>()  (MCP-sourced ops)
-        ├── defineMethod.ts # makeDefineTool<gmail_v1.Gmail>()  (REST-sourced ops)
-        ├── entities/        # PascalCase zod nouns (Label, Thread, Draft, ...)
-        ├── lib/             # projection helpers (REST entity -> documented shape)
-        ├── tools/<tool>/    # schema.ts + handler.ts + handler.test.ts
-        └── methods/<method>/ # same construction
+        ├── index.ts          # server({ name, operations, client }); the bin entry
+        ├── entities/          # PascalCase zod nouns (Label, Thread, Draft, ...)
+        ├── lib/               # projection helpers (REST entity -> documented shape)
+        ├── tools/             # MCP-sourced ops; registry.ts + one folder per tool
+        │   └── <tool>/        # index.ts + handler.ts + schema.ts + handler.test.ts
+        └── methods/           # REST-sourced ops; same construction
+            └── <method>/      # index.ts + handler.ts + schema.ts + handler.test.ts
 ```
 
-`auth`, `harness`, and each service are folders that import each other by relative
+`auth`, `lib`, and each service are folders that import each other by relative
 path and compile to one `dist/`. There is no workspace and no bundler; plain `tsc`
 emits a self-contained package.
 
@@ -28,9 +28,9 @@ emits a self-contained package.
 - **Auth lives once.** A service never implements OAuth. It imports from `src/auth` and calls `authorizedClient(account)` to get an authenticated client. If you find auth code in a service folder, it is a bug; lift it to `src/auth`.
 - **Identity by instance, not by argument.** A running server is bound to one account via the `GOOGLE_MCP_ACCOUNT` env var. Operations do not take an account parameter; multi-account is achieved by running one instance per account.
 - **B1 token model.** One shared OAuth client (`client_secret`). One token per account, granted the front-loaded scope union, authorized once. A service reads only the token for its configured account.
-- **Thin servers, folder-per-operation.** Each operation is a folder with `schema.ts` (input/output zod, composing `entities/`), `handler.ts` (the work + `defineTool`/`defineMethod`, exporting the op), and `handler.test.ts`. The harness (`src/harness`) provides the factory and `createServer`; never reimplement the protocol. `src/gmail` is the shape to copy.
-- **Tools vs methods.** `tools/` mirrors Google's MCP toolset reference; `methods/` covers the broader REST reference (operations the toolset omits). Same construction; methods import `defineMethod`. Mark `destructive: true` (→ MCP `destructiveHint`) any operation that is irreversible (`send`, permanent `delete`) or establishes a persistent dangerous side effect (`create_filter`); `trash`/`untrash` are reversible. All vocabulary is sourced from the docs; entity TSDoc from the guides Concepts page, field docs in `.describe()` so they reach the wire schema. See `EXTENDING.md`.
-- **Canary first.** Patterns are proven in `src/gmail`, then lifted into `src/harness`/`src/auth` or replicated into a new service folder. Do not invent a new shape per service.
+- **Thin servers, folder-per-operation.** Each operation is a folder with three files: `schema.ts` (a single `schema: { input, output }` zod object, composing `entities/`), `handler.ts` (the work; a standalone `handler(client, args)` function), and `index.ts` (the definition: `export const <name> = operation({ description, schema, handler })`), plus a colocated `handler.test.ts`. Every operation has the same `Operation` shape. The `lib` folder (`src/lib`) provides the two primitives, `operation()` and `server()`; never reimplement the protocol. `src/gmail` is the shape to copy.
+- **Tools vs methods, both operations.** `tools/` mirrors Google's MCP toolset reference; `methods/` covers the broader REST reference (operations the toolset omits). Identical construction; both use `operation()`. The server merges them: `operations: { ...tools, ...methods }`. On the MCP wire there is only "tools"; the tools/methods split is a sourcing distinction, not a wire one. Mark `destructive: true` (→ MCP `destructiveHint`) any operation that is irreversible (`send`, permanent `delete`) or establishes a persistent dangerous side effect (`create_filter`); `trash`/`untrash` are reversible. All vocabulary is sourced from the docs; entity TSDoc from the guides Concepts page, field docs in `.describe()` so they reach the wire schema. See `EXTENDING.md`.
+- **Canary first.** Patterns are proven in `src/gmail`, then lifted into `src/lib`/`src/auth` or replicated into a new service folder. Do not invent a new shape per service.
 - **Tests** mirror the source; colocated `*.test.ts`.
 - **Commits**: Conventional Commits (`feat(drive): ...`, `fix(auth): ...`). **Do NOT** attribute AI co-authorship.
 
@@ -59,12 +59,12 @@ bun run check            # full pre-PR gate (lint-fix, build, typecheck, test, k
 
 See **`EXTENDING.md`** for the full recipe. In short: source the operation from
 its Google reference page, make a `tools/<name>/` or `methods/<name>/` folder
-(`schema.ts` + `handler.ts` + `handler.test.ts`) inside the service, register it
-in that folder's `index.ts`, and add any new `entities/`. A new **service** is a
-new folder `src/<service>/`: bind `makeDefineTool<Client>()` once (as
-`defineTool`/`defineMethod`), add its scopes to the shared `SCOPES` union in
-`src/auth/config.ts` (services do not declare scopes locally), call `createServer`
-in its `index.ts`, and add a `bin` entry in `package.json`.
+(`schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`) inside the service,
+register it in that folder's `registry.ts`, and add any new `entities/`. A new
+**service** is a new folder `src/<service>/`: add its scopes to the shared
+`SCOPES` union in `src/auth/config.ts` (services do not declare scopes locally),
+call `server({ name, operations, client })` in its `index.ts`, and add a `bin`
+entry in `package.json`.
 
 ## Things that will trip you up
 

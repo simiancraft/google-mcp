@@ -18,15 +18,15 @@ Commanding multiple Google accounts means running one server instance per accoun
 ```
 src/
   auth/      # shared OAuth: one client secret, per-account tokens
-  harness/   # the MCP server factory: makeDefineTool + createServer
+  lib/       # the two MCP primitives: operation() + server()
   gmail/     # the Gmail server (reference/canary); new services mirror its shape
 ```
 
-One package, one version. `auth`, `harness`, and each service are folders in one `src/` and compile to a single published package.
+One package, one version. `auth`, `lib`, and each service are folders in one `src/` and compile to a single published package.
 
 - **`src/auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
-- **`src/harness`** owns the protocol: `makeDefineTool<Client>()` and `createServer(...)`. A service never reimplements the MCP server.
-- **`src/<service>`** is a server: `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each holding `schema.ts` + `handler.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
+- **`src/lib`** owns the protocol with two primitives: `operation()` (a typed definition every operation conforms to) and `server()` (turns a service's operations into a running stdio MCP server). A service never reimplements the MCP server.
+- **`src/<service>`** is a server: `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each holding `schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
 
 ## The multi-account model
 
