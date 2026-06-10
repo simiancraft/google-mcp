@@ -3,8 +3,10 @@ import type { AnyOperation } from '../../lib/operation.js';
 import { create_event } from './create_event/index.js';
 import { delete_event } from './delete_event/index.js';
 import { get_event } from './get_event/index.js';
+import { list_calendars } from './list_calendars/index.js';
 import { list_events } from './list_events/index.js';
 import { respond_to_event } from './respond_to_event/index.js';
+import { suggest_time } from './suggest_time/index.js';
 import { update_event } from './update_event/index.js';
 
 /**
@@ -15,6 +17,8 @@ import { update_event } from './update_event/index.js';
 export const tools = {
   list_events,
   get_event,
+  list_calendars,
+  suggest_time,
   create_event,
   update_event,
   delete_event,
