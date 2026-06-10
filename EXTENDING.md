@@ -50,10 +50,12 @@ with `operation()`. Keep them split.
 5. **`index.ts`:** `export const <tool_name> = operation({ description, schema,
    handler })`. `operation()` is a typed identity function; it infers the client
    from the handler's first parameter and the input/output from the schema.
-6. **`handler.test.ts`:** feed a mocked client to `handler`, assert the projection
-   and `schema.output.parse(result)`.
+6. **`handler.test.ts`:** feed a stub client to `handler` (a hand-rolled fake
+   that captures params; never the network), assert the exact Google params per
+   input shape, assert the projection, and `schema.output.parse(result)`.
 7. **Register** it in `tools/registry.ts`.
-8. `bun run check`, then verify live against a real account.
+8. `bun run check`, then verify live against a real account (see
+   [Live verification](#live-verification)).
 
 ## Tools vs methods
 
@@ -139,6 +141,38 @@ the tool/REST reference.
 needs "who am I" (Gmail's sender address) should look it up once and memoize per
 client, as `src/gmail/lib/profile.ts` does with a `WeakMap`, rather than fetching
 it on every operation.
+
+## Live verification
+
+Unit tests never touch the network, so every operation is also verified once
+against a real account, tracked per service in an **operational-matrix issue**
+(a live + unit checkbox per operation; Gmail is #7, Calendar is #22).
+
+Live passes are **pairwise**: pair every destructive operation with its
+antecedent, so the only data ever destroyed is test data the pass itself made,
+and the account ends in the state it was found.
+
+- Delete something? Create that something first, then delete it, then **confirm
+  it gone**. The confirmation signal is API-specific: a deleted event fetches
+  back with `status=cancelled`; a deleted calendar vanishes from the calendar
+  list (though `calendars.get` may serve a tombstone briefly after deletion).
+- Create something? Delete it before the pass ends.
+- Reads verify as-is; they have no state to restore.
+- Subscribe/unsubscribe pairs use public data (a public holiday calendar, for
+  example), never entries the user relies on.
+- When the API pins a destructive operation to a surface you did not create
+  (`calendars.clear` accepts only the primary calendar), verify the rejection
+  path with self-made data and document in the matrix issue why the success
+  path is deferred. Do not attempt lossy snapshot-and-restore on real data.
+
+Record a **proof line** per operation in the matrix issue: what was created and
+destroyed, the ids, and the date. For example: *created disposable calendar
+c_e7e3…, deleted, confirmed gone from the calendar list on 6/10/2026*.
+
+Mechanics: drive the built server over real stdio with the MCP SDK client
+(`StdioClientTransport` against `dist/<svc>/index.js`,
+`GOOGLE_MCP_ACCOUNT=<account>`), so the pass exercises the same wire surface an
+agent uses, schemas and projections included.
 
 ## Run
 
