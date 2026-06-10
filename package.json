@@ -1,6 +1,6 @@
 {
   "name": "google-mcp-suite",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Gmail MCP server exposing the curated MCP toolset plus the broader REST surface; one server instance per account; more Google services on the way.",
   "keywords": [
