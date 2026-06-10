@@ -13,7 +13,7 @@ and new menu names are given.
 There are **two independent surfaces** in Google Cloud, in different menus, and you
 need both:
 
-1. **Enable an API** so the project is allowed to *call* a service (Gmail, Drive,
+1. **Enable an API** so the project is allowed to *call* a service (Gmail, Calendar,
    Meet, ...). Menu: *APIs & Services > Library*.
 2. **Declare a scope** on the consent screen so the OAuth flow is allowed to
    *request* that permission. Menu: *Google Auth Platform > Data access* (old:

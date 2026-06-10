@@ -11,6 +11,7 @@
  * is `SCOPES` in `src/auth/config.ts` (services do not declare scopes locally).
  * `assertScopeRegistryMatches` guards the two against silent drift.
  */
+import { calendar } from '@googleapis/calendar';
 import { gmail } from '@googleapis/gmail';
 import { authorizedClient } from '../auth/oauth.js';
 
@@ -30,6 +31,12 @@ async function gmailProbe(account: string): Promise<string> {
   const client = gmail({ version: 'v1', auth: await authorizedClient(account) });
   const res = await client.users.getProfile({ userId: 'me' });
   return res.data.emailAddress ?? '(reachable)';
+}
+
+async function calendarProbe(account: string): Promise<string> {
+  const client = calendar({ version: 'v3', auth: await authorizedClient(account) });
+  const res = await client.calendars.get({ calendarId: 'primary' });
+  return res.data.summary ?? res.data.timeZone ?? '(reachable)';
 }
 
 const S = 'https://www.googleapis.com/auth/';
@@ -54,7 +61,8 @@ export const SERVICES: ServiceInfo[] = [
     name: 'calendar',
     api: 'calendar-json.googleapis.com',
     scopes: [`${S}calendar`],
-    implemented: false,
+    implemented: true,
+    probe: calendarProbe,
   },
   {
     name: 'meet',

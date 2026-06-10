@@ -52,6 +52,7 @@ different operations and intentionally do not share a type.
 
 Tracked as issues, not missing by accident:
 
-- **Account settings** (vacation, auto-forwarding, IMAP/POP, language, forwarding
-  addresses, send-as aliases, delegates): issue #4.
+- **Account settings** (vacation, auto-forwarding, IMAP/POP, language): issue #4.
 - **Niche / specialized** (history, S/MIME, CSE, message insert/import): issue #5.
+- **Identity and access** (send-as aliases, forwarding addresses, delegates;
+  security-sensitive): issue #6.

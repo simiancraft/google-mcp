@@ -38,7 +38,7 @@ One package: `auth`, `lib`, and each service are folders under `src/`, compiled 
 | Find unused exports | `bun run check:knip` |
 | Run every gate end-to-end | `bun run check` |
 
-`bun run check` is the full pre-PR gate: lint-fix, build, typecheck, test, and knip. CI runs the same steps; if `check` is green locally, CI usually is too.
+`bun run check` is the full pre-PR gate: lint-fix, build, typecheck, test with coverage (100%, pinned in `bunfig.toml`), and knip. CI runs the same steps with the same coverage command; if `check` is green locally, CI is too.
 
 ## Commit style
 

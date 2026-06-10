@@ -3,11 +3,17 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-// Mock the Gmail client so the probe exercises its code path without a network
-// call. `profile` is read at call time, so each test can vary the response.
+// Mock the Google clients so each probe exercises its code path without a
+// network call. The response holders are read at call time, so each test can
+// vary the response.
 let profile: { emailAddress?: string } = {};
 mock.module('@googleapis/gmail', () => ({
   gmail: () => ({ users: { getProfile: async () => ({ data: profile }) } }),
+}));
+
+let primaryCalendar: { summary?: string; timeZone?: string } = {};
+mock.module('@googleapis/calendar', () => ({
+  calendar: () => ({ calendars: { get: async () => ({ data: primaryCalendar }) } }),
 }));
 
 const ENV = [
@@ -44,20 +50,37 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-async function runGmailProbe(account: string): Promise<string | undefined> {
+async function runProbe(service: string, account: string): Promise<string | undefined> {
   const { SERVICES } = await import('./services.js');
-  const gmail = SERVICES.find((s) => s.name === 'gmail');
-  return gmail?.probe?.(account);
+  const found = SERVICES.find((s) => s.name === service);
+  return found?.probe?.(account);
 }
 
 describe('gmail probe', () => {
   it('returns the profile email address', async () => {
     profile = { emailAddress: 'info@example.com' };
-    expect(await runGmailProbe('acct')).toBe('info@example.com');
+    expect(await runProbe('gmail', 'acct')).toBe('info@example.com');
   });
 
   it('falls back to a reachable marker when no email is returned', async () => {
     profile = {};
-    expect(await runGmailProbe('acct')).toBe('(reachable)');
+    expect(await runProbe('gmail', 'acct')).toBe('(reachable)');
+  });
+});
+
+describe('calendar probe', () => {
+  it('returns the primary calendar summary', async () => {
+    primaryCalendar = { summary: 'info@example.com', timeZone: 'America/Chicago' };
+    expect(await runProbe('calendar', 'acct')).toBe('info@example.com');
+  });
+
+  it('falls back to the time zone when there is no summary', async () => {
+    primaryCalendar = { timeZone: 'America/Chicago' };
+    expect(await runProbe('calendar', 'acct')).toBe('America/Chicago');
+  });
+
+  it('falls back to a reachable marker when the calendar is bare', async () => {
+    primaryCalendar = {};
+    expect(await runProbe('calendar', 'acct')).toBe('(reachable)');
   });
 });

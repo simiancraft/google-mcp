@@ -2,16 +2,20 @@
   "name": "google-mcp-suite",
   "version": "1.0.0",
   "type": "module",
-  "description": "Gmail MCP server exposing the curated MCP toolset plus the broader REST surface; one server instance per account; more Google services on the way.",
+  "description": "Per-account MCP servers for Gmail and Google Calendar: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes the curated MCP toolset plus the broader REST surface.",
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
     "gmail",
     "google",
     "oauth",
     "multi-account",
     "agent",
-    "email"
+    "email",
+    "calendar",
+    "google-calendar",
+    "scheduling"
   ],
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",
@@ -25,6 +29,7 @@
   },
   "bin": {
     "google-mcp-gmail": "./dist/gmail/index.js",
+    "google-mcp-calendar": "./dist/calendar/index.js",
     "google-mcp-doctor": "./dist/doctor/index.js"
   },
   "files": [
@@ -46,15 +51,16 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "capabilities": "bun run src/gmail/capabilities.ts",
+    "capabilities": "bun run src/gmail/capabilities.ts && bun run src/calendar/capabilities.ts",
     "doctor": "bun run src/doctor/index.ts",
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
     "check:knip": "knip",
-    "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip",
+    "check": "bun run lint:fix && bun run build && bun run typecheck && bun test --coverage && bun run check:knip",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
+    "@googleapis/calendar": "^15.0.0",
     "@googleapis/gmail": "^17.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "addressparser": "^1.0.1",
