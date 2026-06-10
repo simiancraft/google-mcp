@@ -5,9 +5,9 @@ import { methods } from './methods/registry.js';
 const operations = mergeOperations(methods);
 
 describe('sheets operations', () => {
-  it('exposes the full surface (9 methods; methods-only, no MCP toolset)', () => {
-    expect(Object.keys(methods)).toHaveLength(9);
-    expect(Object.keys(operations)).toHaveLength(9);
+  it('exposes the full surface (12 methods; methods-only, no MCP toolset)', () => {
+    expect(Object.keys(methods)).toHaveLength(12);
+    expect(Object.keys(operations)).toHaveLength(12);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -24,6 +24,10 @@ describe('sheets operations', () => {
       .filter(([, op]) => op.destructive)
       .map(([name]) => name)
       .sort();
-    expect(destructive).toEqual(['batch_clear_values', 'clear_values']);
+    expect(destructive).toEqual([
+      'batch_clear_values',
+      'batch_clear_values_by_data_filter',
+      'clear_values',
+    ]);
   });
 });

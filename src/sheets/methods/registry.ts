@@ -2,8 +2,11 @@ import type { sheets_v4 } from '@googleapis/sheets';
 import type { AnyOperation } from '../../lib/operation.js';
 import { append_values } from './append_values/index.js';
 import { batch_clear_values } from './batch_clear_values/index.js';
+import { batch_clear_values_by_data_filter } from './batch_clear_values_by_data_filter/index.js';
 import { batch_get_values } from './batch_get_values/index.js';
+import { batch_get_values_by_data_filter } from './batch_get_values_by_data_filter/index.js';
 import { batch_update_values } from './batch_update_values/index.js';
+import { batch_update_values_by_data_filter } from './batch_update_values_by_data_filter/index.js';
 import { clear_values } from './clear_values/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
@@ -29,4 +32,8 @@ export const methods = {
   batch_get_values,
   batch_update_values,
   batch_clear_values,
+  // values, selected by data filter
+  batch_get_values_by_data_filter,
+  batch_update_values_by_data_filter,
+  batch_clear_values_by_data_filter,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;
