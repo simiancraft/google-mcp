@@ -14,7 +14,7 @@
 
 <p align="center">
   <strong>A Google MCP server you can read in an afternoon.</strong><br />
-  Every Google REST method plus the curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset in one surface. One server instance per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
+  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, in one server per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
 </p>
 
 <p align="center">
@@ -30,7 +30,7 @@
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> ships today with <a href="https://github.com/simiancraft/google-mcp-suite/blob/main/src/gmail/CAPABILITIES.md">33 operations</a>; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
+  <sub><strong>Gmail</strong> ships today with <a href="./src/gmail/CAPABILITIES.md">33 operations</a>; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
 </p>
 
 ## What it does
@@ -39,12 +39,12 @@ Point an AI agent at your Google accounts and let it do the work: triage and sen
 
 The design has two internal concepts and nothing else:
 
-1. An **operation** is a folder of `schema.ts` + `handler.ts` + `handler.test.ts`, conforming to one `operation()` shape.
+1. An **operation** is a folder of `schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`, conforming to one `operation()` shape.
 2. A **server function**, `server(...)`, wires those operations into a running MCP server.
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the full REST method set of its Google API, so an agent gets the service's full capability, not a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) today: 10 curated MCP tools plus 23 REST methods. Every server's live surface is generated into a `CAPABILITIES.md`.
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) today: 10 curated MCP tools plus 23 REST methods (the split is explained in [MCP, and then some](#mcp-and-then-some)).
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -65,18 +65,18 @@ This is an MCP server, and deliberately more than one. Google publishes an MCP t
 - **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
 - **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
 
-The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](https://github.com/simiancraft/google-mcp-suite/blob/main/EXTENDING.md).
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
 
 ## Quickstart
 
-One thing first: a Google Cloud OAuth client (roughly ten minutes of console clicks, once; the friction is Google's, not ours). [PROVISIONING.md](https://github.com/simiancraft/google-mcp-suite/blob/main/PROVISIONING.md) walks every click, and `doctor` tells you which step you are on.
+One thing first: a Google Cloud OAuth client (roughly ten minutes of console clicks, once; the friction is Google's, not ours). [PROVISIONING.md](./PROVISIONING.md) walks every click, and `doctor` tells you which step you are on.
 
 ```sh
 npm install -g google-mcp-suite
 
-google-mcp-doctor scopes            # the exact APIs + scopes to enable in Google Cloud
+google-mcp-doctor scopes                 # the exact APIs + scopes to enable in Google Cloud
 google-mcp-doctor auth you@example.com   # browser consent; writes the account token
-google-mcp-doctor                   # provisioned, authorized, reachable?
+google-mcp-doctor                        # provisioned, authorized, reachable?
 ```
 
 Then point your MCP client at a server, one instance per account:

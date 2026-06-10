@@ -1,6 +1,6 @@
 # Notices and Trademarks
 
-## Google™, Gmail™, Google Drive™, Google Workspace™
+## Google trademarks
 
 **Google**, **Gmail**, **Google Drive**, **Google Docs**, **Google Sheets**, **Google Calendar**, and **Google Workspace** are trademarks of **Google LLC**. This project is **not affiliated with, endorsed by, sponsored by, or certified by Google LLC**.
 

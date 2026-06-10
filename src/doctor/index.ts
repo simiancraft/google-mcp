@@ -10,7 +10,7 @@ import { diagnose, renderScopes } from './diagnose.js';
 import { renderStatus } from './status.js';
 
 function printHelp(): void {
-  console.log(`google-mcp-doctor — provisioning & auth health for google-mcp-suite
+  console.log(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
 
 Usage:
   google-mcp-doctor [check]          full diagnostic: provisioning, accounts, services

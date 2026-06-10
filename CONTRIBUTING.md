@@ -42,7 +42,7 @@ One package: `auth`, `lib`, and each service are folders under `src/`, compiled 
 
 ## Commit style
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): imperative subject`. Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`, `perf`, `build`, `style`. Scope is the area (e.g. `feat(drive):`, `fix(auth):`). This keeps history clean and ready for release automation later.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): imperative subject`. Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`, `perf`, `build`, `style`. Scope is the area (e.g. `feat(drive):`, `fix(auth):`). This keeps history clean and drives semantic-release: the merged commit types determine the published version.
 
 Commits are authored by humans. **Do not** attribute AI co-authorship.
 

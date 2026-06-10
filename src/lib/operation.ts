@@ -33,8 +33,8 @@ export type AnyOperation<Client> = {
 
 /**
  * Define an operation. A no-op at runtime (it returns its argument); its job is
- * type inference — `Client` from the handler's first parameter, `input`/`output`
- * from `schema` — and the front-door check that the handler consumes exactly what
+ * type inference (`Client` from the handler's first parameter, `input`/`output`
+ * from `schema`) and the front-door check that the handler consumes exactly what
  * the schema declares.
  */
 export const operation = <Client, In extends z.ZodType, Out extends z.ZodType>(

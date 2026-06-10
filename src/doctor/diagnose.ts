@@ -55,14 +55,14 @@ export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
   const accounts = loadAccounts();
   console.log(`\nAccounts (${accounts.length})`);
   if (accounts.length === 0) {
-    console.log('  none yet — authorize one: google-mcp-doctor auth you@example.com');
+    console.log('  none yet; authorize one: google-mcp-doctor auth you@example.com');
   }
   const authorized: Account[] = [];
   for (const acct of accounts) {
     const st = statusFor(acct, now);
     if (st.state === 'missing') {
       console.log(
-        `  ${ICON.missing} ${acct.label}  no token — run: google-mcp-doctor auth ${acct.label}`,
+        `  ${ICON.missing} ${acct.label}  no token; run: google-mcp-doctor auth ${acct.label}`,
       );
       continue;
     }

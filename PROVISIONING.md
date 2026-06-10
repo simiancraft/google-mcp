@@ -195,12 +195,12 @@ Build once, then run the `auth` subcommand for each account. The flow forces
 offline access and consent, so a refresh token is always written.
 
 ```sh
-bun install
-bun run build
-
 # authorize an account (opens a browser; writes ~/.google-mcp/tokens/<account>.json, 0600)
+google-mcp-doctor auth you@example.com
+
+# or, from a source checkout:
+bun install && bun run build
 GOOGLE_MCP_ACCOUNT=<account> node ./dist/gmail/index.js auth
-# or, if installed on PATH: GOOGLE_MCP_ACCOUNT=<account> google-mcp-gmail auth
 ```
 
 - The account label becomes the token filename. Use the same label in the MCP
@@ -244,6 +244,12 @@ entries for an MCP host config (e.g. `~/.claude.json` `mcpServers`):
 ```jsonc
 {
   "gmail-simiancraft": {
+    "type": "stdio",
+    "command": "google-mcp-gmail",
+    "env": { "GOOGLE_MCP_ACCOUNT": "simiancraft" }
+  },
+  // or, from a source checkout:
+  "gmail-from-source": {
     "type": "stdio",
     "command": "node",
     "args": ["<abs-path-to-repo>/dist/gmail/index.js"],
