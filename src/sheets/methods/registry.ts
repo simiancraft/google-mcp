@@ -8,6 +8,7 @@ import { batch_get_values_by_data_filter } from './batch_get_values_by_data_filt
 import { batch_update_values } from './batch_update_values/index.js';
 import { batch_update_values_by_data_filter } from './batch_update_values_by_data_filter/index.js';
 import { clear_values } from './clear_values/index.js';
+import { copy_sheet } from './copy_sheet/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
 import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
@@ -41,4 +42,6 @@ export const methods = {
   // developer metadata
   get_developer_metadata,
   search_developer_metadata,
+  // sheets
+  copy_sheet,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;

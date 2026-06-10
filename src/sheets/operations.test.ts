@@ -5,9 +5,9 @@ import { methods } from './methods/registry.js';
 const operations = mergeOperations(methods);
 
 describe('sheets operations', () => {
-  it('exposes the full surface (14 methods; methods-only, no MCP toolset)', () => {
-    expect(Object.keys(methods)).toHaveLength(14);
-    expect(Object.keys(operations)).toHaveLength(14);
+  it('exposes the full surface (15 methods; methods-only, no MCP toolset)', () => {
+    expect(Object.keys(methods)).toHaveLength(15);
+    expect(Object.keys(operations)).toHaveLength(15);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
