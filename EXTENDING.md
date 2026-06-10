@@ -1,63 +1,81 @@
-# Extending google-mcp
+# Extending google-mcp-suite
 
 How to add a tool, an entity, or a whole service. The pattern is fixed on
 purpose: every tool is a folder, every service is the same shape, and all
-vocabulary is sourced from Google's docs. Gmail (`services/gmail`) is the
-worked reference.
+vocabulary is sourced from Google's docs. Gmail (`src/gmail`) is the worked
+reference. It is one package: `auth`, `lib`, and each service are folders
+under `src/` that import each other by relative path and compile to one `dist/`.
 
 ## The shape
 
 ```
-packages/
-  google-auth/    # authorizedClient(account) + runAuthFlow(account); never reimplement auth
-  mcp-harness/    # makeDefineTool<Client>() + createServer(...); never reimplement the server
-services/<svc>/src/
-  index.ts        # createServer({ name, tools, methods, client })
-  defineTool.ts   # makeDefineTool<<svc>_vN.Client>()  (MCP-sourced ops)
-  defineMethod.ts # makeDefineTool<<svc>_vN.Client>()  (REST-sourced ops)
-  entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
-  lib/            # projection helpers (REST entity -> documented shape)
-  tools/          # mirror the MCP toolset reference
-    index.ts      # the registry: { tool_name, ... } (key = wire name)
-    <tool_name>/  # snake_case, verbatim from Google
-      schema.ts        # export const input, output (zod; compose entities)
-      handler.ts       # the work + defineTool(...); exports the tool
-      handler.test.ts  # mocked-client unit test
-  methods/        # cover the REST reference (same construction as tools/)
-    index.ts
-    <method_name>/ { schema.ts, handler.ts, handler.test.ts }
+src/
+  auth/         # authorizedClient(account) + runAuthFlow(account); never reimplement auth
+  lib/          # operation() + server(): the two MCP primitives; never reimplement the server
+  <svc>/        # one folder per service (gmail, drive, ...)
+    index.ts        # server({ name, operations, client }); the bin entry
+    entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
+    lib/            # projection helpers (REST entity -> documented shape)
+    tools/          # mirror the MCP toolset reference
+      registry.ts   # the registry: { tool_name, ... } (key = wire name)
+      <tool_name>/  # snake_case, verbatim from Google
+        schema.ts        # export const schema = { input, output } (zod; compose entities)
+        handler.ts       # the work: a standalone handler(client, args)
+        index.ts         # export const <tool_name> = operation({ description, schema, handler })
+        handler.test.ts  # mocked-client unit test
+    methods/        # cover the REST reference (same construction as tools/)
+      registry.ts
+      <method_name>/ { schema.ts, handler.ts, index.ts, handler.test.ts }
 ```
 
-`schema.ts` is the contract (regenerable from the docs); `handler.ts` is the
-work (the REST call + projection). Keep them split.
+A service imports `lib` and `auth` by relative path (`../lib/server.js`,
+`../lib/operation.js`, `../auth/oauth.js`). Each operation is three files:
+`schema.ts` is the contract (regenerable from the docs), `handler.ts` is the work
+(the REST call + projection), and `index.ts` is the definition that binds them
+with `operation()`. Keep them split.
 
 ## Add a tool
 
 1. **Find the page.** `…/reference/mcp/tools_list/<tool_name>`. Note its input
    schema, output schema, and any `object (X)` it references.
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
-3. **`schema.ts`:** mirror the documented input/output as zod; reference entities
-   for named objects; keep inline primitives inline. Cite the source URL.
-4. **`handler.ts`:** `export const <tool_name> = defineTool({ description, input,
-   output, handler })`. The handler calls the REST method and **projects** the
+3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
+   documented input/output as zod; reference entities for named objects; keep
+   inline primitives inline. Cite the source URL.
+4. **`handler.ts`:** `export async function handler(client, args) { … }`, typed
+   `args: z.infer<typeof schema.input>` and returning `z.infer<typeof
+   schema.output>`. The handler calls the REST method and **projects** the
    response into the output shape (rename/select fields; the docs' shape, not the
    raw entity). Reuse `lib/` projections.
-5. **`handler.test.ts`:** feed a mocked client, assert the projection and
-   `output.parse(result)`.
-6. **Register** it in `tools/index.ts`.
-7. `bun run check`, then verify live against a real account.
+5. **`index.ts`:** `export const <tool_name> = operation({ description, schema,
+   handler })`. `operation()` is a typed identity function; it infers the client
+   from the handler's first parameter and the input/output from the schema.
+6. **`handler.test.ts`:** feed a mocked client to `handler`, assert the projection
+   and `schema.output.parse(result)`.
+7. **Register** it in `tools/registry.ts`.
+8. `bun run check`, then verify live against a real account.
 
 ## Tools vs methods
 
 `tools/` mirrors Google's **MCP toolset** reference (its word: "tools").
 `methods/` covers the broader **REST** reference (its word: "Methods"), the
-operations the MCP toolset omits. Identical construction; a method imports
-`defineMethod` instead of `defineTool` (same factory, REST vocabulary). The
-server merges both into one wire surface, so the split is organizational, not a
-runtime difference.
+operations the MCP toolset omits. Identical construction; both are `operation()`
+definitions. The server merges both into one wire surface (via
+`mergeOperations(tools, methods)`), so on the MCP wire everything is a "tool".
+
+The split is **intentional and load-bearing, not just organizational.** MCP's
+toolset alone cannot fully drive a Google service; `methods/` is how the suite
+goes past it to fully instrument an account. The two folders mirror Google's own
+two reference trees (MCP vs REST), which keeps provenance obvious and makes the
+surface self-documenting. It also enables **documentation-driven updates**: a
+reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple,
+so "here is the page, make the files" is a bounded, repeatable unit of work. The
+merge throws on a duplicate wire name (`mergeOperations`), so the only real hazard
+of the split, a tool and a method colliding on one key, fails loudly rather than
+silently dropping an operation.
 
 Add a method exactly like a tool, but source `schema.ts` from the REST method
-page (`…/reference/rest/v1/<resource>/<method>`) and import `defineMethod`.
+page (`…/reference/rest/v1/<resource>/<method>`).
 
 Mark with `destructive: true` any operation that is irreversible (`send`,
 permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent
@@ -70,7 +88,7 @@ acting on mail after the call). The server surfaces these as MCP
 block plus `structuredContent`); there is no binary or streaming channel. Binary
 payloads (e.g. attachment bytes from `download_attachment`) are base64url-encoded
 into a JSON string field, by design. A service that needs native blob output
-extends the harness (`createServer`/`callTool`), not a single operation.
+extends `lib` (`server`/`callOperation`), not a single operation.
 
 ## Add an entity
 
@@ -87,28 +105,40 @@ Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
 
 **Doc comments are sourced too.** Give the entity a TSDoc comment from the API
 guides **Concepts** page (Google's own definition of the noun) with an `@see`
-link. Put **field-level** docs in `.describe()`, not JSDoc: `zodToJsonSchema`
-emits `.describe()` text into the wire JSON Schema, so an MCP client (and the LLM
-reading it at tool-selection time) sees the field docs; JSDoc on a field never
-reaches the wire. Source the field text from the tool/REST reference.
+link. Put **field-level** docs in `.describe()`, not JSDoc: the server emits the
+schema with `z.toJSONSchema`, which carries `.describe()` text into the wire JSON
+Schema, so an MCP client (and the LLM reading it at tool-selection time) sees the
+field docs; JSDoc on a field never reaches the wire. Source the field text from
+the tool/REST reference.
 
 ## Add a service
 
-1. `services/<svc>/` with `package.json` (deps `@google-mcp/auth`,
-   `@google-mcp/harness`, `@googleapis/<svc>`, `zod`; bin `google-mcp-<svc>`),
-   `tsconfig.json`. Depend on the per-API `@googleapis/<svc>` package, not the
-   `googleapis` monolith; the monolith loads ~900 modules per process at startup.
-2. `defineTool.ts`: `export const defineTool = makeDefineTool<<svc>_vN.Client>()`
-   (`import type { <svc>_vN } from '@googleapis/<svc>'`).
-3. Add the service's scopes to the shared `SCOPES` union in
-   `packages/google-auth/src/config.ts` so each account is authorized once.
-   Services do not declare scopes locally.
-4. `index.ts`: `createServer({ name, tools, client: async (a) =>
-   <svc>({ version, auth: await authorizedClient(a) }) })` (`import { <svc> } from
-   '@googleapis/<svc>'`).
-5. Stamp tools (above), one per page on the service's MCP reference (or, where
+1. **Make the folder** `src/<svc>/`. Add the per-API client
+   `@googleapis/<svc>` to the root `package.json` dependencies (not the
+   `googleapis` monolith; it loads ~900 modules per process at startup), and a
+   `bin` entry `"google-mcp-<svc>": "./dist/<svc>/index.js"`.
+2. Add the service's scopes to the shared `SCOPES` union in `src/auth/config.ts`
+   so each account is authorized once. Services do not declare scopes locally.
+3. `index.ts`: `server({ name, operations: mergeOperations(tools, methods),
+   client: async (a) => <svc>({ version, auth: await authorizedClient(a) }),
+   runAuth: runAuthFlow })`
+   (`import { server } from '../lib/server.js'`,
+   `import { mergeOperations } from '../lib/operation.js'`,
+   `import { authorizedClient, runAuthFlow } from '../auth/oauth.js'`,
+   `import { <svc> } from '@googleapis/<svc>'`,
+   `import { tools } from './tools/registry.js'`,
+   `import { methods } from './methods/registry.js'`). The operation's client
+   type is inferred from each handler's first parameter; there is no per-service
+   factory to bind. `mergeOperations` throws if a tool and a method share a wire
+   name. The server's `version` defaults to the package version, so do not pass it.
+4. Stamp tools (above), one per page on the service's MCP reference (or, where
    Google publishes no MCP page, from the REST reference). Track gaps in a
    `COVERAGE.md`.
+
+**Per-client identity is a solved pattern; do not re-solve it.** A service that
+needs "who am I" (Gmail's sender address) should look it up once and memoize per
+client, as `src/gmail/lib/profile.ts` does with a `WeakMap`, rather than fetching
+it on every operation.
 
 ## Run
 

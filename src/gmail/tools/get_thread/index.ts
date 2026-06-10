@@ -1,0 +1,16 @@
+import { gmailOperation } from '../../operation.js';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
+
+/**
+ * Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/get_thread
+ *
+ * MINIMAL maps to the REST `metadata` format (headers + snippet); FULL_CONTENT
+ * (the default) maps to `full`, which carries the MIME tree projected to
+ * plaintext bodies and attachment ids.
+ */
+export const get_thread = gmailOperation({
+  description: 'Get a thread and its messages by id.',
+  schema,
+  handler,
+});

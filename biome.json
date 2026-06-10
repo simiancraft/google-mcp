@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["packages/**", "services/**", "*.ts", "*.json"]
+    "includes": ["src/**", "*.json"]
   },
   "formatter": {
     "enabled": true,
@@ -17,7 +17,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "complexity": {
+        "useLiteralKeys": "off"
+      }
     }
   },
   "javascript": {

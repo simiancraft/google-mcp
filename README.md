@@ -1,18 +1,20 @@
 <h1 align="center">google-mcp-suite</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg" alt="Coverage 100%" />
+  <a href="https://www.npmjs.com/package/google-mcp-suite"><img src="https://img.shields.io/npm/v/google-mcp-suite.svg" alt="npm" /></a>
   &nbsp;
-  <img src="https://img.shields.io/badge/types-strict-3178c6.svg" alt="Strict TypeScript" />
+  <a href="https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml"><img src="https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   &nbsp;
-  <img src="https://img.shields.io/badge/status-pre--release-orange.svg" alt="Pre-release" />
+  <a href="https://codecov.io/gh/simiancraft/google-mcp-suite"><img src="https://codecov.io/gh/simiancraft/google-mcp-suite/branch/main/graph/badge.svg" alt="codecov" /></a>
+  &nbsp;
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/simiancraft/google-mcp-suite"><img src="https://api.securityscorecards.dev/projects/github.com/simiancraft/google-mcp-suite/badge" alt="OpenSSF Scorecard" /></a>
   &nbsp;
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License: MIT" /></a>
 </p>
 
 <p align="center">
-  <strong>A Google Workspace MCP server you can read in an afternoon.</strong><br />
-  Two internal concepts (an operation and a server function), a folder tree that mirrors Google's own API reference page-for-page, every Google REST method plus a curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset in one surface, and 100% test coverage. Gmail ships today.
+  <strong>A Google MCP server you can read in an afternoon.</strong><br />
+  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, in one server per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
 </p>
 
 <p align="center">
@@ -28,23 +30,21 @@
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> ships today; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
+  <sub><strong>Gmail</strong> ships today with <a href="./src/gmail/CAPABILITIES.md">33 operations</a>; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
 </p>
-
-> **Status:** pre-release. Interfaces and layout will move until the first tagged release.
 
 ## What it does
 
-Point an AI agent at your Google Workspace and let it do the work: triage and send mail today, manage files and edit documents as those services land. The end goal is an agent that operates your Workspace and hands you results.
+Point an AI agent at your Google accounts and let it do the work: triage and send mail today, manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
 
 The design has two internal concepts and nothing else:
 
-1. An **operation** is a folder of `schema.ts` + `handler.ts` + `handler.test.ts`, built with `defineTool` or `defineMethod`.
-2. A **server function**, `createServer(...)`, wires those operations into a running MCP server.
+1. An **operation** is a folder of `schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`, conforming to one `operation()` shape.
+2. A **server function**, `server(...)`, wires those operations into a running MCP server.
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the full REST method set of its Google API, so an agent gets the service's full capability, not a thin slice. Gmail ships with 33 operations today: 10 curated MCP tools plus 23 REST methods. Every server's live surface is generated into a `CAPABILITIES.md`.
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) today: 10 curated MCP tools plus 23 REST methods (the split is explained in [MCP, and then some](#mcp-and-then-some)).
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -52,42 +52,62 @@ That is the whole surface. Read one operation folder and you understand all of t
 | A tools-list page (curated MCP toolset) | `tools/<operation>/` |
 | A REST method reference page | `methods/<operation>/` |
 
-- **Several accounts, in parallel.** Identity is bound to a running instance, not passed per call, so an agent can act across your accounts at once and cannot act on the wrong one.
+- **Multiple accounts, in parallel.** Identity is bound to a running instance, not passed per call, so an agent can act across your accounts at once and cannot act on the wrong one.
 - **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
-- **Built to be trusted.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
+- **Strict by construction.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
 
-Packaged as a Bun workspace monorepo. It publishes as `google-mcp-suite`, with each service also installable on its own as `google-mcp-<service>` (for example `google-mcp-gmail`).
+One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail` today) plus the `google-mcp-doctor` setup CLI.
+
+## MCP, and then some
+
+This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
+
+- **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
+- **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
+
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
 
 ## Quickstart
 
-<!-- QUICKSTART: owned by the doctor/auth onboarding work; fill this in there. -->
+One thing first: a Google Cloud OAuth client (roughly ten minutes of console clicks, once; the friction is Google's, not ours). [PROVISIONING.md](./PROVISIONING.md) walks every click, and `doctor` tells you which step you are on.
 
-> **Quickstart goes here.** Setup is driven by the `google-mcp-doctor` CLI (OAuth client, per-account authorization, and MCP-client wiring); this section lands with the doctor.
+```sh
+npm install -g google-mcp-suite
+
+google-mcp-doctor scopes                 # the exact APIs + scopes to enable in Google Cloud
+google-mcp-doctor auth you@example.com   # browser consent; writes the account token
+google-mcp-doctor                        # provisioned, authorized, reachable?
+```
+
+Then point your MCP client at a server, one instance per account:
+
+```json
+{
+  "mcpServers": {
+    "gmail-personal": {
+      "command": "google-mcp-gmail",
+      "env": { "GOOGLE_MCP_ACCOUNT": "you@example.com" }
+    }
+  }
+}
+```
 
 ## Layout
 
 ```
-packages/
-  google-auth/    # shared OAuth: one client secret, per-account tokens
-  mcp-harness/    # the protocol: makeDefineTool + createServer
-services/
-  gmail/          # reference (canary) server; new services mirror its shape
+src/
+  auth/      # shared OAuth: one client secret, per-account tokens
+  lib/       # the two MCP primitives: operation() + server()
+  doctor/    # google-mcp-doctor: provisioning + auth-health CLI
+  gmail/     # the Gmail server (reference/canary); new services mirror its shape
 ```
 
-- **`packages/google-auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
-- **`packages/mcp-harness`** owns the protocol: `makeDefineTool<Client>()` and `createServer(...)`. A service never reimplements the MCP server.
-- **`services/*`** are the MCP servers. Each holds its source under `src/`: `index.ts` (bootstrap), then a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each folder holding `schema.ts` + `handler.ts` + `handler.test.ts`. Shared zod nouns live in `entities/`, projection helpers in `lib/`, and the per-service factory bindings (`defineTool.ts`, `defineMethod.ts`) sit at `src/` root.
+One package, one version. `auth`, `lib`, `doctor`, and each service are folders in one `src/` and compile to a single published package.
 
-```
-services/gmail/src/
-  index.ts        # createServer({ name, tools, methods, client })
-  defineTool.ts   # makeDefineTool<gmail_v1.Gmail>() for MCP-sourced ops
-  defineMethod.ts # makeDefineTool<gmail_v1.Gmail>() for REST-sourced ops
-  tools/          # curated MCP operations, one folder each
-  methods/        # REST operations, same construction
-  entities/       # shared zod nouns (Label, Thread, Draft, ...)
-  lib/            # projection helpers (REST entity -> documented shape)
-```
+- **`src/auth`** owns authentication. A service imports it and calls `authorizedClient(account)` to get an authenticated Google client.
+- **`src/lib`** owns the protocol with two primitives: `operation()` (a typed definition every operation conforms to) and `server()` (turns a service's operations into a running stdio MCP server). A service never reimplements the MCP server.
+- **`src/doctor`** is the setup and health CLI; it knows the services, never the other way around. See [its README](./src/doctor/README.md).
+- **`src/<service>`** is a server: `index.ts` (bootstrap) plus a folder per operation under `tools/` (MCP-sourced verbs) and `methods/` (REST-sourced verbs), each holding `schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`; shared zod nouns live in `entities/` and projections in `lib/`.
 
 ## The multi-account model
 
@@ -100,32 +120,36 @@ services/gmail/src/
 Authorization is a one-time, per-account browser consent flow.
 
 1. Create a Google Cloud project, enable the APIs you need (Gmail, Drive, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
-2. Place the client secret where `packages/google-auth` expects it (see its README), outside the repo tree.
+2. Place the client secret JSON at `~/.google-mcp/client_secret.json` (override knobs in [src/auth's README](./src/auth/README.md)).
 3. Authorize each account once; this opens a browser consent flow and stores that account's token.
 4. Run a service with `GOOGLE_MCP_ACCOUNT=<account>` to act as that account.
 
-A `google-mcp-doctor` CLI that automates the OAuth-client check, per-account authorization, and MCP-client wiring is in progress; until it lands, the four steps above are the path.
+The [`google-mcp-doctor`](./src/doctor/README.md) CLI drives all of it except the console clicks: `doctor scopes` prints the APIs and scopes to enable, `doctor auth <email>` runs the consent flow and writes the token, and `doctor` / `doctor status` confirm every account is authorized and reachable.
 
 Credentials never live in the repo. Tokens and the client secret live in the ignored `~/.google-mcp/` config directory, and `.gitignore` also blocks common credential filenames.
+
+For the full, step-by-step Google Cloud walkthrough (enabling APIs, declaring scopes, consent-screen and test-user setup, and what an agent can automate), see [PROVISIONING.md](./PROVISIONING.md).
 
 ## Development
 
 ```sh
 bun install
-bun run check     # lint-fix, build, typecheck, test, knip across all workspaces
+bun run check     # lint-fix, build, typecheck, test, knip
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](./AGENTS.md) for the per-service pattern.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, and [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe.
 
 ## Services
 
-| Service | Status |
-|---|---|
-| Gmail | reference / canary |
-| Drive | planned |
-| Sheets | planned |
-| Docs | planned |
-| Calendar | planned |
+| Service | Status | Operations |
+|---|---|---|
+| **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
+| Drive | 🔜 Planned | files, folders, sharing, revisions |
+| Sheets | 🔜 Planned | spreadsheets, values, formatting |
+| Docs | 🔜 Planned | documents, structured content |
+| Calendar | 🔜 Planned | events, calendars, availability |
+
+Gmail is the reference (canary) implementation; each new service mirrors its shape.
 
 ---
 

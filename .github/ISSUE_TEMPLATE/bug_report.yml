@@ -3,13 +3,14 @@ description: Something in a server or the shared auth misbehaves.
 labels: [bug]
 body:
   - type: dropdown
-    id: workspace
+    id: area
     attributes:
-      label: Workspace
-      description: Which package or service is affected?
+      label: Area
+      description: Which part is affected?
       options:
-        - packages/google-auth
-        - services/gmail
+        - gmail (server)
+        - auth (OAuth)
+        - harness (server factory)
         - tooling / repo-wide
         - not sure
     validations:

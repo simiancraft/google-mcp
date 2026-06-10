@@ -1,6 +1,6 @@
 # Notices and Trademarks
 
-## Google™, Gmail™, Google Drive™, Google Workspace™
+## Google trademarks
 
 **Google**, **Gmail**, **Google Drive**, **Google Docs**, **Google Sheets**, **Google Calendar**, and **Google Workspace** are trademarks of **Google LLC**. This project is **not affiliated with, endorsed by, sponsored by, or certified by Google LLC**.
 
@@ -14,4 +14,4 @@ You bring your own Google Cloud OAuth application and credentials; this project 
 
 ## Upstream dependencies
 
-See each workspace's `package.json` for runtime and development dependencies. Runtime dependencies are MIT, ISC, or Apache-2.0 licensed.
+See `package.json` for runtime and development dependencies. Runtime dependencies are MIT, ISC, or Apache-2.0 licensed.
