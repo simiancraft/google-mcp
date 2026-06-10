@@ -16,6 +16,19 @@ mock.module('@googleapis/calendar', () => ({
   calendar: () => ({ calendars: { get: async () => ({ data: primaryCalendar }) } }),
 }));
 
+let sampleSpreadsheet: { properties?: { title?: string } } = {};
+let spreadsheetIdAsked: string | undefined;
+mock.module('@googleapis/sheets', () => ({
+  sheets: () => ({
+    spreadsheets: {
+      get: async (params: { spreadsheetId: string }) => {
+        spreadsheetIdAsked = params.spreadsheetId;
+        return { data: sampleSpreadsheet };
+      },
+    },
+  }),
+}));
+
 const ENV = [
   'GOOGLE_MCP_DIR',
   'GOOGLE_MCP_TOKEN',
@@ -65,6 +78,19 @@ describe('gmail probe', () => {
   it('falls back to a reachable marker when no email is returned', async () => {
     profile = {};
     expect(await runProbe('gmail', 'acct')).toBe('(reachable)');
+  });
+});
+
+describe('sheets probe', () => {
+  it('returns the public sample spreadsheet title', async () => {
+    sampleSpreadsheet = { properties: { title: 'Example Spreadsheet' } };
+    expect(await runProbe('sheets', 'acct')).toBe('Example Spreadsheet');
+    expect(spreadsheetIdAsked).toBe('1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms');
+  });
+
+  it('falls back to a reachable marker when the title is absent', async () => {
+    sampleSpreadsheet = {};
+    expect(await runProbe('sheets', 'acct')).toBe('(reachable)');
   });
 });
 

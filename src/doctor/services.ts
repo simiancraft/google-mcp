@@ -13,6 +13,7 @@
  */
 import { calendar } from '@googleapis/calendar';
 import { gmail } from '@googleapis/gmail';
+import { sheets } from '@googleapis/sheets';
 import { authorizedClient } from '../auth/oauth.js';
 
 /** A cheap, read-only call that proves a service's token + API actually work. */
@@ -39,6 +40,18 @@ async function calendarProbe(account: string): Promise<string> {
   return res.data.summary ?? res.data.timeZone ?? '(reachable)';
 }
 
+// The Sheets API has no id-free read (listing spreadsheets is Drive's job), so
+// the probe reads Google's long-stable public sample spreadsheet (titled
+// "Example Spreadsheet", used throughout the Sheets API docs). If Google ever
+// unpublishes it, the probe fails loudly and this id gets replaced.
+const SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+
+async function sheetsProbe(account: string): Promise<string> {
+  const client = sheets({ version: 'v4', auth: await authorizedClient(account) });
+  const res = await client.spreadsheets.get({ spreadsheetId: SAMPLE_SPREADSHEET_ID });
+  return res.data.properties?.title ?? '(reachable)';
+}
+
 const S = 'https://www.googleapis.com/auth/';
 
 export const SERVICES: ServiceInfo[] = [
@@ -54,7 +67,8 @@ export const SERVICES: ServiceInfo[] = [
     name: 'sheets',
     api: 'sheets.googleapis.com',
     scopes: [`${S}spreadsheets`],
-    implemented: false,
+    implemented: true,
+    probe: sheetsProbe,
   },
   { name: 'docs', api: 'docs.googleapis.com', scopes: [`${S}documents`], implemented: false },
   {
