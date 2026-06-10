@@ -61,7 +61,10 @@ bun run check            # full pre-PR gate (lint-fix, build, typecheck, test, k
 
 ## Adding a tool, method, entity, or service
 
-See **`EXTENDING.md`** for the full recipe. In short: source the operation from
+See **`EXTENDING.md`** for the per-file recipe and **`ADDING-A-SERVICE.md`**
+for the end-to-end service playbook (survey, plan, commit cadence, deferral
+issues, docs checklist, live verification, and the operational matrix),
+retraced from how Calendar shipped. In short: source the operation from
 its Google reference page, make a `tools/<name>/` or `methods/<name>/` folder
 (`schema.ts` + `handler.ts` + `index.ts` + `handler.test.ts`) inside the service,
 register it in that folder's `registry.ts`, and add any new `entities/`. A new

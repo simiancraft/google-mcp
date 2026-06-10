@@ -154,7 +154,7 @@ bun install
 bun run check     # lint-fix, build, typecheck, test, knip
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe, and [CHANGELOG.md](./CHANGELOG.md) for release history.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe, [ADDING-A-SERVICE.md](./ADDING-A-SERVICE.md) for the end-to-end service playbook, and [CHANGELOG.md](./CHANGELOG.md) for release history.
 
 ## Services
 

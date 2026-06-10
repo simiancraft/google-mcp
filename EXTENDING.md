@@ -6,6 +6,11 @@ vocabulary is sourced from Google's docs. Gmail (`src/gmail`) is the worked
 reference. It is one package: `auth`, `lib`, and each service are folders
 under `src/` that import each other by relative path and compile to one `dist/`.
 
+This file is the per-file recipe. For the end-to-end project playbook of
+shipping a whole service (survey, plan, commit cadence, deferral issues, docs
+checklist, live verification, and the operational matrix), see
+[ADDING-A-SERVICE.md](./ADDING-A-SERVICE.md).
+
 ## The shape
 
 ```
