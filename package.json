@@ -53,7 +53,7 @@
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
     "check:knip": "knip",
-    "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip",
+    "check": "bun run lint:fix && bun run build && bun run typecheck && bun test --coverage && bun run check:knip",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
