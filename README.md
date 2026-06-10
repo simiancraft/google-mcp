@@ -18,9 +18,9 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/gmail.svg" height="44" alt="Gmail" title="Gmail (shipping)" />
+  <img src=".github/assets/gmail.svg" height="44" alt="Gmail" title="Gmail" />
   &nbsp;&nbsp;&nbsp;
-  <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar (shipping)" />
+  <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar" />
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/drive.svg" height="44" alt="Drive (planned)" title="Drive (planned)" />
   &nbsp;&nbsp;&nbsp;
