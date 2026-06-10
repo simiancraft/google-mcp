@@ -12,7 +12,7 @@ under `src/` that import each other by relative path and compile to one `dist/`.
 src/
   auth/         # authorizedClient(account) + runAuthFlow(account); never reimplement auth
   lib/          # operation() + server(): the two MCP primitives; never reimplement the server
-  <svc>/        # one folder per service (gmail, drive, ...)
+  <svc>/        # one folder per service (gmail, calendar, ...)
     index.ts        # server({ name, operations, client }); the bin entry
     entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
     lib/            # projection helpers (REST entity -> documented shape)

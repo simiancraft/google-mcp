@@ -1,6 +1,6 @@
 <!--
 Thanks for the PR. Keep this short; the diff does most of the talking.
-Conventional Commits: type(scope): subject. Scope is the area (auth, lib, gmail, drive, ...).
+Conventional Commits: type(scope): subject. Scope is the area (auth, lib, gmail, calendar, ...).
 -->
 
 ## Summary
