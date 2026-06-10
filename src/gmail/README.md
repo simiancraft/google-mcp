@@ -15,7 +15,8 @@ account filters. Irreversible operations (send, permanent delete) carry the MCP
 `destructiveHint`.
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
-regenerated from the registries with `bun run capabilities`. An MCP client
+regenerated from the registries with `bun run capabilities`; what is implemented
+versus Google's full surface is mapped in [`COVERAGE.md`](./COVERAGE.md). An MCP client
 discovers the live surface, with input and output JSON Schema, from the server's
 `tools/list`.
 

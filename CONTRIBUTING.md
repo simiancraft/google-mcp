@@ -5,7 +5,7 @@ Thanks for considering a contribution. This is a single Bun package of Google MC
 ## Prerequisites
 
 - [Bun](https://bun.sh) 1.3+ (package manager, runner, and test runner)
-- A Google Cloud OAuth application and credentials for any service you run end-to-end (see the README auth setup)
+- A Google Cloud OAuth application and credentials for any service you run end-to-end (see the [README auth setup](./README.md#auth-setup) and [PROVISIONING.md](./PROVISIONING.md))
 
 ## Setup
 
@@ -51,7 +51,7 @@ Commits are authored by humans. **Do not** attribute AI co-authorship.
 - Open a PR against `main`. CI must be green before review.
 - Keep the diff focused. One logical change per PR.
 - Add or update tests for any behavior change.
-- Update the README, the service README, or `AGENTS.md` if you change a public surface or a convention.
+- Update the README, the service README, or [AGENTS.md](./AGENTS.md) if you change a public surface or a convention. Adding an operation or a service? The recipe is [EXTENDING.md](./EXTENDING.md).
 
 ## Reporting issues
 

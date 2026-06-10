@@ -1,6 +1,8 @@
 <h1 align="center">google-mcp-suite</h1>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/google-mcp-suite"><img src="https://img.shields.io/npm/v/google-mcp-suite.svg" alt="npm" /></a>
+  &nbsp;
   <a href="https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml"><img src="https://github.com/simiancraft/google-mcp-suite/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   &nbsp;
   <a href="https://codecov.io/gh/simiancraft/google-mcp-suite"><img src="https://codecov.io/gh/simiancraft/google-mcp-suite/branch/main/graph/badge.svg" alt="codecov" /></a>
@@ -11,8 +13,8 @@
 </p>
 
 <p align="center">
-  <strong>A Google Workspace MCP server you can read in an afternoon.</strong><br />
-  Two internal concepts (an operation and a server function), a folder tree that mirrors Google's own API reference page-for-page, every Google REST method plus a curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset in one surface, and 100% test coverage. Gmail ships today.
+  <strong>A Google MCP server you can read in an afternoon.</strong><br />
+  Every Google REST method plus the curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset in one surface. One server instance per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
 </p>
 
 <p align="center">
@@ -28,14 +30,12 @@
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> ships today; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
+  <sub><strong>Gmail</strong> ships today with <a href="https://github.com/simiancraft/google-mcp-suite/blob/main/src/gmail/CAPABILITIES.md">33 operations</a>; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
 </p>
-
-> **Status:** Gmail is implemented and usable today; Drive, Sheets, Docs, and Calendar are next.
 
 ## What it does
 
-Point an AI agent at your Google Workspace and let it do the work: triage and send mail today, manage files and edit documents as those services land. The end goal is an agent that operates your Workspace and hands you results.
+Point an AI agent at your Google accounts and let it do the work: triage and send mail today, manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
 
 The design has two internal concepts and nothing else:
 
@@ -44,7 +44,7 @@ The design has two internal concepts and nothing else:
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the full REST method set of its Google API, so an agent gets the service's full capability, not a thin slice. Gmail ships with 33 operations today: 10 curated MCP tools plus 23 REST methods. Every server's live surface is generated into a `CAPABILITIES.md`.
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the full REST method set of its Google API, so an agent gets the service's full capability, not a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) today: 10 curated MCP tools plus 23 REST methods. Every server's live surface is generated into a `CAPABILITIES.md`.
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -52,13 +52,24 @@ That is the whole surface. Read one operation folder and you understand all of t
 | A tools-list page (curated MCP toolset) | `tools/<operation>/` |
 | A REST method reference page | `methods/<operation>/` |
 
-- **Several accounts, in parallel.** Identity is bound to a running instance, not passed per call, so an agent can act across your accounts at once and cannot act on the wrong one.
+- **Multiple accounts, in parallel.** Identity is bound to a running instance, not passed per call, so an agent can act across your accounts at once and cannot act on the wrong one.
 - **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
-- **Built to be trusted.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
+- **Strict by construction.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
 
 One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail` today) plus the `google-mcp-doctor` setup CLI.
 
+## MCP, and then some
+
+This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
+
+- **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
+- **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
+
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](https://github.com/simiancraft/google-mcp-suite/blob/main/EXTENDING.md).
+
 ## Quickstart
+
+One thing first: a Google Cloud OAuth client (roughly ten minutes of console clicks, once; the friction is Google's, not ours). [PROVISIONING.md](https://github.com/simiancraft/google-mcp-suite/blob/main/PROVISIONING.md) walks every click, and `doctor` tells you which step you are on.
 
 ```sh
 npm install -g google-mcp-suite
@@ -68,7 +79,7 @@ google-mcp-doctor auth you@example.com   # browser consent; writes the account t
 google-mcp-doctor                   # provisioned, authorized, reachable?
 ```
 
-The one-time console step (creating the OAuth client and enabling APIs) is walked through in [PROVISIONING.md](./PROVISIONING.md); `doctor` tells you which step you are on and what to do next. Then point your MCP client at a server, one instance per account:
+Then point your MCP client at a server, one instance per account:
 
 ```json
 {
@@ -80,15 +91,6 @@ The one-time console step (creating the OAuth client and enabling APIs) is walke
   }
 }
 ```
-
-### MCP, and then some
-
-This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
-
-- **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
-- **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
-
-The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of the operation list is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate makes the suite self-documenting and enables **documentation-driven updates**: point at a Google reference page and generate the matching `schema.ts`/`handler.ts`/`index.ts`, with each source page bounding the context of one unit of work.
 
 ## Layout
 
@@ -118,11 +120,11 @@ One package, one version. `auth`, `lib`, `doctor`, and each service are folders 
 Authorization is a one-time, per-account browser consent flow.
 
 1. Create a Google Cloud project, enable the APIs you need (Gmail, Drive, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
-2. Place the client secret where `src/auth` expects it (see [its README](./src/auth/README.md)), outside the repo tree.
+2. Place the client secret JSON at `~/.google-mcp/client_secret.json` (override knobs in [src/auth's README](./src/auth/README.md)).
 3. Authorize each account once; this opens a browser consent flow and stores that account's token.
 4. Run a service with `GOOGLE_MCP_ACCOUNT=<account>` to act as that account.
 
-The `google-mcp-doctor` CLI drives all of it except the console clicks: `doctor scopes` prints the APIs and scopes to enable, `doctor auth <email>` runs the consent flow and writes the token, and `doctor` / `doctor status` confirm every account is authorized and reachable.
+The [`google-mcp-doctor`](./src/doctor/README.md) CLI drives all of it except the console clicks: `doctor scopes` prints the APIs and scopes to enable, `doctor auth <email>` runs the consent flow and writes the token, and `doctor` / `doctor status` confirm every account is authorized and reachable.
 
 Credentials never live in the repo. Tokens and the client secret live in the ignored `~/.google-mcp/` config directory, and `.gitignore` also blocks common credential filenames.
 
@@ -135,11 +137,11 @@ bun install
 bun run check     # lint-fix, build, typecheck, test, knip
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](./AGENTS.md) for the per-service pattern.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, and [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe.
 
 ## Services
 
-| Service | Status | Coverage |
+| Service | Status | Operations |
 |---|---|---|
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
@@ -147,7 +149,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list and [AGENTS.md](
 | Docs | 🔜 Planned | documents, structured content |
 | Calendar | 🔜 Planned | events, calendars, availability |
 
-Gmail is the reference (canary) implementation; each new service mirrors its shape. See its [capability list](./src/gmail/CAPABILITIES.md) for the full operation set.
+Gmail is the reference (canary) implementation; each new service mirrors its shape.
 
 ---
 

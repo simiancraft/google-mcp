@@ -183,7 +183,9 @@ The list in code is the source of truth. When you change `SCOPES`, mirror it her
 > yourself as a test user, you get the full grant immediately. The cost is a
 > "Google hasn't verified this app" interstitial during consent: click
 > **Advanced**, then **Go to (app) (unsafe)**, and proceed. That is expected for a
-> personal/dev app.
+> personal/dev app. The other cost of Testing: **refresh tokens expire 7 days after
+> issuance**, so each account needs weekly re-consent (`google-mcp-doctor auth`;
+> `doctor status` shows the countdown).
 
 ---
 
