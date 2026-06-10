@@ -17,6 +17,7 @@ google-mcp-suite/
     │   │   └── <tool>/        # index.ts + handler.ts + schema.ts + handler.test.ts
     │   └── methods/           # REST-sourced ops; same construction
     │       └── <method>/      # index.ts + handler.ts + schema.ts + handler.test.ts
+    ├── calendar/    # the Calendar server; same construction as gmail/
     └── doctor/      # provisioning + auth-health CLI (bin: google-mcp-doctor); see src/doctor/README.md
 ```
 

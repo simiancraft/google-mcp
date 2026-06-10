@@ -26,16 +26,16 @@
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/docs.svg" height="44" alt="Docs (planned)" title="Docs (planned)" />
   &nbsp;&nbsp;&nbsp;
-  <img src=".github/assets/calendar.svg" height="44" alt="Calendar (planned)" title="Calendar (planned)" />
+  <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar (shipping)" />
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> ships today with <a href="./src/gmail/CAPABILITIES.md">33 operations</a>; Drive, Sheets, Docs, and Calendar are on the way (shown dimmed).</sub>
+  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>) and <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>) ship today; Drive, Sheets, and Docs are on the way (shown dimmed).</sub>
 </p>
 
 ## What it does
 
-Point an AI agent at your Google accounts and let it do the work: triage and send mail today, manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
+Point an AI agent at your Google accounts and let it do the work: triage and send mail and run your calendars today, manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
 
 The design has two internal concepts and nothing else:
 
@@ -44,7 +44,7 @@ The design has two internal concepts and nothing else:
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) today: 10 curated MCP tools plus 23 REST methods (the split is explained in [MCP, and then some](#mcp-and-then-some)).
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) (10 curated MCP tools plus 23 REST methods) and Calendar with [25](./src/calendar/CAPABILITIES.md) (8 plus 17); the split is explained in [MCP, and then some](#mcp-and-then-some).
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -56,7 +56,7 @@ That is the whole surface. Read one operation folder and you understand all of t
 - **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
 - **Strict by construction.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
 
-One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail` today) plus the `google-mcp-doctor` setup CLI.
+One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail` and `google-mcp-calendar` today) plus the `google-mcp-doctor` setup CLI.
 
 ## MCP, and then some
 
@@ -100,6 +100,7 @@ src/
   lib/       # the two MCP primitives: operation() + server()
   doctor/    # google-mcp-doctor: provisioning + auth-health CLI
   gmail/     # the Gmail server (reference/canary); new services mirror its shape
+  calendar/  # the Calendar server; same shape
 ```
 
 One package, one version. `auth`, `lib`, `doctor`, and each service are folders in one `src/` and compile to a single published package.
@@ -144,12 +145,12 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./A
 | Service | Status | Operations |
 |---|---|---|
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
+| **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, availability, settings |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
 | Sheets | 🔜 Planned | spreadsheets, values, formatting |
 | Docs | 🔜 Planned | documents, structured content |
-| Calendar | 🔜 Planned | events, calendars, availability |
 
-Gmail is the reference (canary) implementation; each new service mirrors its shape.
+Gmail is the reference (canary) implementation; Calendar is its first replication; each new service mirrors the same shape.
 
 ---
 
