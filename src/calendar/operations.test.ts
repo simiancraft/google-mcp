@@ -6,10 +6,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('calendar operations', () => {
-  it('exposes the full surface (8 tools, 4 methods; methods grow through the next commits)', () => {
+  it('exposes the full surface (8 tools, 9 methods; methods grow through the next commits)', () => {
     expect(Object.keys(tools)).toHaveLength(8);
-    expect(Object.keys(methods)).toHaveLength(4);
-    expect(Object.keys(operations)).toHaveLength(12);
+    expect(Object.keys(methods)).toHaveLength(9);
+    expect(Object.keys(operations)).toHaveLength(17);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -26,6 +26,6 @@ describe('calendar operations', () => {
       .filter(([, op]) => op.destructive)
       .map(([name]) => name)
       .sort();
-    expect(destructive).toEqual(['delete_event']);
+    expect(destructive).toEqual(['clear_calendar', 'delete_calendar', 'delete_event']);
   });
 });
