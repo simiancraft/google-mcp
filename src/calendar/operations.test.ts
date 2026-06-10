@@ -6,10 +6,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('calendar operations', () => {
-  it('exposes the full tool surface (8 tools; methods grow through the next commits)', () => {
+  it('exposes the full surface (8 tools, 4 methods; methods grow through the next commits)', () => {
     expect(Object.keys(tools)).toHaveLength(8);
-    expect(Object.keys(methods)).toHaveLength(0);
-    expect(Object.keys(operations)).toHaveLength(8);
+    expect(Object.keys(methods)).toHaveLength(4);
+    expect(Object.keys(operations)).toHaveLength(12);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
