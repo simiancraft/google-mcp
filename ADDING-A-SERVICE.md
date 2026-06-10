@@ -125,8 +125,8 @@ one of them is the kind of drift reviewers catch later:
 - **The icon.** `.github/assets/<svc>.svg` ships dimmed for planned services
   with a literal `opacity="0.4"` on its root `<g>`. Remove that attribute when
   the service ships, move the icon next to the other bright (shipped) icons in
-  the README icon row, and update its `alt`/`title` from "(planned)" to
-  "(shipping)".
+  the README icon row, and update its `alt`/`title` from "(planned)" to the
+  plain service name.
 - `AGENTS.md`: the layout tree gains `<svc>/`.
 - `package.json`: the `bin` entry landed in the scaffold commit; now the
   `description` names the new service and `keywords` gain its terms.
