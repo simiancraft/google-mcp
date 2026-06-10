@@ -1,3 +1,23 @@
+# [1.1.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.0.0...v1.1.0) (2026-06-10)
+
+
+### Bug Fixes
+
+* **calendar:** refuse suggest_time on unreadable calendars; bound pageSize; lift Meet helper ([0ed36ca](https://github.com/simiancraft/google-mcp-suite/commit/0ed36ca454b22ec02ec971d0757b3228964a8f66))
+
+
+### Features
+
+* **calendar:** add availability and account methods (freebusy, colors, settings) ([fd69d85](https://github.com/simiancraft/google-mcp-suite/commit/fd69d85b4d3a0d346392dd3f3aebbab7a000a0fe)), closes [#21](https://github.com/simiancraft/google-mcp-suite/issues/21)
+* **calendar:** add calendar entry methods (get, add, update, remove) ([95e99bc](https://github.com/simiancraft/google-mcp-suite/commit/95e99bc929c23d3d042f26fca17bfb4e996bc702))
+* **calendar:** add calendar resource methods (get, create, update, delete, clear) ([c1c3532](https://github.com/simiancraft/google-mcp-suite/commit/c1c35329f8be00ade2323630144f92ab8b30dfc1))
+* **calendar:** add event methods (instances, move, quickAdd, patch) ([5b07b59](https://github.com/simiancraft/google-mcp-suite/commit/5b07b59938da3e605d759fceb7b447f64d7d33fd))
+* **calendar:** add event read tools (list_events, get_event) ([85ccd0e](https://github.com/simiancraft/google-mcp-suite/commit/85ccd0e2fa57590def7fd30c4db2fc9a76ca2b76))
+* **calendar:** add event write tools (create, update, delete, respond) ([dd33a0a](https://github.com/simiancraft/google-mcp-suite/commit/dd33a0a83990f5ac654811b79ea9076562007bae))
+* **calendar:** add list_calendars and suggest_time; 8-tool mirror complete ([e2d09d1](https://github.com/simiancraft/google-mcp-suite/commit/e2d09d16164e86ee3a6eb44f38bfc15a37d36627))
+* **calendar:** scaffold the calendar service skeleton ([bfb67f2](https://github.com/simiancraft/google-mcp-suite/commit/bfb67f2798ca283d0ec50a9027efc7aa5ffe9b5a))
+* **doctor:** register calendar as implemented with a live probe ([89d1ae7](https://github.com/simiancraft/google-mcp-suite/commit/89d1ae769850a477023fc600e67ede6af3e6ba3d))
+
 # 1.0.0 (2026-06-10)
 
 
