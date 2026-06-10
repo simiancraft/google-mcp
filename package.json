@@ -30,6 +30,7 @@
   "bin": {
     "google-mcp-gmail": "./dist/gmail/index.js",
     "google-mcp-calendar": "./dist/calendar/index.js",
+    "google-mcp-sheets": "./dist/sheets/index.js",
     "google-mcp-doctor": "./dist/doctor/index.js"
   },
   "files": [
@@ -51,7 +52,7 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "capabilities": "bun run src/gmail/capabilities.ts && bun run src/calendar/capabilities.ts",
+    "capabilities": "bun run src/gmail/capabilities.ts && bun run src/calendar/capabilities.ts && bun run src/sheets/capabilities.ts",
     "doctor": "bun run src/doctor/index.ts",
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
@@ -62,6 +63,7 @@
   "dependencies": {
     "@googleapis/calendar": "^15.0.0",
     "@googleapis/gmail": "^17.0.0",
+    "@googleapis/sheets": "^13.0.2",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "addressparser": "^1.0.1",
     "google-auth-library": "^10.5.0",
