@@ -1,9 +1,18 @@
 {
   "name": "google-mcp-suite",
   "version": "0.0.0",
-  "private": true,
   "type": "module",
   "description": "Per-account MCP servers for Google services (Gmail, with more to come), sharing one OAuth implementation.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "gmail",
+    "google",
+    "oauth",
+    "multi-account",
+    "agent",
+    "email"
+  ],
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",
   "homepage": "https://github.com/simiancraft/google-mcp-suite#readme",
@@ -17,6 +26,15 @@
   "bin": {
     "google-mcp-gmail": "./dist/gmail/index.js",
     "google-mcp-doctor": "./dist/doctor/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=22"
@@ -33,7 +51,8 @@
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
     "check:knip": "knip",
-    "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip"
+    "check": "bun run lint:fix && bun run build && bun run typecheck && bun run test && bun run check:knip",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@googleapis/gmail": "^17.0.0",
@@ -46,10 +65,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^13.1.5",
     "@types/addressparser": "^1.0.3",
     "@types/bun": "^1.3.13",
     "fast-check": "^4.8.0",
     "knip": "^6.14.0",
+    "semantic-release": "^25.0.5",
     "typescript": "^6.0.0"
   }
 }
