@@ -19,8 +19,12 @@ Read Google's documentation for the candidate service and write down:
 1. **Is there an MCP toolset reference?** Calendar's lives at
    `developers.google.com/workspace/calendar/api/v3/reference/mcp` (note: the
    path shape varies per service and some 404 on the "obvious" URL; find the
-   real one). If Google publishes no MCP page, the tools/ folder is sourced
-   from the REST reference instead (EXTENDING.md covers this).
+   real one). If Google publishes no MCP page (Sheets; the MCP-supported
+   products are Gmail, Drive, Calendar, Chat, and People), the service is
+   **methods-only**: no `tools/` folder at all, `index.ts` serves
+   `mergeOperations(methods)`, `capabilities.ts` renders a single
+   `REST Method` section, the surface-count test pins methods only, and
+   COVERAGE.md leads with why. Sheets is the worked example.
 2. **The REST surface size**, from the discovery document
    (`googleapis.com/discovery/v1/apis/<svc>/<version>/rest`). The discovery
    doc is machine-readable and is the precise source for parameter names,
@@ -82,9 +86,9 @@ Calendar shipped in 11 planned commits; the shape generalizes:
 | # | Commit | Content | Gate |
 |---|--------|---------|------|
 | 1 | `docs(<svc>): add the <svc> service plan` | the plan file | reviewed |
-| 2 | `feat(<svc>): scaffold the <svc> service skeleton` | `operation.ts`, empty registries, `index.ts` bootstrap, `capabilities.ts`, dep + bin in package.json | check green; bin starts, `tools/list` returns 0 |
-| 3..k | `feat(<svc>): add <cluster>` | operations in dependency order: read path first (it forces the entities and projections), then writes, then remaining tools, then methods grouped by REST resource | check green after every commit; CAPABILITIES.md regenerated whenever a registry changes |
-| k+1 | `feat(doctor): register <svc> as implemented with a live probe` | flip `implemented: true`, add the probe, **cover the probe in `services.probe.test.ts` by mocking the client module** | check green; `bun run doctor` live-green per account |
+| 2 | `feat(<svc>): scaffold the <svc> service skeleton` | empty registries, `index.ts` bootstrap, `capabilities.ts`, dep + bin in package.json, root `capabilities` script | check green; bin starts, `tools/list` returns 0 |
+| 3..k | `feat(<svc>): add <cluster>` | operations in dependency order: read path first (it forces the entities and projections), then writes, then remaining tools, then methods grouped by REST resource. `operation.ts` (the `<svc>Operation` binder) lands with the **first** operation commit, not the scaffold: an unreferenced file fails knip's unused-file check (Calendar and Sheets both hit this) | check green after every commit; CAPABILITIES.md regenerated whenever a registry changes |
+| k+1 | `feat(doctor): register <svc> as implemented with a live probe` | flip `implemented: true`, add the probe, **cover the probe in `services.probe.test.ts` by mocking the client module**. The probe must be a cheap, id-free, read-only call; when the API has none (Sheets has no list, every read takes an id), probe a stable public artifact (Sheets reads Google's docs sample spreadsheet) and comment the tradeoff at the probe | check green; `bun run doctor` live-green per account |
 | k+2 | `docs(<svc>): document the shipped service` | COVERAGE.md, service README, root README, AGENTS.md, package.json metadata, the icon | check green; `bun run capabilities` produces no diff; links resolve |
 | k+3 | `docs(<svc>): delete the shipped plan` | remove the plan file | no references to it remain |
 
@@ -147,10 +151,14 @@ and EXTENDING.md (Live verification):
    account. Pair every destructive operation with its antecedent: create the
    thing, destroy that thing, confirm it gone; the account ends in the state
    it was found. Use disposable containers (Calendar used a disposable
-   secondary calendar; Sheets would use a disposable spreadsheet) and public
+   secondary calendar; Sheets used a disposable spreadsheet) and public
    data for subscribe/unsubscribe pairs. When the API pins a destructive
    operation to a surface you did not create, verify the rejection path and
-   document why the success path is deferred.
+   document why the success path is deferred. When the service itself has no
+   delete (the Sheets API cannot delete a spreadsheet; that is Drive's
+   `files.delete`), the verification script cleans up with a direct call to
+   the adjacent API (the scope union already covers it) and the matrix issue
+   documents that the cleanup ran outside the served surface.
 
 Then open the **operational matrix issue** (the rubric from #7, instantiated
 for Calendar in #22): one entry per operation with a `live` and a `unit`
@@ -176,13 +184,13 @@ most expensive knowledge the pass produces.
 
 ## Worked deltas for the likely next services
 
-- **Sheets** (`@googleapis/sheets`, v4): scope `…/auth/spreadsheets` is
-  already in the union. The practical surface is `spreadsheets.values.*`
-  (get, update, append, clear, batchGet) plus `spreadsheets.get`/`create`;
-  the hostile cluster is `spreadsheets.batchUpdate`, a union of dozens of
-  request types; defer it as an issue with a curated subset later, do not
-  transcribe the union. Expect an A1-notation helper in `lib/` (pure,
-  unit-tested, the `suggest.ts` analog).
+(Sheets shipped from this playbook in June 2026: 15 methods-only operations,
+`batchUpdate` deferred as issue #27 and grid data as #28. The predicted
+A1-notation `lib/` helper turned out unnecessary; no shipped operation
+computes A1, ranges pass through verbatim. Do not build helpers ahead of an
+operation that needs them; knip flags them and the pattern says lift on the
+second use.)
+
 - **Drive** (`@googleapis/drive`, v3): scope already in the union. The
   hostile clusters are media upload/download (resumable uploads do not fit
   JSON-only output; plan the base64 boundary deliberately) and permissions

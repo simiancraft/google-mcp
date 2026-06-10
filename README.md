@@ -22,20 +22,20 @@
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar" />
   &nbsp;&nbsp;&nbsp;
-  <img src=".github/assets/drive.svg" height="44" alt="Drive (planned)" title="Drive (planned)" />
+  <img src=".github/assets/sheets.svg" height="44" alt="Sheets" title="Sheets" />
   &nbsp;&nbsp;&nbsp;
-  <img src=".github/assets/sheets.svg" height="44" alt="Sheets (planned)" title="Sheets (planned)" />
+  <img src=".github/assets/drive.svg" height="44" alt="Drive (planned)" title="Drive (planned)" />
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/docs.svg" height="44" alt="Docs (planned)" title="Docs (planned)" />
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>) and <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>) ship today; Drive, Sheets, and Docs are on the way (shown dimmed).</sub>
+  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>), <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>), and <strong>Sheets</strong> (<a href="./src/sheets/CAPABILITIES.md">15 operations</a>) ship today; Drive and Docs are on the way (shown dimmed).</sub>
 </p>
 
 ## What it does
 
-Point an AI agent at your Google accounts and let it do the work: triage and send mail, run your calendars today; manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
+Point an AI agent at your Google accounts and let it do the work: triage and send mail, run your calendars, and read and write your spreadsheets today; manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
 
 The design has two internal concepts and nothing else:
 
@@ -44,7 +44,7 @@ The design has two internal concepts and nothing else:
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) (10 curated MCP tools plus 23 REST methods) and Calendar with [25](./src/calendar/CAPABILITIES.md) (8 plus 17); the split is explained in [MCP, and then some](#mcp-and-then-some).
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) (10 curated MCP tools plus 23 REST methods), Calendar with [25](./src/calendar/CAPABILITIES.md) (8 plus 17), and Sheets with [15](./src/sheets/CAPABILITIES.md) (Google publishes no Sheets MCP toolset, so all 15 are REST-sourced); the split is explained in [MCP, and then some](#mcp-and-then-some).
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -56,7 +56,7 @@ That is the whole surface. Read one operation folder and you understand all of t
 - **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
 - **Strict by construction.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
 
-One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail` and `google-mcp-calendar` today) plus the `google-mcp-doctor` setup CLI.
+One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail`, `google-mcp-calendar`, and `google-mcp-sheets` today) plus the `google-mcp-doctor` setup CLI.
 
 ## MCP, and then some
 
@@ -65,7 +65,7 @@ This is an MCP server, and deliberately more than one. Google publishes an MCP t
 - **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
 - **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
 
-The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Sheets is the limit case: Google publishes no Sheets MCP toolset at all, so its server is methods-only, [15 operations](./src/sheets/CAPABILITIES.md) sourced entirely from the REST reference. Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
 
 ## Quickstart
 
@@ -99,6 +99,10 @@ Then point your MCP client at the servers, one instance per service per account:
     "calendar-work": {
       "command": "google-mcp-calendar",
       "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
+    },
+    "sheets-work": {
+      "command": "google-mcp-sheets",
+      "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
     }
   }
 }
@@ -106,7 +110,7 @@ Then point your MCP client at the servers, one instance per service per account:
 
 Then ask your agent for something no single-account tool can do:
 
-> Find 30 free minutes next week that works across my work and personal calendars, book it on the work calendar with a Meet link, and email the invite summary to my personal address.
+> Find 30 free minutes next week that works across my work and personal calendars, book it on the work calendar with a Meet link, email the invite summary to my personal address, and log the booking in my scheduling spreadsheet.
 
 ## Layout
 
@@ -117,6 +121,7 @@ src/
   doctor/    # google-mcp-doctor: provisioning + auth-health CLI
   gmail/     # the Gmail server (reference/canary); new services mirror its shape
   calendar/  # the Calendar server; same shape
+  sheets/    # the Sheets server; same shape, methods-only (no Google MCP toolset)
 ```
 
 One package, one version. `auth`, `lib`, `doctor`, and each service are folders in one `src/` and compile to a single published package.
@@ -162,11 +167,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./A
 |---|---|---|
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
 | **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, free/busy, and meeting-time suggestions |
+| **Sheets** | ✅ Implemented | [15 operations](./src/sheets/CAPABILITIES.md): spreadsheets, values, batch and data-filter reads/writes, developer metadata |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
-| Sheets | 🔜 Planned | spreadsheets, values, formatting |
 | Docs | 🔜 Planned | documents, structured content |
 
-Gmail is the reference (canary) implementation; Calendar is its first replication; each new service mirrors the same shape.
+Gmail is the reference (canary) implementation; Calendar is its first replication; Sheets is the first methods-only service (Google publishes no Sheets MCP toolset); each new service mirrors the same shape.
 
 ---
 

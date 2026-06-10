@@ -82,7 +82,14 @@ of the split, a tool and a method colliding on one key, fails loudly rather than
 silently dropping an operation.
 
 Add a method exactly like a tool, but source `schema.ts` from the REST method
-page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3).
+page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
+Sheets v4).
+
+Where Google publishes no MCP toolset at all (Sheets; its MCP-supported
+products are Gmail, Drive, Calendar, Chat, and People), the service is
+**methods-only**: no `tools/` folder, `index.ts` serves
+`mergeOperations(methods)`, and `capabilities.ts` renders a single
+`REST Method` section. The service's COVERAGE.md leads with why.
 
 Mark with `destructive: true` any operation that is irreversible (`send`,
 permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent
