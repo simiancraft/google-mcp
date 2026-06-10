@@ -18,7 +18,19 @@ export async function handler(
       items: args.attendeeEmails.map((id) => ({ id })),
     }),
   });
-  const busy = Object.values(data.calendars ?? {}).flatMap((entry) =>
+  const calendars = data.calendars ?? {};
+  // A calendar that reports errors (unknown id, not shared) contributes no
+  // busy intervals, so suggesting from the rest would confidently propose
+  // slots that conflict with it. Refuse instead of answering from partial data.
+  const unreadable = Object.entries(calendars)
+    .filter(([, entry]) => (entry.errors ?? []).length > 0)
+    .map(([id]) => id);
+  if (unreadable.length > 0) {
+    throw new Error(
+      `Free/busy is unavailable for ${unreadable.join(', ')}; suggestions would ignore those calendars' events. Check the calendar ids and their sharing, then retry.`,
+    );
+  }
+  const busy = Object.values(calendars).flatMap((entry) =>
     (entry.busy ?? []).flatMap((period) =>
       period.start && period.end ? [{ start: period.start, end: period.end }] : [],
     ),

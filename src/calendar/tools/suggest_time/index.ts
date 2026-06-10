@@ -10,6 +10,11 @@ import { schema } from './schema.js';
  * flattens the busy periods, and computes the free slots in lib/suggest.ts.
  * Working hours and weekend exclusion are evaluated in the given time zone
  * (default UTC), judged by each slot's start instant.
+ *
+ * Refuses rather than degrades: when any attendee's free/busy is unreadable
+ * (unknown id, calendar not shared), the handler throws instead of suggesting
+ * slots computed from partial data, which would conflict with the unreadable
+ * calendar's real events.
  */
 export const suggest_time = calendarOperation({
   description: 'Suggest free time slots where the given attendees can meet within a time window.',

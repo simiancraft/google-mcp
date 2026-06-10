@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/google.js';
@@ -6,30 +5,9 @@ import type { Optional } from '../../../lib/types.js';
 import { applyAttendeeDeltas } from '../../lib/attendees.js';
 import { buildEventDateTime } from '../../lib/datetime.js';
 import { projectEvent } from '../../lib/event.js';
+import { meetConferenceData } from '../../lib/meet.js';
 import { toSendUpdates } from '../../lib/notifications.js';
 import type { schema } from './schema.js';
-
-/**
- * The conference payload for the requested Meet handling: an explicit
- * googleMeetUrl attaches as a video entry point and wins over
- * addGoogleMeetUrl, which asks Google to mint a new Meet link via a create
- * request. Writing conference data requires conferenceDataVersion 1 on the
- * query; the handler sets it whenever this returns a payload.
- */
-function meetConferenceData(args: {
-  addGoogleMeetUrl?: Optional<boolean>;
-  googleMeetUrl?: Optional<string>;
-}): Optional<calendar_v3.Schema$ConferenceData> {
-  if (args.googleMeetUrl !== undefined) {
-    return { entryPoints: [{ entryPointType: 'video', uri: args.googleMeetUrl }] };
-  }
-  if (args.addGoogleMeetUrl) {
-    return {
-      createRequest: { requestId: randomUUID(), conferenceSolutionKey: { type: 'hangoutsMeet' } },
-    };
-  }
-  return undefined;
-}
 
 /**
  * The patched guest list: when either attendee delta is given, read the

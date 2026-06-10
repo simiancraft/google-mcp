@@ -11,7 +11,8 @@ import { schema } from './schema.js';
  * not editable here; the patch_event method covers it.
  */
 export const update_event = calendarOperation({
-  description: 'Update fields of an existing event; unset fields are left unchanged.',
+  description:
+    'Update fields of an existing event; unset fields are left unchanged. Attendee changes are deltas; for whole-list replacement and the REST-only fields (recurrence, transparency, extendedProperties), use patch_event.',
   schema,
   handler,
 });

@@ -11,7 +11,7 @@
 | `list_calendars` | MCP Tool | List the calendars on the user's calendar list, paginated. |
 | `suggest_time` | MCP Tool | Suggest free time slots where the given attendees can meet within a time window. |
 | `create_event` | MCP Tool | Create an event on a calendar. |
-| `update_event` | MCP Tool | Update fields of an existing event; unset fields are left unchanged. |
+| `update_event` | MCP Tool | Update fields of an existing event; unset fields are left unchanged. Attendee changes are deltas; for whole-list replacement and the REST-only fields (recurrence, transparency, extendedProperties), use patch_event. |
 | `delete_event` ⚠️ | MCP Tool | Delete an event from a calendar, returning the deleted event. |
 | `respond_to_event` | MCP Tool | Respond to an event invitation: declined, tentative, or accepted. |
 | `list_event_instances` | REST Method | List the instances of a recurring event, optionally filtered and paginated. |

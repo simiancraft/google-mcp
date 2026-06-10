@@ -50,6 +50,25 @@ describe('suggest_time', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
+  it('rejects when any attendee calendar is unreadable, naming the culprits', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(
+        fakeCalendar(captured, {
+          calendars: {
+            primary: { busy: [] },
+            'typo@example.com': { busy: [], errors: [{ domain: 'global', reason: 'notFound' }] },
+          },
+        }),
+        {
+          attendeeEmails: ['primary', 'typo@example.com'],
+          startTime: '2026-06-10T09:00:00Z',
+          endTime: '2026-06-10T10:00:00Z',
+        },
+      ),
+    ).rejects.toThrow('Free/busy is unavailable for typo@example.com');
+  });
+
   it('passes the time zone through to the freebusy query', async () => {
     const captured: Captured = {};
     await handler(fakeCalendar(captured, {}), {

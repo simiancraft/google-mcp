@@ -50,8 +50,10 @@ export const schema = {
         pageSize: z
           .number()
           .int()
+          .positive()
+          .max(50)
           .optional()
-          .describe('Maximum number of time slots to return (default 5).'),
+          .describe('Maximum number of time slots to return (default 5, max 50).'),
       })
       .optional()
       .describe('Scheduling preferences narrowing where the suggested slots may fall.'),

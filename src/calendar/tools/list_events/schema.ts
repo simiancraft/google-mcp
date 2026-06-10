@@ -40,7 +40,7 @@ export const schema = {
       .enum(['default', 'startTime', 'startTimeDesc', 'lastModified'])
       .optional()
       .describe(
-        'The order of the events returned: default (an unspecified, stable order), startTime, startTimeDesc, or lastModified.',
+        'The order of the events returned: default (an unspecified, stable order), startTime, startTimeDesc, or lastModified. startTimeDesc reverses each page independently; pages still advance in ascending order.',
       ),
     fullText: z
       .string()
