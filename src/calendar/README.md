@@ -44,9 +44,26 @@ Calendar REST API.
 
 ## Run
 
-One instance per account, bound by env var:
+Point your MCP client at one instance per account:
+
+```json
+{
+  "mcpServers": {
+    "calendar-personal": {
+      "command": "google-mcp-calendar",
+      "env": { "GOOGLE_MCP_ACCOUNT": "personal@example.com" }
+    },
+    "calendar-work": {
+      "command": "google-mcp-calendar",
+      "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
+    }
+  }
+}
+```
+
+Or run it bare (debugging, smoke tests), bound by the same env var:
 
 ```sh
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-calendar        # serve
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-calendar auth   # authorize the account
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-calendar        # serve
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-calendar auth   # authorize the account
 ```

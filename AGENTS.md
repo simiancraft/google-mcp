@@ -1,6 +1,6 @@
 # google-mcp-suite: Agent Instructions
 
-A single package of **Google MCP servers**: one thin [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, each authorized per account, all sharing one auth implementation. The organizing entity is a Google **account**; its children are **services** (Gmail, Drive, ...); each service exposes **operations**. One package, one version; each service ships as its own `bin`.
+A single package of **Google MCP servers**: one thin [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, each authorized per account, all sharing one auth implementation. The organizing entity is a Google **account**; its children are **services** (Gmail, Calendar, ...); each service exposes **operations**. One package, one version; each service ships as its own `bin`.
 
 ## Quick orientation
 

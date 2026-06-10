@@ -2,9 +2,10 @@
   "name": "google-mcp-suite",
   "version": "1.0.0",
   "type": "module",
-  "description": "Gmail and Calendar MCP servers exposing the curated MCP toolset plus the broader REST surface; one server instance per account; more Google services on the way.",
+  "description": "Per-account MCP servers for Gmail and Google Calendar: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes the curated MCP toolset plus the broader REST surface.",
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
     "gmail",
     "google",
@@ -12,7 +13,9 @@
     "multi-account",
     "agent",
     "email",
-    "calendar"
+    "calendar",
+    "google-calendar",
+    "scheduling"
   ],
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",

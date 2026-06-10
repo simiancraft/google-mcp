@@ -77,7 +77,7 @@ of the split, a tool and a method colliding on one key, fails loudly rather than
 silently dropping an operation.
 
 Add a method exactly like a tool, but source `schema.ts` from the REST method
-page (`…/reference/rest/v1/<resource>/<method>`).
+page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3).
 
 Mark with `destructive: true` any operation that is irreversible (`send`,
 permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent

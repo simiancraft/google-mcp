@@ -41,13 +41,29 @@ Methods speak the REST vocabulary (`timeMin`, `maxResults`, `sendUpdates`)
 while tools keep the MCP pages' vocabulary (`startTime`, `pageSize`,
 `notificationLevel`); each folder mirrors its own source of truth.
 
+**Method naming for REST `patch`:** methods take `update_*` (`update_calendar`,
+`update_calendar_entry`) unless an MCP tool already holds that name, in which
+case `patch_*` disambiguates; `events.patch` is `patch_event` because the
+toolset owns `update_event`.
+
+**Intentionally not exposed:** the PUT methods (`events.update`,
+`calendars.update`, `calendarList.update`) are skipped; the patch operations
+supersede them (full-resource PUT over a lossy projection would clobber
+unprojected fields). `calendarList.list` with the full per-user view is a real
+gap (the `list_calendars` tool returns the 4-field MCP projection); tracked as
+issue #24.
+
 ## The MCP Event projection and its gap-filler
 
 The MCP toolset defines a lossy Event projection, which the tools return
 verbatim: `conferenceData` collapses to a `conferenceUrl` string, attendee
 `optional` is renamed `optionalAttendee`, `reminders.overrides` surfaces as
 `overrideReminders`, and etag, sequence, iCalUID, extendedProperties,
-attachments, and the guest-permission flags are omitted.
+attachments, and the guest-permission flags are omitted. Because `etag` is
+omitted, the read-modify-write paths (`update_event` attendee deltas,
+`respond_to_event`) carry no `If-Match` concurrency guard; a lost update is
+possible under concurrent edits, an accepted simplification for a single-agent
+surface.
 
 `patch_event` (methods/) is the fidelity gap-filler on the write side: it
 exposes the REST fields the `update_event` tool cannot touch (recurrence,

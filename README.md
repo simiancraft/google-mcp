@@ -13,20 +13,20 @@
 </p>
 
 <p align="center">
-  <strong>A Google MCP server you can read in an afternoon.</strong><br />
+  <strong>Google MCP servers you can read in an afternoon, one per service.</strong><br />
   The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, in one server per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
 </p>
 
 <p align="center">
   <img src=".github/assets/gmail.svg" height="44" alt="Gmail" title="Gmail (shipping)" />
   &nbsp;&nbsp;&nbsp;
+  <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar (shipping)" />
+  &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/drive.svg" height="44" alt="Drive (planned)" title="Drive (planned)" />
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/sheets.svg" height="44" alt="Sheets (planned)" title="Sheets (planned)" />
   &nbsp;&nbsp;&nbsp;
   <img src=".github/assets/docs.svg" height="44" alt="Docs (planned)" title="Docs (planned)" />
-  &nbsp;&nbsp;&nbsp;
-  <img src=".github/assets/calendar.svg" height="44" alt="Calendar" title="Calendar (shipping)" />
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@
 
 ## What it does
 
-Point an AI agent at your Google accounts and let it do the work: triage and send mail and run your calendars today, manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
+Point an AI agent at your Google accounts and let it do the work: triage and send mail, run your calendars today; manage files and edit documents as those services land. The end goal is an agent that operates your accounts and hands you results.
 
 The design has two internal concepts and nothing else:
 
@@ -60,7 +60,7 @@ One package, one version: everything compiles into `google-mcp-suite`, which shi
 
 ## MCP, and then some
 
-This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
+This is an MCP server, and deliberately more than one. Google publishes an MCP toolset for some services, but that toolset is a small slice of what each API can do; you cannot fully instrument an account with it alone. Calendar makes the gap concrete: Google's curated Calendar toolset is 8 tools; the API has 25 worth having, and this server ships all of them. The goal here is to **fully empower an agent across several Google accounts and services**, so each server exposes two surfaces under one wire protocol:
 
 - **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
 - **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
@@ -79,18 +79,34 @@ google-mcp-doctor auth you@example.com   # browser consent; writes the account t
 google-mcp-doctor                        # provisioned, authorized, reachable?
 ```
 
-Then point your MCP client at a server, one instance per account:
+Then point your MCP client at the servers, one instance per service per account:
 
 ```json
 {
   "mcpServers": {
     "gmail-personal": {
       "command": "google-mcp-gmail",
-      "env": { "GOOGLE_MCP_ACCOUNT": "you@example.com" }
+      "env": { "GOOGLE_MCP_ACCOUNT": "personal@example.com" }
+    },
+    "gmail-work": {
+      "command": "google-mcp-gmail",
+      "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
+    },
+    "calendar-personal": {
+      "command": "google-mcp-calendar",
+      "env": { "GOOGLE_MCP_ACCOUNT": "personal@example.com" }
+    },
+    "calendar-work": {
+      "command": "google-mcp-calendar",
+      "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
     }
   }
 }
 ```
+
+Then ask your agent for something no single-account tool can do:
+
+> Find 30 free minutes next week that works across my work and personal calendars, book it on the work calendar with a Meet link, and email the invite summary to my personal address.
 
 ## Layout
 
@@ -113,14 +129,14 @@ One package, one version. `auth`, `lib`, `doctor`, and each service are folders 
 ## The multi-account model
 
 - **One OAuth app.** A single Google Cloud OAuth client (`client_secret`) is shared across every service.
-- **One token per account.** Each account is authorized once, granted the full scope union for all services. Tokens are stored per account, outside the repo.
+- **One token per account.** Each account is authorized once, granted the full scope union for all services. Tokens are stored per account, outside the repo. The account name is a label you choose at `doctor auth` time; an email address or a short alias (`work`, `personal`) both work, and the alias form keeps your MCP config readable.
 - **Identity by instance.** A running server is bound to one account via the `GOOGLE_MCP_ACCOUNT` environment variable. To command three accounts, you run three instances of a service, each with a different `GOOGLE_MCP_ACCOUNT`. There is no per-call account argument, so a server cannot act on the wrong account.
 
 ## Auth setup
 
 Authorization is a one-time, per-account browser consent flow.
 
-1. Create a Google Cloud project, enable the APIs you need (Gmail, Drive, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
+1. Create a Google Cloud project, enable the APIs you need (Gmail, Calendar, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
 2. Place the client secret JSON at `~/.google-mcp/client_secret.json` (override knobs in [src/auth's README](./src/auth/README.md)).
 3. Authorize each account once; this opens a browser consent flow and stores that account's token.
 4. Run a service with `GOOGLE_MCP_ACCOUNT=<account>` to act as that account.
@@ -138,14 +154,14 @@ bun install
 bun run check     # lint-fix, build, typecheck, test, knip
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, and [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./AGENTS.md) for the per-service pattern, [EXTENDING.md](./EXTENDING.md) for the add-a-service recipe, and [CHANGELOG.md](./CHANGELOG.md) for release history.
 
 ## Services
 
 | Service | Status | Operations |
 |---|---|---|
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
-| **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, availability, settings |
+| **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, free/busy, and meeting-time suggestions |
 | Drive | 🔜 Planned | files, folders, sharing, revisions |
 | Sheets | 🔜 Planned | spreadsheets, values, formatting |
 | Docs | 🔜 Planned | documents, structured content |
