@@ -18,7 +18,11 @@ src/
   auth/         # authorizedClient(account) + runAuthFlow(account); never reimplement auth
   lib/          # operation() + server(): the two MCP primitives; never reimplement the server
   <svc>/        # one folder per service (gmail, calendar, ...)
-    index.ts        # server({ name, operations, client }); the bin entry
+    index.ts        # server({ name, title, description, instructions, operations, client }); the bin entry
+    operation.ts    # <svc>Operation: operation() bound to the service's client type
+    instructions.ts # the served usage paragraph (MCP initialize result); testable without booting
+    capabilities.ts # regenerates CAPABILITIES.md from the registries (bun run capabilities)
+    operations.test.ts  # the surface pins (counts, annotation sets, citations, instructions, doc equality)
     entities/       # PascalCase zod nouns (Label.ts, Thread.ts, ...)
     lib/            # projection helpers (REST entity -> documented shape)
     tools/          # mirror the MCP toolset reference
@@ -42,7 +46,9 @@ with `operation()`. Keep them split.
 ## Add a tool
 
 1. **Find the page.** `…/reference/mcp/tools_list/<tool_name>`. Note its input
-   schema, output schema, and any `object (X)` it references.
+   schema, output schema, any `object (X)` it references, and the **Tool
+   Annotations** section at the bottom (all four hints; transcribed verbatim
+   into the definition).
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
 3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
    documented input/output as zod; reference entities for named objects; keep
@@ -59,14 +65,19 @@ with `operation()`. Keep them split.
    input/output from the schema. `annotations` is the four-hint quad (see
    Annotations below); `source` is the reference page URL the folder
    transcribes, emitted on the wire under
-   `_meta['com.simiancraft.google-mcp/source']` and linked from the generated
+   `_meta['com.simiancraft.google-mcp/source']` (the `SOURCE_META_KEY`
+   constant in `src/lib/operation.ts`) and linked from the generated
    CAPABILITIES.md, so an agent can fetch the authoritative documentation for
    any operation.
 6. **`handler.test.ts`:** feed a stub client to `handler` (a hand-rolled fake
    that captures params; never the network), assert the exact Google params per
    input shape, assert the projection, and `schema.output.parse(result)`.
 7. **Register** it in `tools/registry.ts`.
-8. `bun run check`, then verify live against a real account (see
+8. **Update the surface pins and regenerate the doc.** `operations.test.ts`
+   pins the counts and the read-only/destructive sets (update them in the
+   same commit), and an equality test pins CAPABILITIES.md to the registries,
+   so the suite stays red until `bun run capabilities` regenerates it.
+9. `bun run check`, then verify live against a real account (see
    [Live verification](#live-verification)).
 
 ## Tools vs methods
@@ -88,9 +99,11 @@ merge throws on a duplicate wire name (`mergeOperations`), so the only real haza
 of the split, a tool and a method colliding on one key, fails loudly rather than
 silently dropping an operation.
 
-Add a method exactly like a tool, but source `schema.ts` from the REST method
-page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
-Sheets v4).
+Add a method exactly like a tool, but transcribe from the REST method page
+(`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
+Sheets v4): that page URL becomes the definition's `source`, and the
+annotations follow the rubric below, since REST pages publish no Tool
+Annotations section.
 
 Where Google publishes no MCP toolset at all (Sheets; its MCP-supported
 products are Gmail, Drive, Calendar, Chat, and People), the service is
@@ -125,8 +138,15 @@ pages establish:
   (`create_filter`) is destructive and not idempotent
 
 Everything else is closed-world (`openWorldHint: false`), matching every
-Google-published page. The surface-count test pins each wing's read-only and
-destructive sets.
+Google-published page.
+
+**The surface pins.** Each wing's `operations.test.ts` asserts, and every
+registry change updates: the tool and method counts; all four hints present
+on every operation; the exact read-only and destructive sets; the citation
+shape per provenance (a tool cites its own `mcp/tools_list/<name>` page, a
+method a REST reference page); the instructions string (cites the real
+`_meta` key, names only real operations); and that CAPABILITIES.md equals a
+fresh render of the registries.
 
 Annotations are written as the four explicit flags at each definition site,
 the same way Google's pages present them; do not abstract them into named
@@ -192,9 +212,13 @@ the tool/REST reference.
    runAuth: runAuthFlow })`. `title`, `description`, and the package-homepage
    `websiteUrl` default identify the server in client UIs (MCP
    `Implementation`); `instructions` is served in the initialize result, which
-   clients inject into the agent's context at connect time. Write it as the
-   one paragraph an agent should read before calling tools: identity binding,
-   vocabulary, and the service's traps.
+   clients typically inject into the agent's context at connect time. Write it
+   as the one paragraph an agent should read before calling tools: identity
+   binding, vocabulary, and the service's traps. Keep the string in
+   `src/<svc>/instructions.ts`, composed from lib's `identityInstructions()`
+   preamble and interpolating `SOURCE_META_KEY` (never hand-typed), so the
+   wing test can pin it without booting the server (`index.ts`'s import side
+   effect is `await server()`).
    (`import { server } from '../lib/server.js'`,
    `import { mergeOperations } from '../lib/operation.js'`,
    `import { authorizedClient, runAuthFlow } from '../auth/oauth.js'`,
