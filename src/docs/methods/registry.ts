@@ -1,7 +1,9 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
 import { create_document } from './create_document/index.js';
+import { create_paragraph_bullets } from './create_paragraph_bullets/index.js';
 import { delete_content_range } from './delete_content_range/index.js';
+import { delete_paragraph_bullets } from './delete_paragraph_bullets/index.js';
 import { get_document } from './get_document/index.js';
 import { insert_text } from './insert_text/index.js';
 import { replace_all_text } from './replace_all_text/index.js';
@@ -27,4 +29,6 @@ export const methods = {
   // styling (curated batchUpdate requests)
   update_text_style,
   update_paragraph_style,
+  create_paragraph_bullets,
+  delete_paragraph_bullets,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;
