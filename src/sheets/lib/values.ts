@@ -1,8 +1,8 @@
 import type { sheets_v4 } from '@googleapis/sheets';
+import { narrow } from '../../lib/enums.js';
 import type { CellValue } from '../entities/CellValue.js';
 import type { UpdateValuesResponse } from '../entities/UpdateValuesResponse.js';
 import type { ValueRange } from '../entities/ValueRange.js';
-import { narrow } from './enums.js';
 
 /**
  * Project a REST value range onto the ValueRange shape, cleaning nulls to

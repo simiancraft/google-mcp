@@ -1,7 +1,7 @@
 import type { sheets_v4 } from '@googleapis/sheets';
+import { narrow } from '../../lib/enums.js';
 import type { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
-import { narrow } from './enums.js';
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
 export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): SheetProperties {
