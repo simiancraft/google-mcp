@@ -64,7 +64,7 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write .",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "capabilities": "for f in src/*/capabilities.ts; do bun run \"$f\" || exit 1; done",

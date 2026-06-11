@@ -1,8 +1,11 @@
 import { randomBytes } from 'node:crypto';
-import { chmodSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { CodeChallengeMethod, type Credentials, OAuth2Client } from 'google-auth-library';
+import { CodeChallengeMethod, OAuth2Client } from 'google-auth-library';
 import open from 'open';
+import { z } from 'zod';
+import { forGoogle } from '../lib/utils/google.js';
+import { readJsonFile } from '../lib/utils/json.js';
 import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 
 // The loopback IP literal, not `localhost` (RFC 8252 section 8.3, and Google's
@@ -10,14 +13,32 @@ import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 // `localhost` at ::1 where nothing listens.
 const redirectUri = (port: number) => `http://127.0.0.1:${port}/oauth2callback`;
 
+const ClientKeys = z.object({
+  client_id: z.string().optional(),
+  client_secret: z.string().optional(),
+});
+
+/** The two shapes Google's console downloads use; everything else is rejected below. */
+const ClientSecretFile = z.object({
+  installed: ClientKeys.optional(),
+  web: ClientKeys.optional(),
+});
+
 type ClientSecret = { client_id: string; client_secret: string };
 
 function loadClientSecret(): ClientSecret {
   const secretPath = loadConfig().clientSecretPath;
-  const raw = JSON.parse(readFileSync(secretPath, 'utf8')) as {
-    installed?: ClientSecret;
-    web?: ClientSecret;
-  };
+  let raw: z.infer<typeof ClientSecretFile>;
+  try {
+    raw = readJsonFile(secretPath, ClientSecretFile);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      throw new Error(
+        `Invalid OAuth client secret at ${secretPath} (expected "installed" or "web").`,
+      );
+    }
+    throw err;
+  }
   const keys = raw.installed ?? raw.web;
   if (!keys?.client_id || !keys.client_secret) {
     throw new Error(
@@ -26,6 +47,15 @@ function loadClientSecret(): ClientSecret {
   }
   return { client_id: keys.client_id, client_secret: keys.client_secret };
 }
+
+/**
+ * The token fields the library refreshes from; everything else Google stores
+ * in the file rides along untyped (the file is this suite's own write).
+ */
+const StoredToken = z.looseObject({
+  access_token: z.string().optional(),
+  refresh_token: z.string().optional(),
+});
 
 function newClient(port = 3000): OAuth2Client {
   const { client_id, client_secret } = loadClientSecret();
@@ -40,10 +70,10 @@ function newClient(port = 3000): OAuth2Client {
 export async function authorizedClient(account?: string): Promise<OAuth2Client> {
   const client = newClient();
   const config = loadConfig();
-  const token: Credentials = JSON.parse(
-    readFileSync(tokenPath(resolveAccount(account, config), config), 'utf8'),
-  );
-  client.setCredentials(token);
+  const token = readJsonFile(tokenPath(resolveAccount(account, config), config), StoredToken);
+  // forGoogle drops undefined-valued keys, reconciling zod's `?: T | undefined`
+  // with the library's exactOptionalPropertyTypes-strict Credentials.
+  client.setCredentials(forGoogle(token));
   return client;
 }
 

@@ -32,10 +32,17 @@ it('resolves an authorized client from a stored token', async () => {
 
 it('throws on an invalid client secret file', async () => {
   const badDir = mkdtempSync(path.join(os.tmpdir(), 'google-auth-bad-'));
-  writeFileSync(path.join(badDir, 'client_secret.json'), JSON.stringify({ nonsense: true }));
   const saved = process.env['GOOGLE_MCP_CLIENT_SECRET'];
   process.env['GOOGLE_MCP_CLIENT_SECRET'] = path.join(badDir, 'client_secret.json');
+  // Keys absent entirely: passes the file schema, fails the presence check.
+  writeFileSync(path.join(badDir, 'client_secret.json'), JSON.stringify({ nonsense: true }));
   await expect(authorizedClient('test')).rejects.toThrow(/Invalid OAuth client secret/);
+  // Shape violation: the zod failure carries the same message.
+  writeFileSync(path.join(badDir, 'client_secret.json'), JSON.stringify({ installed: 'nope' }));
+  await expect(authorizedClient('test')).rejects.toThrow(/Invalid OAuth client secret/);
+  // Broken JSON is not a shape problem; it surfaces untranslated.
+  writeFileSync(path.join(badDir, 'client_secret.json'), '{not json');
+  await expect(authorizedClient('test')).rejects.toThrow(SyntaxError);
   process.env['GOOGLE_MCP_CLIENT_SECRET'] = saved;
   rmSync(badDir, { recursive: true, force: true });
 });
