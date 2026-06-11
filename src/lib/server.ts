@@ -110,10 +110,10 @@ export function renderCapabilities<Client>(
   groups: CapabilityGroup<Client>[],
 ): string {
   const rows = groups.flatMap(({ kind, operations }) =>
-    Object.entries(operations).map(([name, op]) => {
-      const label = op.source ? `[\`${name}\`](${op.source})` : `\`${name}\``;
-      return `| ${label}${op.annotations.destructiveHint ? ' ⚠️' : ''} | ${kind} | ${op.description} |`;
-    }),
+    Object.entries(operations).map(
+      ([name, op]) =>
+        `| [\`${name}\`](${op.source})${op.annotations.destructiveHint ? ' ⚠️' : ''} | ${kind} | ${op.description} |`,
+    ),
   );
   // Derived from the groups actually passed in, so a methods-only service
   // (Sheets) does not claim an MCP toolset it does not have.
