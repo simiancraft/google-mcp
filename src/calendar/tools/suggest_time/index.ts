@@ -18,6 +18,12 @@ import { schema } from './schema.js';
  */
 export const suggest_time = calendarOperation({
   description: 'Suggest free time slots where the given attendees can meet within a time window.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -12,6 +12,12 @@ import { schema } from './schema.js';
 export const remove_calendar_entry = calendarOperation({
   description:
     "Remove a calendar from the user's calendar list (unsubscribe); the calendar itself is untouched.",
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

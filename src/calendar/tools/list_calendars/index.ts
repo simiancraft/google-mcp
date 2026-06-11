@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const list_calendars = calendarOperation({
   description: "List the calendars on the user's calendar list, paginated.",
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

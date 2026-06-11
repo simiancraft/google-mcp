@@ -12,6 +12,12 @@ import { schema } from './schema.js';
  */
 export const create_event = calendarOperation({
   description: 'Create an event on a calendar.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

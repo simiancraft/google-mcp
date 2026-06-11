@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const get_colors = calendarOperation({
   description: 'Get the color palettes for calendars and events, keyed by color ID.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

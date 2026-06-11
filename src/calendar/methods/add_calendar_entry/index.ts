@@ -12,6 +12,12 @@ import { schema } from './schema.js';
  */
 export const add_calendar_entry = calendarOperation({
   description: "Add an existing calendar to the user's calendar list (subscribe).",
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

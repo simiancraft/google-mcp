@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const get_setting = calendarOperation({
   description: 'Get a single user setting by id.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

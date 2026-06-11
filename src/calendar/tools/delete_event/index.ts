@@ -11,6 +11,12 @@ import { schema } from './schema.js';
 export const delete_event = calendarOperation({
   description: 'Delete an event from a calendar, returning the deleted event.',
   destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

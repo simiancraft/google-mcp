@@ -13,6 +13,12 @@ import { schema } from './schema.js';
 export const update_calendar_entry = calendarOperation({
   description:
     "Update the user's view of a calendar (title override, colors, visibility, default reminders); unset fields are left unchanged.",
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

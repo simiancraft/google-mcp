@@ -9,6 +9,12 @@ import { schema } from './schema.js';
 export const update_calendar = calendarOperation({
   description:
     "Update a calendar's title, description, location, and/or time zone; unset fields are left unchanged.",
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

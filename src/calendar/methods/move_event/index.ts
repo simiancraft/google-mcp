@@ -12,6 +12,12 @@ import { schema } from './schema.js';
  */
 export const move_event = calendarOperation({
   description: 'Move an event to another calendar; only default-type events can move.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });
