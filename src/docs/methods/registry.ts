@@ -1,7 +1,10 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
 import { create_document } from './create_document/index.js';
+import { delete_content_range } from './delete_content_range/index.js';
 import { get_document } from './get_document/index.js';
+import { insert_text } from './insert_text/index.js';
+import { replace_all_text } from './replace_all_text/index.js';
 
 /**
  * REST-sourced operations, from
@@ -15,4 +18,8 @@ export const methods = {
   // documents
   get_document,
   create_document,
+  // text editing (curated batchUpdate requests)
+  insert_text,
+  replace_all_text,
+  delete_content_range,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;

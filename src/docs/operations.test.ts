@@ -8,9 +8,9 @@ import { methods } from './methods/registry.js';
 const operations = mergeOperations(methods);
 
 describe('docs operations', () => {
-  it('exposes the full surface (2 methods; methods-only, no MCP toolset)', () => {
-    expect(Object.keys(methods)).toHaveLength(2);
-    expect(Object.keys(operations)).toHaveLength(2);
+  it('exposes the full surface (5 methods; methods-only, no MCP toolset)', () => {
+    expect(Object.keys(methods)).toHaveLength(5);
+    expect(Object.keys(operations)).toHaveLength(5);
   });
 
   it('annotates every operation with the four MCP hints, explicitly', () => {
@@ -35,7 +35,7 @@ describe('docs operations', () => {
       .filter(([, op]) => op.annotations.destructiveHint)
       .map(([name]) => name)
       .sort();
-    expect(destructive).toEqual([]);
+    expect(destructive).toEqual(['delete_content_range', 'replace_all_text']);
   });
 
   it('declares the whole surface closed-world', () => {
