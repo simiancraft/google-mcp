@@ -93,7 +93,10 @@ export async function callOperation<Client>(
   name: string,
   rawArgs: unknown,
 ): Promise<CallToolResult> {
-  const op = operations[name];
+  // Own-property guard: the registry is a plain object, so a bare `operations[name]`
+  // would resolve inherited keys (`__proto__`, `toString`, ...) to truthy non-operations
+  // and throw past the error envelope when an agent sends one as a tool name.
+  const op = Object.hasOwn(operations, name) ? operations[name] : undefined;
   if (!op) {
     return errorResult(`Unknown tool: ${name}`);
   }

@@ -44,6 +44,16 @@ describe('callOperation', () => {
     expect(result.isError).toBe(true);
   });
 
+  it('treats inherited Object keys as unknown operations, not dispatch targets', async () => {
+    for (const name of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) {
+      const result = await callOperation(operations, client, name, {});
+      expect(result.isError).toBe(true);
+      expect(result.content[0]).toMatchObject({
+        text: expect.stringContaining(`Unknown tool: ${name}`),
+      });
+    }
+  });
+
   it('returns an error result for invalid input', async () => {
     const result = await callOperation(operations, client, 'echo', { text: 42 });
     expect(result.isError).toBe(true);

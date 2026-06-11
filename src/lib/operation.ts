@@ -53,7 +53,7 @@ export function mergeOperations<Client>(
   const merged: Record<string, AnyOperation<Client>> = {};
   for (const group of groups) {
     for (const [name, op] of Object.entries(group)) {
-      if (name in merged) {
+      if (Object.hasOwn(merged, name)) {
         throw new Error(`Duplicate operation name: ${name}`);
       }
       merged[name] = op;
