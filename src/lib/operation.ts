@@ -38,7 +38,8 @@ export type OperationAnnotations = {
   idempotentHint: boolean;
   /**
    * True when the operation reaches arbitrary external entities (Gmail's
-   * sends); false for everything bound to the account's own data.
+   * sends by rubric; Drive's create_file/copy_file pair by Google's own MCP
+   * pages); false for everything bound to the account's own data.
    */
   openWorldHint: boolean;
 };
@@ -89,7 +90,7 @@ export type AnyOperation<Client> = {
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
   annotations: OperationAnnotations;
-  source: string;
+  source: `https://${string}`;
 };
 
 /**

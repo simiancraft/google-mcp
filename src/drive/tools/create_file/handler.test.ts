@@ -89,18 +89,28 @@ describe('create_file', () => {
     expect(captured.params?.media).toBeUndefined();
   });
 
-  it('rejects ambiguous and underspecified content', async () => {
+  it('does not resolve inherited keys as conversions', async () => {
     const captured: Captured = {};
-    expect(
-      handler(fakeDrive(captured, {}), {
-        title: 'x',
-        contentMimeType: 'text/plain',
-        textContent: 'a',
-        base64Content: 'YQ==',
-      }),
-    ).rejects.toThrow('cannot both be set');
-    expect(handler(fakeDrive(captured, {}), { title: 'x', textContent: 'a' })).rejects.toThrow(
-      'contentMimeType is required',
-    );
+    await handler(fakeDrive(captured, { id: 'F9' }), {
+      title: 'x',
+      contentMimeType: '__proto__',
+      textContent: 'a',
+    });
+    // No conversion: the create carries no mimeType override in its body.
+    expect(captured.params?.requestBody?.mimeType).toBeUndefined();
+  });
+
+  it('rejects ambiguous and underspecified content at the schema', () => {
+    const both = schema.input.safeParse({
+      title: 'x',
+      contentMimeType: 'text/plain',
+      textContent: 'a',
+      base64Content: 'YQ==',
+    });
+    expect(both.success).toBe(false);
+    expect(JSON.stringify(both.error?.issues)).toContain('cannot both be set');
+    const noMime = schema.input.safeParse({ title: 'x', textContent: 'a' });
+    expect(noMime.success).toBe(false);
+    expect(JSON.stringify(noMime.error?.issues)).toContain('contentMimeType is required');
   });
 });

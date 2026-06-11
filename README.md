@@ -180,7 +180,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./A
 | Service | Status | Operations |
 |---|---|---|
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
-| **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, free/busy, and meeting-time suggestions |
+| **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, free/busy, meeting-time suggestions |
 | **Sheets** | ✅ Implemented | [15 operations](./src/sheets/CAPABILITIES.md): spreadsheets, values, batch and data-filter reads/writes, developer metadata |
 | **Docs** | ✅ Implemented | [9 operations](./src/docs/CAPABILITIES.md): document reads and creation, curated text editing and styling |
 | **Drive** | ✅ Implemented | [35 operations](./src/drive/CAPABILITIES.md): files, search, content, comments, revisions, shared drives |

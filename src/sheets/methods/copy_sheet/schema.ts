@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { SheetProperties } from '../../entities/SheetProperties.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the sheet to copy.'),
     sheetId: z.number().int().describe('The ID of the sheet to copy.'),
     destinationSpreadsheetId: z

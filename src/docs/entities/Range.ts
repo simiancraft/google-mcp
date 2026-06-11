@@ -7,7 +7,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/docs/api/reference/rest/v1/documents#Range
  */
-export const Range = z.object({
+export const Range = z.strictObject({
   startIndex: z
     .number()
     .int()

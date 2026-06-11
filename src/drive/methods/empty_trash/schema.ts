@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     driveId: z
       .string()
       .optional()

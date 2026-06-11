@@ -8,8 +8,15 @@
  * when present it is preferred over the flat 7-day assumption.
  */
 import { readFileSync, statSync } from 'node:fs';
+import { z } from 'zod';
 import { tokenPath } from '../auth/config.js';
 import { type Account, loadAccounts } from './accounts.js';
+
+// The two token-file fields the doctor reads; tolerant of every other key.
+const TokenFile = z.object({
+  refresh_token_expires_in: z.number().optional(),
+  scope: z.string().optional(),
+});
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const DUE_SOON_MS = 48 * 60 * 60 * 1000;
@@ -41,10 +48,8 @@ export function statusFor(account: Account, now: number): TokenStatus {
   const authorizedAt = stat.mtime;
   let lifetimeMs = SEVEN_DAYS_MS;
   try {
-    const raw = JSON.parse(readFileSync(tokenPath(account.label), 'utf8')) as {
-      refresh_token_expires_in?: number;
-    };
-    if (typeof raw.refresh_token_expires_in === 'number') {
+    const raw = TokenFile.parse(JSON.parse(readFileSync(tokenPath(account.label), 'utf8')));
+    if (raw.refresh_token_expires_in !== undefined) {
       lifetimeMs = raw.refresh_token_expires_in * 1000;
     }
   } catch {
@@ -64,7 +69,7 @@ export function allStatuses(now: number): TokenStatus[] {
 /** Scopes Google actually granted this account, or null if no token exists. */
 export function grantedScopes(label: string): string[] | null {
   try {
-    const raw = JSON.parse(readFileSync(tokenPath(label), 'utf8')) as { scope?: string };
+    const raw = TokenFile.parse(JSON.parse(readFileSync(tokenPath(label), 'utf8')));
     return raw.scope ? raw.scope.split(' ').filter(Boolean) : [];
   } catch {
     return null;
@@ -72,7 +77,7 @@ export function grantedScopes(label: string): string[] | null {
 }
 
 export function humanizeRemaining(ms: number | undefined): string {
-  if (ms === undefined) return '—';
+  if (ms === undefined) return '-';
   if (ms <= 0) return 'expired';
   const hours = Math.floor(ms / 3_600_000);
   const days = Math.floor(hours / 24);
@@ -80,7 +85,7 @@ export function humanizeRemaining(ms: number | undefined): string {
 }
 
 function stamp(d: Date | undefined): string {
-  return d ? d.toISOString().slice(0, 16).replace('T', ' ') : '—';
+  return d ? d.toISOString().slice(0, 16).replace('T', ' ') : '-';
 }
 
 /** `doctor status`: the at-a-glance countdown table. */

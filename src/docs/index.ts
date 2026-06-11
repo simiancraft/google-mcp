@@ -19,7 +19,7 @@ await server({
   name: 'docs',
   title: 'Google Docs (google-mcp-suite)',
   description:
-    'Per-account Google Docs MCP server: document reads and creation plus curated text editing.',
+    'Per-account Google Docs MCP server: document reads and creation plus curated text editing and styling.',
   instructions,
   operations: mergeOperations(methods),
   client: async (account) => docs({ version: 'v1', auth: await authorizedClient(account) }),

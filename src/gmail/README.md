@@ -24,7 +24,7 @@ discovers the live surface, with input and output JSON Schema, from the server's
 ## Layout (`src/gmail/`)
 
 ```
-index.ts        # server({ name, operations, client }); the bin entry
+index.ts        # server({ name, title, description, instructions, operations, client }); the bin entry
 tools/          # MCP-sourced ops; registry.ts + one folder per tool
                 #   <tool>/ index.ts + handler.ts + schema.ts + handler.test.ts
 methods/        # REST-sourced ops; same construction
@@ -41,9 +41,26 @@ discovery only; the handlers reimplement over the Gmail REST API.
 
 ## Run
 
-One instance per account, bound by env var:
+Point your MCP client at one instance per account:
+
+```json
+{
+  "mcpServers": {
+    "gmail-personal": {
+      "command": "google-mcp-gmail",
+      "env": { "GOOGLE_MCP_ACCOUNT": "personal@example.com" }
+    },
+    "gmail-work": {
+      "command": "google-mcp-gmail",
+      "env": { "GOOGLE_MCP_ACCOUNT": "work@example.com" }
+    }
+  }
+}
+```
+
+Or run it bare (debugging, smoke tests), bound by the same env var:
 
 ```sh
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-gmail        # serve
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-gmail auth   # authorize the account
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-gmail        # serve
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-gmail auth   # authorize the account
 ```

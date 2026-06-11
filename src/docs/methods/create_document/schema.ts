@@ -7,7 +7,7 @@ import { Document } from '../../entities/Document.js';
  * rather than accepting fields the API would drop.
  */
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     title: z
       .string()
       .describe(

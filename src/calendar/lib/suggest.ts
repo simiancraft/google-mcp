@@ -17,6 +17,8 @@ type Preferences = {
 /** A busy interval in epoch milliseconds. */
 type Interval = { start: number; end: number };
 
+const MAX_SCAN_ITERATIONS = 10_000;
+
 const MINUTE_MS = 60_000;
 const DAY_MINUTES = 24 * 60;
 
@@ -117,7 +119,21 @@ export function suggestSlots(input: {
   const slots: TimeSlot[] = [];
   let cursor = Date.parse(input.windowStart);
 
+  // Cap the scan: every branch advances the cursor, so 10,000 iterations
+  // covers roughly 27 years of day-by-day skipping; preferences that never
+  // admit a slot would otherwise walk an arbitrarily wide window on the
+  // single server thread. Throwing (rather than returning partial slots)
+  // keeps the refusal posture: a partial answer here looks complete.
+  let iterations = 0;
+
   while (slots.length < cap && cursor + durationMs <= windowEnd) {
+    iterations += 1;
+    if (iterations > MAX_SCAN_ITERATIONS) {
+      throw new Error(
+        `suggest_time scanned ${MAX_SCAN_ITERATIONS} candidate start times without filling the request; ` +
+          'narrow the window or relax the preferences.',
+      );
+    }
     const blocked = busy.find(
       (period) => period.start < cursor + durationMs && period.end > cursor,
     );

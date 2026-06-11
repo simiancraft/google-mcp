@@ -9,7 +9,7 @@
  *
  * Scopes are attributed per service for reporting, but the canonical scope list
  * is `SCOPES` in `src/auth/config.ts` (services do not declare scopes locally).
- * `assertScopeRegistryMatches` guards the two against silent drift.
+ * `scopeRegistryDrift` (and its test) guards the two against silent drift.
  */
 import { calendar } from '@googleapis/calendar';
 import { docs } from '@googleapis/docs';

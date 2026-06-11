@@ -3,7 +3,7 @@ import { DataFilter } from '../../entities/DataFilter.js';
 import { DeveloperMetadata } from '../../entities/DeveloperMetadata.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to retrieve metadata from.'),
     dataFilters: z
       .array(DataFilter)

@@ -5,7 +5,7 @@ import { ValueRange } from '../../entities/ValueRange.js';
 import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to retrieve data from.'),
     ranges: z
       .array(z.string())

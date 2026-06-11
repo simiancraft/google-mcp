@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     // Required, no primary default: the caller must name the calendar it is
     // destroying, and the primary calendar cannot be deleted anyway.
     calendarId: z.string().describe('The calendar ID of the secondary calendar to delete.'),

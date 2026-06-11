@@ -1,6 +1,12 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { isGoogleNative, isTextLike, textExportMime } from '../../lib/content.js';
+import {
+  assertWithinCap,
+  isGoogleNative,
+  isTextLike,
+  mediaBuffer,
+  textExportMime,
+} from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -9,7 +15,7 @@ export async function handler(
 ): Promise<z.infer<typeof schema.output>> {
   const { data: meta } = await drive.files.get({
     fileId: args.fileId,
-    fields: 'id,mimeType',
+    fields: 'id,mimeType,size',
     supportsAllDrives: true,
   });
   const mimeType = meta.mimeType ?? '';
@@ -25,7 +31,9 @@ export async function handler(
       { fileId: args.fileId, mimeType: exportMime },
       { responseType: 'arraybuffer' },
     );
-    return { fileContent: Buffer.from(res.data as ArrayBuffer).toString('utf8') };
+    // Native exports stay uncapped on purpose: Google's own export limit
+    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
+    return { fileContent: mediaBuffer(res).toString('utf8') };
   }
 
   if (!isTextLike(mimeType)) {
@@ -34,9 +42,16 @@ export async function handler(
         'use download_file_content for base64 bytes.',
     );
   }
+  // The same ceiling download_file_content enforces: blobs buffer whole into a
+  // JSON string, so an uncapped read is a self-inflicted OOM on a large CSV.
+  assertWithinCap(Number(meta.size ?? 0), 'File', 'content reads');
   const res = await drive.files.get(
     { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
     { responseType: 'arraybuffer' },
   );
-  return { fileContent: Buffer.from(res.data as ArrayBuffer).toString('utf8') };
+  const bytes = mediaBuffer(res);
+  // Re-check what actually arrived: the metadata size is a separate earlier
+  // call, absent on some blobs, and content can change between the two.
+  assertWithinCap(bytes.byteLength, 'File content', 'content reads');
+  return { fileContent: bytes.toString('utf8') };
 }

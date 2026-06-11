@@ -295,3 +295,19 @@ describe('suggestSlots', () => {
     ).toEqual([]);
   });
 });
+
+describe('suggestSlots scan cap', () => {
+  it('throws rather than walking an arbitrarily wide window day by day', () => {
+    expect(() =>
+      suggestSlots({
+        windowStart: '2026-01-01T00:00:00.000Z',
+        windowEnd: '2126-01-01T00:00:00.000Z',
+        durationMinutes: 30,
+        busy: [],
+        timeZone: 'UTC',
+        // opening equals closing, so no day ever admits a 30-minute slot
+        preferences: { startHour: '09:00', endHour: '09:00' },
+      }),
+    ).toThrow(/narrow the window or relax the preferences/);
+  });
+});

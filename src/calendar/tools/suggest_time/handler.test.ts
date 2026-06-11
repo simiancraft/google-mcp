@@ -22,11 +22,16 @@ function fakeCalendar(
 describe('suggest_time', () => {
   it("queries freebusy over the window, passing 'primary' and attendee emails straight through", async () => {
     const captured: Captured = {};
-    const result = await handler(fakeCalendar(captured, {}), {
-      attendeeEmails: ['primary', 'a@example.com'],
-      startTime: '2026-06-10T09:00:00Z',
-      endTime: '2026-06-10T10:00:00Z',
-    });
+    const result = await handler(
+      fakeCalendar(captured, {
+        calendars: { primary: { busy: [] }, 'a@example.com': { busy: [] } },
+      }),
+      {
+        attendeeEmails: ['primary', 'a@example.com'],
+        startTime: '2026-06-10T09:00:00Z',
+        endTime: '2026-06-10T10:00:00Z',
+      },
+    );
     expect(captured.params).toEqual({
       requestBody: {
         timeMin: '2026-06-10T09:00:00Z',
@@ -69,9 +74,20 @@ describe('suggest_time', () => {
     ).rejects.toThrow('Free/busy is unavailable for typo@example.com');
   });
 
+  it('rejects when a requested calendar is missing from the response entirely', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeCalendar(captured, { calendars: { primary: { busy: [] } } }), {
+        attendeeEmails: ['primary', 'silent@example.com'],
+        startTime: '2026-06-10T09:00:00Z',
+        endTime: '2026-06-10T10:00:00Z',
+      }),
+    ).rejects.toThrow('Free/busy is unavailable for silent@example.com');
+  });
+
   it('passes the time zone through to the freebusy query', async () => {
     const captured: Captured = {};
-    await handler(fakeCalendar(captured, {}), {
+    await handler(fakeCalendar(captured, { calendars: { primary: { busy: [] } } }), {
       attendeeEmails: ['primary'],
       startTime: '2026-06-10T09:00:00Z',
       endTime: '2026-06-10T10:00:00Z',
@@ -135,7 +151,7 @@ describe('suggest_time', () => {
 
   it('applies the duration and the scheduling preferences', async () => {
     const captured: Captured = {};
-    const result = await handler(fakeCalendar(captured, {}), {
+    const result = await handler(fakeCalendar(captured, { calendars: { primary: { busy: [] } } }), {
       attendeeEmails: ['primary'],
       startTime: '2026-06-10T06:00:00Z',
       endTime: '2026-06-10T18:00:00Z',

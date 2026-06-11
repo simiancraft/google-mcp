@@ -8,7 +8,7 @@ import { DeveloperMetadataLocation } from './DeveloperMetadataLocation.js';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.developerMetadata#DeveloperMetadataLookup
  */
-export const DeveloperMetadataLookup = z.object({
+export const DeveloperMetadataLookup = z.strictObject({
   locationType: z
     .enum(['ROW', 'COLUMN', 'SHEET', 'SPREADSHEET'])
     .optional()

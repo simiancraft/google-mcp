@@ -1,8 +1,9 @@
 import type { calendar_v3 } from '@googleapis/calendar';
+import { narrow } from '../../lib/enums.js';
 import type { Attendee } from '../entities/Attendee.js';
 import type { Event } from '../entities/Event.js';
 import type { Principal } from '../entities/Principal.js';
-import type { Reminder } from '../entities/Reminder.js';
+import { Reminder } from '../entities/Reminder.js';
 import { projectEventDateTime } from './datetime.js';
 
 /** The REST shape of an event's creator and organizer (structurally identical). */
@@ -36,8 +37,7 @@ function projectAttendee(attendee: calendar_v3.Schema$EventAttendee): Attendee {
 /** Project a REST reminder onto the Reminder shape; unknown delivery methods drop rather than masquerade as popups. */
 export function projectReminder(reminder: calendar_v3.Schema$EventReminder): Reminder {
   return {
-    method:
-      reminder.method === 'email' || reminder.method === 'popup' ? reminder.method : undefined,
+    method: narrow(reminder.method, Reminder.shape.method.unwrap().options),
     minutes: reminder.minutes ?? 0,
   };
 }

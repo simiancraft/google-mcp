@@ -38,10 +38,11 @@ src/
 ```
 
 A service imports `lib` and `auth` by relative path (`../lib/server.js`,
-`../lib/operation.js`, `../auth/oauth.js`). Each operation is three files:
-`schema.ts` is the contract (regenerable from the docs), `handler.ts` is the work
-(the REST call + projection), and `index.ts` is the definition that binds them
-with `operation()`. Keep them split.
+`../lib/operation.js`, `../auth/oauth.js`). Each operation is three code
+files plus a colocated test: `schema.ts` is the contract (regenerable from the docs), `handler.ts` is the
+work (the REST call + projection), `index.ts` is the definition that binds
+them with `operation()`, and `handler.test.ts` drives the handler against a
+stub client. Keep them split.
 
 ## Add a tool
 
@@ -52,8 +53,17 @@ with `operation()`. Keep them split.
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
 3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
    documented input/output as zod; reference entities for named objects; keep
-   inline primitives inline. The folder's citation lives once, in `index.ts`'s
-   `source` field; do not restate the URL in schema.ts.
+   inline primitives inline. The input wrapper and every object nested under
+   it are `z.strictObject` (suite-wide decision: an unknown key is an agent
+   typo and must reject loudly at any depth; a typo'd key inside a nested
+   noun like `textStyle` or `criteria` would otherwise strip silently into a
+   no-op). The wire schema carries `additionalProperties: false` on every
+   object node, and the surface pin walks the emitted input schema
+   recursively. Strictness rides into outputs where an input entity is also
+   projected there (projections construct exactly, so this is free);
+   output-only wrappers and entities stay `z.object`. The folder's
+   citation lives once, in `index.ts`'s `source` field; do not restate the URL
+   in schema.ts.
 4. **`handler.ts`:** `export async function handler(client, args) { … }`, typed
    `args: z.infer<typeof schema.input>` and returning `z.infer<typeof
    schema.output>`. The handler calls the REST method and **projects** the
@@ -74,9 +84,10 @@ with `operation()`. Keep them split.
    input shape, assert the projection, and `schema.output.parse(result)`.
 7. **Register** it in `tools/registry.ts`.
 8. **Update the surface pins and regenerate the doc.** `operations.test.ts`
-   pins the counts and the read-only/destructive sets (update them in the
-   same commit), and an equality test pins CAPABILITIES.md to the registries,
-   so the suite stays red until `bun run capabilities` regenerates it.
+   pins the counts and the read-only/destructive/open-world sets (update them
+   in the same commit), and an equality test pins CAPABILITIES.md to the
+   registries, so the suite stays red until `bun run capabilities`
+   regenerates it.
 9. `bun run check`, then verify live against a real account (see
    [Live verification](#live-verification)).
 
@@ -93,7 +104,9 @@ toolset alone cannot fully drive a Google service; `methods/` is how the suite
 goes past it to fully instrument an account. The two folders mirror Google's own
 two reference trees (MCP vs REST), which keeps provenance obvious and makes the
 surface self-documenting. It also enables **documentation-driven updates**: a
-reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple,
+reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple
+(occasionally a page splits into several operations where annotations differ,
+like Drive's `files/update` page behind `update_file` and the trash pair),
 so "here is the page, make the files" is a bounded, repeatable unit of work. The
 merge throws on a duplicate wire name (`mergeOperations`), so the only real hazard
 of the split, a tool and a method colliding on one key, fails loudly rather than
@@ -101,8 +114,9 @@ silently dropping an operation.
 
 Add a method exactly like a tool, but transcribe from the REST method page
 (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
-Sheets v4, Docs v1): that page URL becomes the definition's `source`, and the
-annotations follow the rubric below, since REST pages publish no Tool
+Sheets v4, Docs v1, Drive v3; Calendar's pages deviate, with no `rest`
+segment and the version before `reference`: `…/calendar/api/v3/reference/`):
+that page URL becomes the definition's `source`, and the annotations follow the rubric below, since REST pages publish no Tool
 Annotations section.
 
 Where Google publishes no MCP toolset at all (Sheets and Docs; the
@@ -134,20 +148,24 @@ pages establish:
 - removals (delete, clear, trash, unlabel, unsubscribe) → destructive
   **true**, idempotent true (Google's `unlabel_message` precedent; reversible
   removals still count)
-- sends → destructive true, idempotent false, and open-world true (the one
-  cluster that reaches arbitrary external parties); a standing side effect
-  (`create_filter`) is destructive and not idempotent
+- sends → destructive true, idempotent false, and open-world true (the
+  rubric's one cluster that reaches arbitrary external parties); a standing
+  side effect (`create_filter`) is destructive and not idempotent
 
-Everything else is closed-world (`openWorldHint: false`), matching every
-Google-published page.
+Everything else under the rubric is closed-world (`openWorldHint: false`).
+Toolset transcriptions keep their page's hints verbatim either way; Drive's
+`create_file`/`copy_file` pages publish open-world, so the shipped pair
+carries it.
 
 **The surface pins.** Each wing's `operations.test.ts` asserts, and every
 registry change updates: the tool and method counts; all four hints present
-on every operation; the exact read-only and destructive sets; the citation
-shape per provenance (a tool cites its own `mcp/tools_list/<name>` page, a
-method a REST reference page); the instructions string (cites the real
-`_meta` key, names only real operations); and that CAPABILITIES.md equals a
-fresh render of the registries.
+on every operation; the exact read-only, destructive, and open-world sets;
+strict inputs at every depth (the recursive `additionalProperties: false`
+walk); the citation shape per provenance (a tool cites its own
+`mcp/tools_list/<name>` page, a method a REST reference page); the
+instructions string (cites the real `_meta` key, names only real
+operations); and that CAPABILITIES.md equals a fresh render of the
+registries.
 
 Annotations are written as the four explicit flags at each definition site,
 the same way Google's pages present them; do not abstract them into named
@@ -157,9 +175,10 @@ fit a category scheme.
 
 **Output crosses the wire as JSON.** Every result is JSON-serialized (a `text`
 block plus `structuredContent`); there is no binary or streaming channel. Binary
-payloads (e.g. attachment bytes from `download_attachment`) are base64url-encoded
-into a JSON string field, by design. A service that needs native blob output
-extends `lib` (`server`/`callOperation`), not a single operation.
+payloads are base64-encoded into a JSON string field per their source API's
+convention (Gmail's `download_attachment` is URL-safe base64url; Drive's
+`download_file_content` is standard base64), by design. A service that needs
+native blob output extends `lib` (`server`/`callOperation`), not a single operation.
 
 ## Add an entity
 
@@ -167,11 +186,14 @@ When a tool's schema references `object (X)`, add `entities/X.ts`:
 
 ```ts
 import { z } from 'zod';
-export const X = z.object({ id: z.string().describe('…, from the docs') });
+export const X = z.object({ id: z.string().describe('..., from the docs') });
 export type X = z.infer<typeof X>;
 ```
 
-Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
+An entity composed into any input schema must be `z.strictObject` (the
+strict-input rule above holds at every depth; the recursive surface pin
+fails otherwise). Follow the chain: if `X` references `object (Y)`, add
+`entities/Y.ts` too. Open
 `entities/` and it should be the complete catalog of the service's nouns.
 Resources and reused elements get entities (shared enum fields too, like
 Calendar's `NotificationLevel` or Sheets' `ValueInputOption`); a one-off
@@ -179,8 +201,10 @@ response wrapper may stay inline in its `schema.ts`.
 
 **Enum policy.** Inputs are closed `z.enum`s with the `*_UNSPECIFIED` variants
 never exposed. Outputs are closed `z.enum`s with unknown values **dropped** at
-projection (the field goes absent; Sheets' `lib/enums.ts` `narrow()` is the
-helper): the schema stays truthful and a new upstream value degrades to a
+projection (the field goes absent; `narrow()` in the shared `src/lib/enums.ts`
+is the helper, and the allowed list derives from the entity itself,
+`Entity.shape.<field>.unwrap().options`, so projection and schema cannot
+disagree): the schema stays truthful and a new upstream value degrades to a
 missing field, never a wrong one. Never coerce an unknown value to a
 valid-looking default. (Calendar's open-string output fields, e.g.
 `Event.status`, predate this rule and keep their shape for wire stability.)
@@ -217,8 +241,10 @@ the tool/REST reference.
    as the one paragraph an agent should read before calling tools: identity
    binding, vocabulary, and the service's traps. Keep the string in
    `src/<svc>/instructions.ts`, composed from lib's `identityInstructions()`
-   preamble and interpolating `SOURCE_META_KEY` (never hand-typed), so the
-   wing test can pin it without booting the server (`index.ts`'s import side
+   preamble, `vocabularyInstructions()` sentence (which interpolates
+   `SOURCE_META_KEY`; never hand-typed), and `untrustedContentInstructions()`
+   advisory (presence pinned by the surface pin), so the wing test can pin it
+   without booting the server (`index.ts`'s import side
    effect is `await server()`).
    (`import { server } from '../lib/server.js'`,
    `import { mergeOperations } from '../lib/operation.js'`,
@@ -251,7 +277,7 @@ it on every operation.
 Unit tests never touch the network, so every operation is also verified once
 against a real account, tracked per service in an **operational-matrix issue**
 (a live + unit checkbox per operation; Gmail is #7, Calendar is #22, Sheets
-is #29, Docs is #41).
+is #29, Docs is #41, Drive is #44).
 
 Live passes are **pairwise**: pair every destructive operation with its
 antecedent, so the only data ever destroyed is test data the pass itself made,

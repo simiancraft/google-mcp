@@ -10,7 +10,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/docs/api/reference/rest/v1/documents#ParagraphStyle
  */
-export const ParagraphStyle = z.object({
+export const ParagraphStyle = z.strictObject({
   namedStyleType: z
     .enum([
       'NORMAL_TEXT',

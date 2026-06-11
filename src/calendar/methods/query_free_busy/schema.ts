@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { FreeBusyCalendar } from '../../entities/FreeBusy.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     timeMin: z
       .string()
       .describe('The start of the interval for the query, as an RFC3339 timestamp.'),
@@ -15,7 +15,7 @@ export const schema = {
       ),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           id: z
             .string()
             .describe("A calendar id to query; use 'primary' for the user's primary calendar."),

@@ -1,7 +1,7 @@
 import type { drive_v3 } from '@googleapis/drive';
 import { narrow } from '../../lib/enums.js';
 import type { File } from '../entities/File.js';
-import type { Permission } from '../entities/Permission.js';
+import { Permission } from '../entities/Permission.js';
 
 /**
  * The REST `fields` selection backing the MCP toolset's `File` projection:
@@ -53,17 +53,10 @@ export function projectFile(data: drive_v3.Schema$File): File {
 /** Project a REST permission onto the Permission shape; unknown enum values drop rather than masquerade. */
 export function projectPermission(data: drive_v3.Schema$Permission): Permission {
   return {
-    role: narrow(data.role, [
-      'owner',
-      'organizer',
-      'fileOrganizer',
-      'writer',
-      'commenter',
-      'reader',
-    ]),
+    role: narrow(data.role, Permission.shape.role.unwrap().options),
     displayName: data.displayName ?? undefined,
-    type: narrow(data.type, ['user', 'group', 'domain', 'anyone']),
+    type: narrow(data.type, Permission.shape.type.unwrap().options),
     emailAddress: data.emailAddress ?? undefined,
-    view: narrow(data.view, ['published', 'metadata']),
+    view: narrow(data.view, Permission.shape.view.unwrap().options),
   };
 }

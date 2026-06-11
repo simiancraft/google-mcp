@@ -10,7 +10,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/docs/api/reference/rest/v1/documents#TextStyle
  */
-export const TextStyle = z.object({
+export const TextStyle = z.strictObject({
   bold: z.boolean().optional().describe('Whether the text is rendered as bold.'),
   italic: z.boolean().optional().describe('Whether the text is italicized.'),
   underline: z.boolean().optional().describe('Whether the text is underlined.'),
@@ -28,7 +28,7 @@ export const TextStyle = z.object({
     .optional()
     .describe("The size of the text's font, in points (PT is the API's only unit)."),
   link: z
-    .object({ url: z.string().describe('An external URL.') })
+    .strictObject({ url: z.string().describe('An external URL.') })
     .optional()
     .describe('The hyperlink destination of the text.'),
 });

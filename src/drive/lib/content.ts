@@ -1,3 +1,5 @@
+import { MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+
 /**
  * The content boundary for the two content tools (see the COVERAGE.md
  * divergence notes): Google-native files cross it through `files.export`,
@@ -24,7 +26,9 @@ export function isGoogleNative(mimeType: string): boolean {
 
 /** The text-representation export MIME for a native type, if it has one. */
 export function textExportMime(mimeType: string): string | undefined {
-  return TEXT_EXPORTS[mimeType];
+  // Own-property guard for uniformity with the suite's other map lookups;
+  // unreachable by inherited keys in practice (isGoogleNative gates callers).
+  return Object.hasOwn(TEXT_EXPORTS, mimeType) ? TEXT_EXPORTS[mimeType] : undefined;
 }
 
 /** Whether a blob type is text enough for `read_file_content` to return as UTF-8. */
@@ -39,9 +43,34 @@ export function isTextLike(mimeType: string): boolean {
   );
 }
 
+const MIB_LABEL = `${MAX_DOWNLOAD_BYTES / (1024 * 1024)} MiB`;
+
 /**
- * The decoded-size ceiling for `download_file_content` blob downloads: 25 MiB,
- * the suite's de facto base64-in-JSON boundary (Gmail's attachment maximum).
- * Larger transfers are deferred to the media issue (#38).
+ * Refuse a blob transfer over the suite ceiling, citing the media deferral.
+ * One construction site for the four cap errors (pre-fetch on the metadata
+ * size, post-fetch on the bytes that actually arrived, in both content
+ * tools), so the prose cannot drift from the constant.
  */
-export const MAX_DOWNLOAD_BYTES = 25 * 1024 * 1024;
+export function assertWithinCap(
+  byteLength: number,
+  subject: 'File' | 'File content',
+  action: 'content reads' | 'base64 downloads',
+): void {
+  if (byteLength > MAX_DOWNLOAD_BYTES) {
+    throw new Error(
+      `${subject} is ${byteLength} bytes; this server caps ${action} at ` +
+        `${MAX_DOWNLOAD_BYTES} bytes (${MIB_LABEL}). Larger transfers are deferred to ` +
+        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
+    );
+  }
+}
+
+/**
+ * The bytes of a media-shaped response. googleapis types `res.data` from the
+ * resource schema, not the request's `responseType`; with
+ * `{ responseType: 'arraybuffer' }` the body is an ArrayBuffer at runtime,
+ * and this helper owns that one cast for both content tools.
+ */
+export function mediaBuffer(res: { data: unknown }): Buffer {
+  return Buffer.from(res.data as ArrayBuffer);
+}

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { SharedDrive } from '../../entities/SharedDrive.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     name: z.string().describe('The name of the shared drive to create.'),
     requestId: z
       .string()

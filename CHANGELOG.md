@@ -52,6 +52,12 @@
 
 ## [1.4.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.4.0...v1.4.1) (2026-06-11)
 
+Documentation-only release: the recipe docs (EXTENDING.md,
+ADDING-A-SERVICE.md, AGENTS.md) updated for the operation-definition
+enhancements (annotations, source provenance, server identity). The notes
+preset in use through v1.7.0 rendered no docs section; releases cut after
+the conventionalcommits preset change will.
+
 # [1.4.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.3.0...v1.4.0) (2026-06-11)
 
 

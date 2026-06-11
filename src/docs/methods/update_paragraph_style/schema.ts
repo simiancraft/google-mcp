@@ -4,7 +4,7 @@ import { ParagraphStyle } from '../../entities/ParagraphStyle.js';
 import { Range } from '../../entities/Range.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     documentId: z.string().describe('The ID of the document to update.'),
     range: Range.describe('The range overlapping the paragraphs to style.'),
     paragraphStyle: ParagraphStyle.refine((style) => Object.keys(style).length > 0, {

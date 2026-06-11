@@ -44,7 +44,7 @@ describe('read_file_content', () => {
     );
     expect(captured.getParams[0]).toEqual({
       fileId: 'F1',
-      fields: 'id,mimeType',
+      fields: 'id,mimeType,size',
       supportsAllDrives: true,
     });
     expect(captured.exportParams).toEqual({ fileId: 'F1', mimeType: 'text/csv' });
@@ -80,5 +80,26 @@ describe('read_file_content', () => {
     expect(handler(fakeDrive(captured, {}, ''), { fileId: 'F5' })).rejects.toThrow(
       'unknown mime type',
     );
+  });
+
+  it('refuses an oversized body even when the metadata carries no size', async () => {
+    const captured: Captured = { getParams: [], options: [] };
+    const oversized = 'x'.repeat(26 * 1024 * 1024);
+    await expect(
+      handler(fakeDrive(captured, { id: 'F1', mimeType: 'text/csv' }, oversized), {
+        fileId: 'F1',
+      }),
+    ).rejects.toThrow(/caps content reads/);
+  });
+
+  it('refuses a text blob over the 25 MiB ceiling', async () => {
+    const captured: Captured = { getParams: [], options: [] };
+    const oversized = String(26 * 1024 * 1024);
+    await expect(
+      handler(
+        fakeDrive(captured, { id: 'F1', mimeType: 'text/csv', size: oversized }, 'never read'),
+        { fileId: 'F1' },
+      ),
+    ).rejects.toThrow(/caps content reads/);
   });
 });

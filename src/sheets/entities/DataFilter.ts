@@ -8,7 +8,7 @@ import { GridRange } from './GridRange.js';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/DataFilter
  */
-export const DataFilter = z.object({
+export const DataFilter = z.strictObject({
   a1Range: z.string().optional().describe('Selects data that matches the specified A1 range.'),
   gridRange: GridRange.optional().describe(
     'Selects data that matches the range described by the GridRange.',

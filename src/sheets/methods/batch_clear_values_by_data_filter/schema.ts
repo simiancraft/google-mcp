@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DataFilter } from '../../entities/DataFilter.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),
     dataFilters: z
       .array(DataFilter)

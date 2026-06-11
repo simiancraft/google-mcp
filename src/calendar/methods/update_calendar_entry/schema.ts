@@ -3,7 +3,7 @@ import { CalendarListEntry } from '../../entities/CalendarListEntry.js';
 import { Reminder } from '../../entities/Reminder.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     calendarId: z
       .string()
       .optional()

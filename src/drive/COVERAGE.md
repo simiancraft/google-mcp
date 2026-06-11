@@ -24,9 +24,10 @@ operations total.
 | `copy_file` | `files.copy` |
 
 Tool annotations are transcribed verbatim from the MCP pages, which makes
-`create_file` and `copy_file` the suite's first **open-world** pair
-(`openWorldHint: true` on Google's pages, verified against the raw HTML on
-2026-06-10); everything else is closed-world.
+`create_file` and `copy_file` the first **open-world** pair published on
+Google's own MCP pages (`openWorldHint: true`, verified against the raw HTML
+on 2026-06-10); Gmail's sends carry the hint by rubric, and everything else
+here is closed-world.
 
 ### Divergences from the hosted toolset, by necessity
 
@@ -46,9 +47,10 @@ its contracts through REST v3, which cannot do everything those backends do:
   download as UTF-8. The hosted toolset's PDF/Office/image text extraction
   has no REST equivalent, so those types are refused with guidance toward
   `download_file_content`.
-- **`download_file_content` is capped.** Blob downloads over 25 MiB decoded
+- **Both content tools are capped.** Blob transfers over 25 MiB decoded
   (the suite's base64-in-JSON ceiling, Gmail's attachment maximum) are
-  refused with an error citing #38 rather than degraded.
+  refused with an error citing #38 rather than degraded; `read_file_content`
+  and `download_file_content` enforce the same ceiling.
 - **`create_file`'s deprecated parameters** (`mimeType`, `content`,
   superseded on the page itself by `contentMimeType` and
   `textContent`/`base64Content`) are not transcribed.
@@ -57,14 +59,14 @@ its contracts through REST v3, which cannot do everything those backends do:
 
 | Resource | Implemented |
 |----------|-------------|
-| files | `update_file`, `trash_file` ⚠, `untrash_file`, `delete_file` ⚠, `empty_trash` ⚠ |
-| comments | `list_comments`, `get_comment`, `create_comment`, `update_comment`, `delete_comment` ⚠ |
-| replies | `list_replies`, `get_reply`, `create_reply`, `update_reply`, `delete_reply` ⚠ |
-| revisions | `list_revisions`, `get_revision`, `update_revision`, `delete_revision` ⚠ |
-| drives | `list_shared_drives`, `get_shared_drive`, `create_shared_drive`, `update_shared_drive`, `delete_shared_drive` ⚠, `hide_shared_drive`, `unhide_shared_drive` |
+| files | `update_file`, `trash_file` ⚠️, `untrash_file`, `delete_file` ⚠️, `empty_trash` ⚠️ |
+| comments | `list_comments`, `get_comment`, `create_comment`, `update_comment`, `delete_comment` ⚠️ |
+| replies | `list_replies`, `get_reply`, `create_reply`, `update_reply`, `delete_reply` ⚠️ |
+| revisions | `list_revisions`, `get_revision`, `update_revision`, `delete_revision` ⚠️ |
+| drives | `list_shared_drives`, `get_shared_drive`, `create_shared_drive`, `update_shared_drive`, `delete_shared_drive` ⚠️, `hide_shared_drive`, `unhide_shared_drive` |
 | about | `get_about` |
 
-⚠ = destructive (`destructiveHint`), per the annotation rubric in
+⚠️ = destructive (`destructiveHint`), per the annotation rubric in
 EXTENDING.md: `trash_file` is a reversible removal (reversible removals still
 count, Gmail's `trash_message` precedent), while `delete_file`,
 `empty_trash`, `delete_revision`, and `delete_shared_drive` are permanent.

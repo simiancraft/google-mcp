@@ -4,20 +4,20 @@ import { browserCommand, detectWsl, openInBrowser } from './browser.js';
 
 describe('detectWsl', () => {
   it('is true via WSL_DISTRO_NAME', () => {
-    expect(detectWsl({ WSL_DISTRO_NAME: 'Ubuntu' } as NodeJS.ProcessEnv, () => '')).toBe(true);
+    expect(detectWsl({ WSL_DISTRO_NAME: 'Ubuntu' }, () => '')).toBe(true);
   });
 
   it('is true when /proc/version names a Microsoft kernel', () => {
-    expect(detectWsl({} as NodeJS.ProcessEnv, () => 'Linux 5.15 Microsoft-standard')).toBe(true);
+    expect(detectWsl({}, () => 'Linux 5.15 Microsoft-standard')).toBe(true);
   });
 
   it('is false on a plain kernel', () => {
-    expect(detectWsl({} as NodeJS.ProcessEnv, () => 'Linux 6.6 generic')).toBe(false);
+    expect(detectWsl({}, () => 'Linux 6.6 generic')).toBe(false);
   });
 
   it('is false when /proc/version is unreadable', () => {
     expect(
-      detectWsl({} as NodeJS.ProcessEnv, () => {
+      detectWsl({}, () => {
         throw new Error('nope');
       }),
     ).toBe(false);

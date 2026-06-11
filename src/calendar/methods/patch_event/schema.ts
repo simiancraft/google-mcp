@@ -7,7 +7,7 @@ import { EventDateTime } from '../../entities/EventDateTime.js';
  * (entities/Attendee), `optional` keeps its REST name, and the read-only
  * fields (id, organizer, self) are absent.
  */
-const RestAttendee = z.object({
+const RestAttendee = z.strictObject({
   email: z.string().describe("The attendee's email address."),
   displayName: z.string().optional().describe("The attendee's name."),
   optional: z
@@ -33,7 +33,7 @@ const RestAttendee = z.object({
 });
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventId: z.string().describe('The ID of the event to patch.'),
     calendarId: z
       .string()
@@ -78,7 +78,7 @@ export const schema = {
       .optional()
       .describe('The full attendee list; if set, it replaces all existing attendees.'),
     extendedProperties: z
-      .object({
+      .strictObject({
         private: z
           .record(z.string(), z.string())
           .optional()

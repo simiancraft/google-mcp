@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     calendarId: z
       .string()
       .describe("The calendar ID of the entry to remove from the user's calendar list."),

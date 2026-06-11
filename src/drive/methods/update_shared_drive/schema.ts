@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { SharedDrive } from '../../entities/SharedDrive.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     driveId: z.string().describe('The ID of the shared drive.'),
     name: z.string().optional().describe('The name to set on this shared drive.'),
     colorRgb: z
@@ -20,7 +20,7 @@ export const schema = {
           'of possible driveThemes can be retrieved from a get_about response.',
       ),
     restrictions: z
-      .object({
+      .strictObject({
         adminManagedRestrictions: z
           .boolean()
           .optional()

@@ -48,7 +48,20 @@ const danger = operation({
   handler: async (_client: FakeClient) => ({ ok: true }),
 });
 
-const operations = { echo, boom };
+const liar = operation({
+  description: 'Returns a shape its own output schema rejects.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
+  schema: { input: z.object({}), output: z.object({ shouted: z.string() }) },
+  handler: async (_client: FakeClient) => ({ shouted: 42 }) as never,
+});
+
+const operations = { echo, boom, liar };
 const client: FakeClient = { upper: (s) => s.toUpperCase() };
 
 describe('callOperation', () => {
@@ -74,9 +87,21 @@ describe('callOperation', () => {
     }
   });
 
-  it('returns an error result for invalid input', async () => {
+  it('returns a prettified error result for invalid input', async () => {
     const result = await callOperation(operations, client, 'echo', { text: 42 });
     expect(result.isError).toBe(true);
+    // prettifyError, not the raw ZodError JSON dump: one issue per line with a path.
+    const text = (result.content[0] as { text: string }).text;
+    expect(text).toContain('Invalid arguments for echo:');
+    expect(text).toMatch(/✖ .*\n\s*→ at text/);
+  });
+
+  it('returns a prettified error result for invalid handler output', async () => {
+    const result = await callOperation(operations, client, 'liar', {});
+    expect(result.isError).toBe(true);
+    const text = (result.content[0] as { text: string }).text;
+    expect(text).toContain('Invalid output from liar:');
+    expect(text).toMatch(/→ at shouted/);
   });
 
   it('returns an error result when the handler throws', async () => {

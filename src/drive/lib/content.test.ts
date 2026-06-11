@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import { isGoogleNative, isTextLike, MAX_DOWNLOAD_BYTES, textExportMime } from './content.js';
+import { MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+import { isGoogleNative, isTextLike, mediaBuffer, textExportMime } from './content.js';
 
 describe('isGoogleNative', () => {
   it('recognizes Workspace editor and other native types', () => {
@@ -39,6 +40,13 @@ describe('isTextLike', () => {
     expect(
       isTextLike('application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
     ).toBe(false);
+  });
+});
+
+describe('mediaBuffer', () => {
+  it('returns the arraybuffer body as a Buffer', () => {
+    const bytes = new TextEncoder().encode('media body');
+    expect(mediaBuffer({ data: bytes.buffer }).toString('utf8')).toBe('media body');
   });
 });
 

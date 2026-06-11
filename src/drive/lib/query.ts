@@ -31,7 +31,7 @@ export function tokenize(query: string): Token[] {
   const tokens: Token[] = [];
   let i = 0;
   while (i < query.length) {
-    const char = query[i] as string;
+    const char = query.charAt(i);
     if (/\s/.test(char)) {
       i += 1;
     } else if (char === "'") {
@@ -48,7 +48,7 @@ export function tokenize(query: string): Token[] {
       i += 1;
     } else if (OPERATOR_CHARS.has(char)) {
       let end = i;
-      while (end < query.length && OPERATOR_CHARS.has(query[end] as string)) {
+      while (end < query.length && OPERATOR_CHARS.has(query.charAt(end))) {
         end += 1;
       }
       tokens.push({ kind: 'op', text: query.slice(i, end) });
@@ -57,11 +57,11 @@ export function tokenize(query: string): Token[] {
       let end = i;
       while (
         end < query.length &&
-        !/\s/.test(query[end] as string) &&
-        !OPERATOR_CHARS.has(query[end] as string) &&
-        query[end] !== "'" &&
-        query[end] !== '(' &&
-        query[end] !== ')'
+        !/\s/.test(query.charAt(end)) &&
+        !OPERATOR_CHARS.has(query.charAt(end)) &&
+        query.charAt(end) !== "'" &&
+        query.charAt(end) !== '(' &&
+        query.charAt(end) !== ')'
       ) {
         end += 1;
       }
@@ -83,9 +83,14 @@ export function translateQuery(query: string): string {
   const tokens = tokenize(query);
   const out: string[] = [];
   for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i] as Token;
+    const token = tokens[i];
+    if (!token) break; // the index is loop-bounded; this satisfies noUncheckedIndexedAccess
     if (token.kind === 'word') {
-      const collection = CONTAINMENT_TERMS[token.text];
+      // Own-property guards: a query word like __proto__ must miss, not
+      // resolve an inherited value (the server.ts dispatch precedent).
+      const collection = Object.hasOwn(CONTAINMENT_TERMS, token.text)
+        ? CONTAINMENT_TERMS[token.text]
+        : undefined;
       const operator = tokens[i + 1];
       const value = tokens[i + 2];
       if (
@@ -101,7 +106,9 @@ export function translateQuery(query: string): string {
         i += 2;
         continue;
       }
-      const renamed = RENAMED_TERMS[token.text];
+      const renamed = Object.hasOwn(RENAMED_TERMS, token.text)
+        ? RENAMED_TERMS[token.text]
+        : undefined;
       if (renamed) {
         out.push(renamed);
         continue;

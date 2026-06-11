@@ -19,10 +19,7 @@ export const Thread = z.object({
     .describe(
       'A short preview of the thread (present on search results; use get_thread for messages).',
     ),
-  messages: z
-    .array(Message)
-    .default([])
-    .describe('The messages in the thread, chronologically ordered.'),
+  messages: z.array(Message).describe('The messages in the thread, chronologically ordered.'),
 });
 
 export type Thread = z.infer<typeof Thread>;

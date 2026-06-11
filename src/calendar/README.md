@@ -28,7 +28,7 @@ server's `tools/list`.
 ## Layout (`src/calendar/`)
 
 ```
-index.ts        # server({ name, operations, client }); the bin entry
+index.ts        # server({ name, title, description, instructions, operations, client }); the bin entry
 tools/          # MCP-sourced ops; registry.ts + one folder per tool
                 #   <tool>/ index.ts + handler.ts + schema.ts + handler.test.ts
 methods/        # REST-sourced ops; same construction

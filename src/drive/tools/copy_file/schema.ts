@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { File } from '../../entities/File.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     fileId: z.string().describe('The ID of the file to copy.'),
     title: z
       .string()

@@ -34,7 +34,7 @@ surface, with input and output JSON Schema, from the server's `tools/list`.
 ## Layout (`src/sheets/`)
 
 ```
-index.ts        # server({ name, operations, client }); the bin entry
+index.ts        # server({ name, title, description, instructions, operations, client }); the bin entry
 methods/        # REST-sourced ops; registry.ts + one folder per method
                 #   <method>/ index.ts + handler.ts + schema.ts + handler.test.ts
 entities/       # PascalCase zod domain objects (Spreadsheet, ValueRange, ...)

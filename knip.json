@@ -2,5 +2,5 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["src/*/capabilities.ts", "src/*/index.ts"],
   "ignoreExportsUsedInFile": true,
-  "ignoreDependencies": ["@semantic-release/npm"]
+  "ignoreDependencies": ["@semantic-release/npm", "conventional-changelog-conventionalcommits"]
 }

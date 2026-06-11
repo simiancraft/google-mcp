@@ -8,5 +8,6 @@ export function narrow<T extends string>(
   value: string | null | undefined,
   allowed: readonly T[],
 ): T | undefined {
-  return value != null && (allowed as readonly string[]).includes(value) ? (value as T) : undefined;
+  // find() narrows without a cast: null/undefined never match a T.
+  return allowed.find((v) => v === value);
 }

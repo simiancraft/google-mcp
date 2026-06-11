@@ -4,7 +4,7 @@ import { NotificationLevel } from '../../entities/NotificationLevel.js';
 import { Reminder } from '../../entities/Reminder.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventId: z.string().describe('The ID of the event to update.'),
     calendarId: z
       .string()

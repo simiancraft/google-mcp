@@ -8,7 +8,7 @@ import { MajorDimension } from './MajorDimension.js';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values#ValueRange
  */
-export const ValueRange = z.object({
+export const ValueRange = z.strictObject({
   range: z
     .string()
     .optional()

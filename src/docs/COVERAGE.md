@@ -22,10 +22,10 @@ styling four.
 | Resource | Implemented |
 |----------|-------------|
 | documents | `get_document`, `create_document` |
-| documents.batchUpdate (text editing) | `insert_text`, `replace_all_text` ⚠, `delete_content_range` ⚠ |
-| documents.batchUpdate (styling) | `update_text_style`, `update_paragraph_style`, `create_paragraph_bullets`, `delete_paragraph_bullets` ⚠ |
+| documents.batchUpdate (text editing) | `insert_text`, `replace_all_text` ⚠️, `delete_content_range` ⚠️ |
+| documents.batchUpdate (styling) | `update_text_style`, `update_paragraph_style`, `create_paragraph_bullets`, `delete_paragraph_bullets` ⚠️ |
 
-⚠ = destructive (`destructiveHint`): replaced and deleted text is gone (the
+⚠️ = destructive (`destructiveHint`): replaced and deleted text is gone (the
 API has no undo), and `delete_paragraph_bullets` is a removal (the unlabel
 precedent; the text itself is preserved). The text-editing writes are not
 idempotent: a repeated `replace_all_text` grows the document whenever the

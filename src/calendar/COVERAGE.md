@@ -7,34 +7,34 @@ Developer Preview) and the **discovery document** (every REST method).
 - MCP reference: `https://developers.google.com/workspace/calendar/api/v3/reference/mcp`
 - Discovery: `https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest`
 
-## Tools: MCP toolset (8 / 8)
+## Tools: the MCP toolset (`tools/`, 8 of 8)
 
 Every tool on the MCP reference is implemented (`tools/`). Each `schema.ts` cites
 its page.
 
 `list_events`, `get_event`, `list_calendars`, `suggest_time`, `create_event`,
-`update_event`, `delete_event` ⚠, `respond_to_event`.
+`update_event`, `delete_event` ⚠️, `respond_to_event`.
 
 Two of these are compositions, not transcriptions: `suggest_time` has no REST
 equivalent (it is `freebusy.query` plus pure slot computation in
 `lib/suggest.ts`), and `respond_to_event` is an `events.patch` of the
 self-attendee's response status.
 
-## Methods: REST reference (`methods/`)
+## Methods: REST reference (`methods/`, 17)
 
 Operations beyond the MCP toolset, sourced from the REST reference.
 
 | Resource | Implemented |
 |----------|-------------|
 | events | `list_event_instances`, `move_event`, `quick_add_event`, `patch_event` |
-| calendars | `get_calendar`, `create_calendar`, `update_calendar`, `delete_calendar` ⚠, `clear_calendar` ⚠ |
-| calendarList | `get_calendar_entry`, `add_calendar_entry`, `update_calendar_entry`, `remove_calendar_entry` ⚠ |
+| calendars | `get_calendar`, `create_calendar`, `update_calendar`, `delete_calendar` ⚠️, `clear_calendar` ⚠️ |
+| calendarList | `get_calendar_entry`, `add_calendar_entry`, `update_calendar_entry`, `remove_calendar_entry` ⚠️ |
 | freebusy | `query_free_busy` |
 | colors | `get_colors` |
 | settings | `list_settings`, `get_setting` |
 
-⚠ = destructive (`destructiveHint`): a removal, per the annotation rubric in
-EXTENDING.md. `remove_calendar_entry` ⚠ only unsubscribes (the calendar and
+⚠️ = destructive (`destructiveHint`): a removal, per the annotation rubric in
+EXTENDING.md. `remove_calendar_entry` ⚠️ only unsubscribes (the calendar and
 its events are untouched, and re-adding the entry reverses it), but a removal
 is annotated destructive, matching Google's own `unlabel_message` precedent.
 The tools additionally transcribe the Tool Annotations published on their MCP

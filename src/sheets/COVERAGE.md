@@ -16,11 +16,11 @@ the REST-sourced `methods/` registry is the whole wire surface.
 | Resource | Implemented |
 |----------|-------------|
 | spreadsheets | `get_spreadsheet`, `create_spreadsheet` |
-| spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠ |
+| spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet` |
 
-⚠ = destructive (`destructiveHint`): the clears are removals, per the
+⚠️ = destructive (`destructiveHint`): the clears are removals, per the
 annotation rubric in EXTENDING.md. Updates and appends are not destructive,
 matching Google's own classification of `update_event` (overwriting values is
 an update, not a removal); `valueInputOption` is required on every write

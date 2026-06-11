@@ -27,6 +27,16 @@ function fakeDrive(captured: Captured, meta: drive_v3.Schema$File, body: string)
 }
 
 describe('download_file_content', () => {
+  it('refuses an oversized body even when the metadata carries no size', async () => {
+    const captured: Captured = { getParams: [] };
+    const oversized = 'x'.repeat(26 * 1024 * 1024);
+    await expect(
+      handler(fakeDrive(captured, { id: 'F1', mimeType: 'application/pdf' }, oversized), {
+        fileId: 'F1',
+      }),
+    ).rejects.toThrow(/caps base64 downloads/);
+  });
+
   it('downloads a blob as base64', async () => {
     const captured: Captured = { getParams: [] };
     const result = await handler(

@@ -4,7 +4,7 @@ import { NotificationLevel } from '../../entities/NotificationLevel.js';
 import { Reminder } from '../../entities/Reminder.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     summary: z.string().describe('Title of the event.'),
     startTime: z.string().describe('The start time of the event, formatted as per ISO 8601.'),
     endTime: z.string().describe('The end time of the event, formatted as per ISO 8601.'),

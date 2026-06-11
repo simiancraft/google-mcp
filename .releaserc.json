@@ -4,13 +4,28 @@
     [
       "@semantic-release/commit-analyzer",
       {
+        "preset": "conventionalcommits",
         "releaseRules": [
           { "type": "refactor", "release": "patch" },
           { "type": "docs", "release": "patch" }
         ]
       }
     ],
-    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "perf", "section": "Performance" },
+            { "type": "refactor", "section": "Refactoring" },
+            { "type": "docs", "section": "Documentation" }
+          ]
+        }
+      }
+    ],
     ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
     "@semantic-release/npm",
     [

@@ -1,19 +1,21 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/enums.js';
 import type { CellValue } from '../entities/CellValue.js';
+import { MajorDimension } from '../entities/MajorDimension.js';
 import type { UpdateValuesResponse } from '../entities/UpdateValuesResponse.js';
 import type { ValueRange } from '../entities/ValueRange.js';
 
 /**
  * Project a REST value range onto the ValueRange shape, cleaning nulls to
  * undefined. The grid arrives as JSON scalars (the generated types say
- * `any[][]`); the cast narrows them to the documented CellValue union, and the
- * server's output validation rejects anything else loudly.
+ * `any[][]`); the assertion documents the intended CellValue union for
+ * readers (any[][] assigns regardless), and the server's output validation is
+ * what rejects anything else loudly.
  */
 export function projectValueRange(data: sheets_v4.Schema$ValueRange): ValueRange {
   return {
     range: data.range ?? undefined,
-    majorDimension: narrow(data.majorDimension, ['ROWS', 'COLUMNS']),
+    majorDimension: narrow(data.majorDimension, MajorDimension.options),
     values: data.values ? (data.values as CellValue[][]) : undefined,
   };
 }

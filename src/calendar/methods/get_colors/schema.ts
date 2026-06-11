@@ -2,6 +2,6 @@ import { z } from 'zod';
 import { Colors } from '../../entities/Colors.js';
 
 export const schema = {
-  input: z.object({}),
+  input: z.strictObject({}),
   output: Colors,
 };

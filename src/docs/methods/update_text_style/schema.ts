@@ -4,7 +4,7 @@ import { Range } from '../../entities/Range.js';
 import { TextStyle } from '../../entities/TextStyle.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     documentId: z.string().describe('The ID of the document to update.'),
     range: Range.describe(
       'The range of text to style; the API may extend it to include adjacent newlines.',

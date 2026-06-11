@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Calendar } from '../../entities/Calendar.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     calendarId: z
       .string()
       .optional()

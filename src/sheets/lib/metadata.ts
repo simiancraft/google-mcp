@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/enums.js';
-import type { DeveloperMetadata } from '../entities/DeveloperMetadata.js';
+import { DeveloperMetadata } from '../entities/DeveloperMetadata.js';
 import { projectDeveloperMetadataLocation } from './filters.js';
 
 /** Project REST developer metadata onto the DeveloperMetadata shape, cleaning nulls to undefined. */
@@ -12,6 +12,6 @@ export function projectDeveloperMetadata(
     metadataKey: data.metadataKey ?? undefined,
     metadataValue: data.metadataValue ?? undefined,
     location: data.location ? projectDeveloperMetadataLocation(data.location) : undefined,
-    visibility: narrow(data.visibility, ['DOCUMENT', 'PROJECT']),
+    visibility: narrow(data.visibility, DeveloperMetadata.shape.visibility.unwrap().options),
   };
 }

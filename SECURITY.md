@@ -2,11 +2,12 @@
 
 ## Supported versions
 
-This repository is pre-release. Until a tagged release exists, only `main` receives security fixes.
+Releases are published to npm as `google-mcp-suite`. Only the latest release line receives security fixes; fixes land on `main` and ship in the next release.
 
 | Version | Supported |
 |---------|-----------|
-| `main`  | ✓         |
+| latest 1.x | ✓ |
+| older releases | ✗ |
 
 ## Reporting a vulnerability
 
@@ -31,5 +32,5 @@ Unlike a pure-function library, these servers hold real credential, filesystem, 
 ### Out of scope
 
 - **Incorrect API results or missing operations.** These are bugs; file a regular [GitHub issue](https://github.com/simiancraft/google-mcp-suite/issues).
-- **Vulnerabilities in Google's APIs or the `googleapis` / `google-auth-library` packages.** Report upstream; we will track and bump.
+- **Vulnerabilities in Google's APIs or the `@googleapis/*` / `google-auth-library` packages.** Report upstream; we will track and bump.
 - **Misconfiguration of your own Google Cloud OAuth app, scopes, or credentials** outside what this repo's code controls.
