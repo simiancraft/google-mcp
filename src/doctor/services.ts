@@ -13,6 +13,7 @@
  */
 import { calendar } from '@googleapis/calendar';
 import { docs } from '@googleapis/docs';
+import { drive } from '@googleapis/drive';
 import { gmail } from '@googleapis/gmail';
 import { sheets } from '@googleapis/sheets';
 import { authorizedClient } from '../auth/oauth.js';
@@ -69,6 +70,12 @@ async function docsProbe(account: string): Promise<string> {
   }
 }
 
+async function driveProbe(account: string): Promise<string> {
+  const client = drive({ version: 'v3', auth: await authorizedClient(account) });
+  const res = await client.about.get({ fields: 'user(emailAddress)' });
+  return res.data.user?.emailAddress ?? '(reachable)';
+}
+
 // The Sheets API has no id-free read (listing spreadsheets is Drive's job), so
 // the probe reads Google's long-stable public sample spreadsheet (titled
 // "Example Spreadsheet", used throughout the Sheets API docs). If Google ever
@@ -91,7 +98,13 @@ export const SERVICES: ServiceInfo[] = [
     implemented: true,
     probe: gmailProbe,
   },
-  { name: 'drive', api: 'drive.googleapis.com', scopes: [`${S}drive`], implemented: false },
+  {
+    name: 'drive',
+    api: 'drive.googleapis.com',
+    scopes: [`${S}drive`],
+    implemented: true,
+    probe: driveProbe,
+  },
   {
     name: 'sheets',
     api: 'sheets.googleapis.com',
