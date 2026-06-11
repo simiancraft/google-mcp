@@ -1,0 +1,17 @@
+import { randomUUID } from 'node:crypto';
+import type { drive_v3 } from '@googleapis/drive';
+import type { z } from 'zod';
+import { projectSharedDrive, SHARED_DRIVE_FIELDS } from '../../lib/shared-drive.js';
+import type { schema } from './schema.js';
+
+export async function handler(
+  drive: drive_v3.Drive,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  const { data } = await drive.drives.create({
+    requestId: args.requestId ?? randomUUID(),
+    requestBody: { name: args.name },
+    fields: SHARED_DRIVE_FIELDS,
+  });
+  return projectSharedDrive(data);
+}
