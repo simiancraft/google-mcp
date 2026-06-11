@@ -91,12 +91,32 @@ products are Gmail, Drive, Calendar, Chat, and People), the service is
 `mergeOperations(methods)`, and `capabilities.ts` renders a single
 `REST Method` section. The service's COVERAGE.md leads with why.
 
-Mark with `destructive: true` any operation that is irreversible (`send`,
-permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent
-dangerous side effect (e.g. `create_filter`: a forward/auto-delete filter keeps
-acting on mail after the call). The server surfaces these as MCP
-`destructiveHint`. `trash`/`untrash` are reversible with no standing effect, so
-**not** destructive.
+**Annotations.** Every operation declares all four MCP `ToolAnnotations`
+hints explicitly (`readOnlyHint`, `destructiveHint`, `idempotentHint`,
+`openWorldHint`; emitted verbatim in `tools/list`). The semantics are the
+spec's (`modelcontextprotocol.io/specification/2025-06-18/schema`,
+ToolAnnotations): read-only = does not modify the environment; destructive =
+may perform non-additive updates; idempotent = repeating with the same args
+has no additional effect; open-world = reaches external entities. **Tools
+transcribe the Tool Annotations section of their Google MCP reference page
+verbatim** (each page publishes all four); methods follow the rubric those
+pages establish:
+
+- reads → `{ readOnlyHint: true, destructiveHint: false, idempotentHint: true }`
+- creates → all false (additive, and repeating duplicates)
+- updates and additive modifications (label, subscribe, untrash, patch) →
+  destructive **false**, idempotent true (Google's `update_event` precedent:
+  overwriting fields is not "destructive" in MCP's vocabulary)
+- removals (delete, clear, trash, unlabel, unsubscribe) → destructive
+  **true**, idempotent true (Google's `unlabel_message` precedent; reversible
+  removals still count)
+- sends → destructive true, idempotent false, and open-world true (the one
+  cluster that reaches arbitrary external parties); a standing side effect
+  (`create_filter`) is destructive and not idempotent
+
+Everything else is closed-world (`openWorldHint: false`), matching every
+Google-published page. The surface-count test pins each wing's read-only and
+destructive sets.
 
 **Output crosses the wire as JSON.** Every result is JSON-serialized (a `text`
 block plus `structuredContent`); there is no binary or streaming channel. Binary

@@ -28,14 +28,18 @@ Operations beyond the MCP toolset, sourced from the REST reference.
 |----------|-------------|
 | events | `list_event_instances`, `move_event`, `quick_add_event`, `patch_event` |
 | calendars | `get_calendar`, `create_calendar`, `update_calendar`, `delete_calendar` ⚠, `clear_calendar` ⚠ |
-| calendarList | `get_calendar_entry`, `add_calendar_entry`, `update_calendar_entry`, `remove_calendar_entry` |
+| calendarList | `get_calendar_entry`, `add_calendar_entry`, `update_calendar_entry`, `remove_calendar_entry` ⚠ |
 | freebusy | `query_free_busy` |
 | colors | `get_colors` |
 | settings | `list_settings`, `get_setting` |
 
-⚠ = destructive (`destructiveHint`): irreversible. `remove_calendar_entry` is
-not destructive: it only unsubscribes; the calendar and its events are
-untouched and re-adding the entry reverses it.
+⚠ = destructive (`destructiveHint`): a removal, per the annotation rubric in
+EXTENDING.md. `remove_calendar_entry` ⚠ only unsubscribes (the calendar and
+its events are untouched, and re-adding the entry reverses it), but a removal
+is annotated destructive, matching Google's own `unlabel_message` precedent.
+The tools additionally transcribe the Tool Annotations published on their MCP
+pages (notably: `update_event` and `respond_to_event` are non-destructive per
+Google).
 
 Methods speak the REST vocabulary (`timeMin`, `maxResults`, `sendUpdates`)
 while tools keep the MCP pages' vocabulary (`startTime`, `pageSize`,

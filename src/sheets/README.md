@@ -17,8 +17,8 @@ batch values (`batch_get_values`, `batch_update_values`,
 `batch_clear_values`), data-filter-addressed values (the three
 `*_by_data_filter` operations), developer metadata
 (`get_developer_metadata`, `search_developer_metadata`), and the sheet copy
-(`copy_sheet`). The three clears are irreversible and carry the MCP
-`destructiveHint`.
+(`copy_sheet`). Every operation carries the four MCP annotation hints; the
+three clears are removals and marked destructive (`destructiveHint`).
 
 Cell data moves as plain 2D arrays of `string | number | boolean | null`;
 spreadsheet metadata is a lean projection (grid data, formatting, and themes

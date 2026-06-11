@@ -11,8 +11,9 @@ The Gmail MCP server, and the reference (canary) implementation for the
 read (`search_threads`, `get_thread`, `get_message`, `list_messages`), compose
 and send (`create_draft`, `send_message`, `send_draft`), organize (labels,
 `batch_modify_messages`, trash/untrash), attachments (`download_attachment`), and
-account filters. Irreversible operations (send, permanent delete) carry the MCP
-`destructiveHint`.
+account filters. Every operation carries the four MCP annotation hints;
+removals, sends, and standing filters are marked destructive
+(`destructiveHint`), and the sends are open-world.
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`; what is implemented

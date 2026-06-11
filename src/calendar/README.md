@@ -14,8 +14,10 @@ and settings: read (`list_events`, `get_event`, `list_event_instances`), write
 `move_event`, `respond_to_event`), scheduling (`suggest_time`,
 `query_free_busy`), calendar management (`list_calendars`, the calendars and
 calendar-list-entry methods), and account lookups (`get_colors`,
-`list_settings`, `get_setting`). Irreversible operations (`delete_event`,
-`delete_calendar`, `clear_calendar`) carry the MCP `destructiveHint`.
+`list_settings`, `get_setting`). Every operation carries the four MCP
+annotation hints; the removals (`delete_event`, `delete_calendar`,
+`clear_calendar`, `remove_calendar_entry`) are marked destructive
+(`destructiveHint`).
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`; what is implemented

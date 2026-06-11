@@ -20,10 +20,11 @@ the REST-sourced `methods/` registry is the whole wire surface.
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet` |
 
-⚠ = destructive (`destructiveHint`): cleared values are unrecoverable through
-the API. Updates and appends are not destructive (overwrite ≠ destroy,
-following the Gmail and Calendar precedent); `valueInputOption` is required on
-every write because REST rejects writes without it.
+⚠ = destructive (`destructiveHint`): the clears are removals, per the
+annotation rubric in EXTENDING.md. Updates and appends are not destructive,
+matching Google's own classification of `update_event` (overwriting values is
+an update, not a removal); `valueInputOption` is required on every write
+because REST rejects writes without it.
 
 Methods speak the REST vocabulary verbatim (`spreadsheetId`,
 `valueInputOption`, `majorDimension`, `dateTimeRenderOption`); wire names
