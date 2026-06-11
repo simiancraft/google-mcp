@@ -26,7 +26,9 @@ export function isGoogleNative(mimeType: string): boolean {
 
 /** The text-representation export MIME for a native type, if it has one. */
 export function textExportMime(mimeType: string): string | undefined {
-  return TEXT_EXPORTS[mimeType];
+  // Own-property guard for uniformity with the suite's other map lookups;
+  // unreachable by inherited keys in practice (isGoogleNative gates callers).
+  return Object.hasOwn(TEXT_EXPORTS, mimeType) ? TEXT_EXPORTS[mimeType] : undefined;
 }
 
 /** Whether a blob type is text enough for `read_file_content` to return as UTF-8. */
@@ -49,7 +51,11 @@ const MIB_LABEL = `${MAX_DOWNLOAD_BYTES / (1024 * 1024)} MiB`;
  * size, post-fetch on the bytes that actually arrived, in both content
  * tools), so the prose cannot drift from the constant.
  */
-export function assertWithinCap(byteLength: number, subject: string, action: string): void {
+export function assertWithinCap(
+  byteLength: number,
+  subject: 'File' | 'File content',
+  action: 'content reads' | 'base64 downloads',
+): void {
   if (byteLength > MAX_DOWNLOAD_BYTES) {
     throw new Error(
       `${subject} is ${byteLength} bytes; this server caps ${action} at ` +
