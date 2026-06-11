@@ -1,6 +1,9 @@
 import { z } from 'zod';
+import { DateTimeRenderOption } from '../../entities/DateTimeRenderOption.js';
 import { UpdateValuesResponse } from '../../entities/UpdateValuesResponse.js';
+import { ValueInputOption } from '../../entities/ValueInputOption.js';
 import { ValueRange } from '../../entities/ValueRange.js';
+import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
 /** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate */
 export const schema = {
@@ -12,29 +15,15 @@ export const schema = {
       .describe(
         'The new values to apply to the spreadsheet: one ValueRange per target range, each with its range and values set.',
       ),
-    valueInputOption: z
-      .enum(['RAW', 'USER_ENTERED'])
-      .describe(
-        'How the input data should be interpreted: RAW stores values as-is; USER_ENTERED parses them as if typed into the UI (numbers, dates, formulas). Required.',
-      ),
+    valueInputOption: ValueInputOption,
     includeValuesInResponse: z
       .boolean()
       .optional()
       .describe(
         'Whether each response should include the values of the cells that were updated. Defaults to false.',
       ),
-    responseValueRenderOption: z
-      .enum(['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA'])
-      .optional()
-      .describe(
-        'How values in the response should be rendered. The default render option is FORMATTED_VALUE.',
-      ),
-    responseDateTimeRenderOption: z
-      .enum(['SERIAL_NUMBER', 'FORMATTED_STRING'])
-      .optional()
-      .describe(
-        'How dates, times, and durations in the response should be rendered. Ignored if responseValueRenderOption is FORMATTED_VALUE; the default is SERIAL_NUMBER.',
-      ),
+    responseValueRenderOption: ValueRenderOption.optional(),
+    responseDateTimeRenderOption: DateTimeRenderOption.optional(),
   }),
   output: z.object({
     spreadsheetId: z.string().describe('The spreadsheet the updates were applied to.'),

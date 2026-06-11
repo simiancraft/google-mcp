@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CellValue } from './CellValue.js';
 import { DataFilter } from './DataFilter.js';
+import { MajorDimension } from './MajorDimension.js';
 
 /**
  * Values to write to the ranges a data filter matches: the write-side
@@ -12,10 +13,7 @@ export const DataFilterValueRange = z.object({
   dataFilter: DataFilter.describe(
     'The data filter describing the location of the values in the spreadsheet.',
   ),
-  majorDimension: z
-    .enum(['ROWS', 'COLUMNS'])
-    .optional()
-    .describe('The major dimension of the values. Defaults to ROWS.'),
+  majorDimension: MajorDimension.optional(),
   values: z
     .array(z.array(CellValue))
     .describe(

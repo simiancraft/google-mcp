@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { CellValue } from '../../entities/CellValue.js';
+import { DateTimeRenderOption } from '../../entities/DateTimeRenderOption.js';
+import { MajorDimension } from '../../entities/MajorDimension.js';
 import { UpdateValuesResponse } from '../../entities/UpdateValuesResponse.js';
+import { ValueInputOption } from '../../entities/ValueInputOption.js';
+import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
 /** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/update */
 export const schema = {
@@ -14,33 +18,16 @@ export const schema = {
       .describe(
         'The data to write, an array of arrays: each inner array is one major dimension (one row, by default).',
       ),
-    majorDimension: z
-      .enum(['ROWS', 'COLUMNS'])
-      .optional()
-      .describe('The major dimension of the values being written. Defaults to ROWS.'),
-    valueInputOption: z
-      .enum(['RAW', 'USER_ENTERED'])
-      .describe(
-        'How the input data should be interpreted: RAW stores values as-is; USER_ENTERED parses them as if typed into the UI (numbers, dates, formulas). Required.',
-      ),
+    majorDimension: MajorDimension.optional(),
+    valueInputOption: ValueInputOption,
     includeValuesInResponse: z
       .boolean()
       .optional()
       .describe(
         'Whether the response should include the values of the cells that were updated. Defaults to false.',
       ),
-    responseValueRenderOption: z
-      .enum(['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA'])
-      .optional()
-      .describe(
-        'How values in the response should be rendered. The default render option is FORMATTED_VALUE.',
-      ),
-    responseDateTimeRenderOption: z
-      .enum(['SERIAL_NUMBER', 'FORMATTED_STRING'])
-      .optional()
-      .describe(
-        'How dates, times, and durations in the response should be rendered. Ignored if responseValueRenderOption is FORMATTED_VALUE; the default is SERIAL_NUMBER.',
-      ),
+    responseValueRenderOption: ValueRenderOption.optional(),
+    responseDateTimeRenderOption: DateTimeRenderOption.optional(),
   }),
   output: UpdateValuesResponse,
 };

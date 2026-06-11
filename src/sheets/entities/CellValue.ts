@@ -10,6 +10,8 @@ import { z } from 'zod';
  * @see https://sheets.googleapis.com/$discovery/rest?version=v4 (schemas.ValueRange.values)
  * @see https://developers.google.com/workspace/sheets/api/guides/concepts#cell
  */
-export const CellValue = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+export const CellValue = z
+  .union([z.string(), z.number(), z.boolean(), z.null()])
+  .describe('One cell value: a string, number, boolean, or null.');
 
 export type CellValue = z.infer<typeof CellValue>;

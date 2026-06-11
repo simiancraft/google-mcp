@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CellValue } from './CellValue.js';
+import { MajorDimension } from './MajorDimension.js';
 
 /**
  * A range of cell values: data within a rectangle of the spreadsheet, addressed
@@ -14,12 +15,9 @@ export const ValueRange = z.object({
     .describe(
       'The range the values cover, in A1 notation. For output, this range indicates the entire requested range, even though the values will exclude trailing rows and columns.',
     ),
-  majorDimension: z
-    .enum(['ROWS', 'COLUMNS'])
-    .optional()
-    .describe(
-      'The major dimension of the values. For output, if the spreadsheet data is A1=1,B1=2,A2=3,B2=4, then requesting range=A1:B2,majorDimension=ROWS returns [[1,2],[3,4]], whereas majorDimension=COLUMNS returns [[1,3],[2,4]]. Defaults to ROWS.',
-    ),
+  majorDimension: MajorDimension.optional().describe(
+    'The major dimension of the values. For output, if the spreadsheet data is A1=1,B1=2,A2=3,B2=4, then requesting range=A1:B2,majorDimension=ROWS returns [[1,2],[3,4]], whereas majorDimension=COLUMNS returns [[1,3],[2,4]]. Defaults to ROWS.',
+  ),
   values: z
     .array(z.array(CellValue))
     .optional()

@@ -21,7 +21,11 @@ irreversible and carry the MCP `destructiveHint`.
 
 Cell data moves as plain 2D arrays of `string | number | boolean | null`;
 spreadsheet metadata is a lean projection (grid data, formatting, and themes
-are deferred, see [`COVERAGE.md`](./COVERAGE.md)). The full, always-current
+are deferred, see [`COVERAGE.md`](./COVERAGE.md)). One caution on writes:
+with `valueInputOption: USER_ENTERED`, a leading `=` becomes a live formula,
+so writing untrusted content that way is a formula-injection risk
+(`IMPORTRANGE` and friends can exfiltrate sheet data when the spreadsheet is
+next opened); use `RAW` for content you do not control. The full, always-current
 operation list is [`CAPABILITIES.md`](./CAPABILITIES.md), regenerated from the
 registry with `bun run capabilities`. An MCP client discovers the live
 surface, with input and output JSON Schema, from the server's `tools/list`.
