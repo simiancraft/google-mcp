@@ -1,23 +1,8 @@
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/google.js';
-import type { FreeBusyCalendar } from '../../entities/FreeBusy.js';
+import { projectFreeBusyCalendar } from '../../lib/freebusy.js';
 import type { schema } from './schema.js';
-
-/** Project one calendar's expansion, dropping busy periods missing either bound. */
-function projectFreeBusyCalendar(entry: calendar_v3.Schema$FreeBusyCalendar): FreeBusyCalendar {
-  return {
-    busy: (entry.busy ?? []).flatMap((period) =>
-      period.start && period.end ? [{ start: period.start, end: period.end }] : [],
-    ),
-    errors: entry.errors
-      ? entry.errors.map((error) => ({
-          domain: error.domain ?? undefined,
-          reason: error.reason ?? undefined,
-        }))
-      : undefined,
-  };
-}
 
 export async function handler(
   calendar: calendar_v3.Calendar,
