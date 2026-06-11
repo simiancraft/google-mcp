@@ -154,7 +154,7 @@ describe('runAuthFlow', () => {
     spy.mockRestore();
   });
 
-  it('answers an absolute-form request target with 400 instead of crashing', async () => {
+  it('answers an unparseable absolute-form request target with 400 instead of crashing', async () => {
     const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
       tokens: { access_token: 'a', refresh_token: 'r' },
     } as never);

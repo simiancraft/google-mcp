@@ -21,9 +21,9 @@ import { update_calendar_entry } from './update_calendar_entry/index.js';
 /**
  * REST-sourced operations (beyond the MCP toolset), sourced from
  * `developers.google.com/workspace/calendar/api/v3/reference`. Same wire
- * surface as tools; merged into the registry by the server. Removals
- * (reversible ones included) and clears carry `destructive`; see
- * EXTENDING.md's annotation rubric.
+ * surface as tools; merged into the registry by the server. Removals (the
+ * deletes and clear_calendar; reversible ones included) carry
+ * `destructiveHint`; see EXTENDING.md's annotation rubric.
  */
 export const methods = {
   // events

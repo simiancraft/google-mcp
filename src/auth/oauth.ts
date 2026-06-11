@@ -94,9 +94,10 @@ export async function runAuthFlow(
 
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
-      // Absolute-form request targets (proxy-style "GET http://x HTTP/1.1")
-      // reach req.url verbatim and would throw in the URL constructor; answer
-      // 400 rather than crash the flow on an unhandled rejection.
+      // Absolute-form request targets reach req.url verbatim, and an
+      // unparseable one (proxy-style "GET http:// HTTP/1.1") would throw in
+      // the URL constructor; answer 400 rather than crash the flow on an
+      // unhandled rejection.
       let requested: URL;
       try {
         requested = new URL(req.url ?? '/', redirectUri(port));

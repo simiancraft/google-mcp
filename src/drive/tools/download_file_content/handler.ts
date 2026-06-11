@@ -1,7 +1,6 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { MAX_DOWNLOAD_BYTES } from '../../../lib/limits.js';
-import { isGoogleNative, mediaBuffer } from '../../lib/content.js';
+import { assertWithinCap, isGoogleNative, mediaBuffer } from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -18,6 +17,8 @@ export async function handler(
   let bytes: Buffer;
   let contentMime = mimeType;
   if (isGoogleNative(mimeType)) {
+    // Native exports stay uncapped on purpose: Google's own export limit
+    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
     contentMime = args.exportMimeType ?? 'text/plain';
     const res = await drive.files.export(
       { fileId: args.fileId, mimeType: contentMime },
@@ -25,14 +26,7 @@ export async function handler(
     );
     bytes = mediaBuffer(res);
   } else {
-    const size = Number(meta.size ?? 0);
-    if (size > MAX_DOWNLOAD_BYTES) {
-      throw new Error(
-        `File is ${size} bytes; this server caps base64 downloads at ${MAX_DOWNLOAD_BYTES} bytes ` +
-          '(25 MiB). Larger transfers are deferred to ' +
-          'https://github.com/simiancraft/google-mcp-suite/issues/38.',
-      );
-    }
+    assertWithinCap(Number(meta.size ?? 0), 'File', 'base64 downloads');
     const res = await drive.files.get(
       { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
       { responseType: 'arraybuffer' },
@@ -40,13 +34,7 @@ export async function handler(
     bytes = mediaBuffer(res);
     // Re-check what actually arrived: the metadata size is a separate earlier
     // call, absent on some blobs, and content can change between the two.
-    if (bytes.byteLength > MAX_DOWNLOAD_BYTES) {
-      throw new Error(
-        `File content is ${bytes.byteLength} bytes; this server caps base64 downloads at ` +
-          `${MAX_DOWNLOAD_BYTES} bytes (25 MiB). Larger transfers are deferred to ` +
-          'https://github.com/simiancraft/google-mcp-suite/issues/38.',
-      );
-    }
+    assertWithinCap(bytes.byteLength, 'File content', 'base64 downloads');
   }
 
   return {

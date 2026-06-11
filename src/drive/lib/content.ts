@@ -1,3 +1,5 @@
+import { MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+
 /**
  * The content boundary for the two content tools (see the COVERAGE.md
  * divergence notes): Google-native files cross it through `files.export`,
@@ -37,6 +39,24 @@ export function isTextLike(mimeType: string): boolean {
     mimeType.endsWith('+json') ||
     mimeType.endsWith('+xml')
   );
+}
+
+const MIB_LABEL = `${MAX_DOWNLOAD_BYTES / (1024 * 1024)} MiB`;
+
+/**
+ * Refuse a blob transfer over the suite ceiling, citing the media deferral.
+ * One construction site for the four cap errors (pre-fetch on the metadata
+ * size, post-fetch on the bytes that actually arrived, in both content
+ * tools), so the prose cannot drift from the constant.
+ */
+export function assertWithinCap(byteLength: number, subject: string, action: string): void {
+  if (byteLength > MAX_DOWNLOAD_BYTES) {
+    throw new Error(
+      `${subject} is ${byteLength} bytes; this server caps ${action} at ` +
+        `${MAX_DOWNLOAD_BYTES} bytes (${MIB_LABEL}). Larger transfers are deferred to ` +
+        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
+    );
+  }
 }
 
 /**

@@ -104,7 +104,7 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
     }
   });
 
-  it('instructions cite the real _meta key and only real operation names', () => {
+  it('instructions cite the _meta key, carry the content advisory, and name only real operations', () => {
     expect(pins.instructions).toContain(SOURCE_META_KEY);
     expect(pins.instructions).toContain(untrustedContentInstructions().trim());
     const mentioned = pins.instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];

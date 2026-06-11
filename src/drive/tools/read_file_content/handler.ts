@@ -1,7 +1,12 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { MAX_DOWNLOAD_BYTES } from '../../../lib/limits.js';
-import { isGoogleNative, isTextLike, mediaBuffer, textExportMime } from '../../lib/content.js';
+import {
+  assertWithinCap,
+  isGoogleNative,
+  isTextLike,
+  mediaBuffer,
+  textExportMime,
+} from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -26,6 +31,8 @@ export async function handler(
       { fileId: args.fileId, mimeType: exportMime },
       { responseType: 'arraybuffer' },
     );
+    // Native exports stay uncapped on purpose: Google's own export limit
+    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
     return { fileContent: mediaBuffer(res).toString('utf8') };
   }
 
@@ -37,14 +44,7 @@ export async function handler(
   }
   // The same ceiling download_file_content enforces: blobs buffer whole into a
   // JSON string, so an uncapped read is a self-inflicted OOM on a large CSV.
-  const size = Number(meta.size ?? 0);
-  if (size > MAX_DOWNLOAD_BYTES) {
-    throw new Error(
-      `File is ${size} bytes; this server caps content reads at ${MAX_DOWNLOAD_BYTES} bytes ` +
-        '(25 MiB). Larger transfers are deferred to ' +
-        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
-    );
-  }
+  assertWithinCap(Number(meta.size ?? 0), 'File', 'content reads');
   const res = await drive.files.get(
     { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
     { responseType: 'arraybuffer' },
@@ -52,12 +52,6 @@ export async function handler(
   const bytes = mediaBuffer(res);
   // Re-check what actually arrived: the metadata size is a separate earlier
   // call, absent on some blobs, and content can change between the two.
-  if (bytes.byteLength > MAX_DOWNLOAD_BYTES) {
-    throw new Error(
-      `File content is ${bytes.byteLength} bytes; this server caps content reads at ` +
-        `${MAX_DOWNLOAD_BYTES} bytes (25 MiB). Larger transfers are deferred to ` +
-        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
-    );
-  }
+  assertWithinCap(bytes.byteLength, 'File content', 'content reads');
   return { fileContent: bytes.toString('utf8') };
 }

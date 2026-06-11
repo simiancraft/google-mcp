@@ -39,8 +39,7 @@ src/
 
 A service imports `lib` and `auth` by relative path (`../lib/server.js`,
 `../lib/operation.js`, `../auth/oauth.js`). Each operation is three code
-files plus a colocated test:
-`schema.ts` is the contract (regenerable from the docs), `handler.ts` is the
+files plus a colocated test: `schema.ts` is the contract (regenerable from the docs), `handler.ts` is the
 work (the REST call + projection), `index.ts` is the definition that binds
 them with `operation()`, and `handler.test.ts` drives the handler against a
 stub client. Keep them split.
@@ -117,8 +116,7 @@ Add a method exactly like a tool, but transcribe from the REST method page
 (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
 Sheets v4, Docs v1, Drive v3; Calendar's pages deviate, with no `rest`
 segment and the version before `reference`: `…/calendar/api/v3/reference/`):
-that page URL becomes the definition's `source`, and the
-annotations follow the rubric below, since REST pages publish no Tool
+that page URL becomes the definition's `source`, and the annotations follow the rubric below, since REST pages publish no Tool
 Annotations section.
 
 Where Google publishes no MCP toolset at all (Sheets and Docs; the
@@ -180,8 +178,7 @@ block plus `structuredContent`); there is no binary or streaming channel. Binary
 payloads are base64-encoded into a JSON string field per their source API's
 convention (Gmail's `download_attachment` is URL-safe base64url; Drive's
 `download_file_content` is standard base64), by design. A service that needs
-native blob output
-extends `lib` (`server`/`callOperation`), not a single operation.
+native blob output extends `lib` (`server`/`callOperation`), not a single operation.
 
 ## Add an entity
 
@@ -246,8 +243,8 @@ the tool/REST reference.
    `src/<svc>/instructions.ts`, composed from lib's `identityInstructions()`
    preamble, `vocabularyInstructions()` sentence (which interpolates
    `SOURCE_META_KEY`; never hand-typed), and `untrustedContentInstructions()`
-   advisory (presence pinned by the surface pin), so the
-   wing test can pin it without booting the server (`index.ts`'s import side
+   advisory (presence pinned by the surface pin), so the wing test can pin it
+   without booting the server (`index.ts`'s import side
    effect is `await server()`).
    (`import { server } from '../lib/server.js'`,
    `import { mergeOperations } from '../lib/operation.js'`,

@@ -89,6 +89,17 @@ describe('create_file', () => {
     expect(captured.params?.media).toBeUndefined();
   });
 
+  it('does not resolve inherited keys as conversions', async () => {
+    const captured: Captured = {};
+    await handler(fakeDrive(captured, { id: 'F9' }), {
+      title: 'x',
+      contentMimeType: '__proto__',
+      textContent: 'a',
+    });
+    // No conversion: the create carries no mimeType override in its body.
+    expect(captured.params?.requestBody?.mimeType).toBeUndefined();
+  });
+
   it('rejects ambiguous and underspecified content at the schema', () => {
     const both = schema.input.safeParse({
       title: 'x',

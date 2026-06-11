@@ -21,8 +21,14 @@ export async function handler(
 
   // Converting an upload means creating the file as the Google editor type
   // while the media carries the uploaded content type.
+  // Own-property guard: contentMimeType is free text, and an inherited key
+  // (__proto__, toString) must miss rather than resolve (the query.ts and
+  // server.ts precedent).
   const converted =
-    hasContent && !args.disableConversionToGoogleType && args.contentMimeType
+    hasContent &&
+    !args.disableConversionToGoogleType &&
+    args.contentMimeType &&
+    Object.hasOwn(CONVERSIONS, args.contentMimeType)
       ? CONVERSIONS[args.contentMimeType]
       : undefined;
 
