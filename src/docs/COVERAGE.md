@@ -56,6 +56,10 @@ content).
 
 ## Intentionally not exposed
 
+- **Clearing a style to inherited.** The update masks are derived from the
+  provided keys, so a field can be set but never reset to inherit (and a
+  link, once set, cannot be removed); clearing requires a mask entry with no
+  value, which rides with the `writeControl` work in issue #35.
 - **The other 33 `batchUpdate` request types** (tables, named ranges,
   headers and footers, tabs, objects): issue #35 tracks the curated
   expansion. `writeControl` (optimistic concurrency), `searchByRegex` on the
@@ -72,7 +76,8 @@ content).
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` expansion** (text styling, bullets, tables, named
-  ranges, headers/footers, regex replace, write control): issue #35.
+- **Curated `batchUpdate` expansion** (tables, named ranges,
+  headers/footers, remaining styling fields, regex replace, write control):
+  issue #35.
 - **Rich document structure in reads** (tabs, table cells, styles,
   suggestions): issue #36.

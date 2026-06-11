@@ -4,9 +4,10 @@ import { schema } from './schema.js';
 
 /**
  * One CreateParagraphBulletsRequest applied via `documents.batchUpdate` (the
- * curated subset; issue #35). An additive modification, like labeling:
- * re-applying the same preset to the same range is a no-op. Nesting levels
- * are determined by each paragraph's leading tabs, which the API consumes.
+ * curated subset; issue #35). Nesting levels come from each paragraph's
+ * leading tabs, which the API consumes on first application, so indices can
+ * shift; a repeat then finds no tabs left and changes nothing, which is why
+ * the idempotent hint holds despite the first-run shift.
  */
 export const create_paragraph_bullets = docsOperation({
   description:

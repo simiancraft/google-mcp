@@ -14,9 +14,9 @@ the shared [`lib`](../lib) and served by `server()` over an
 `create_document`), a curated trio of text-editing operations
 (`insert_text`, `replace_all_text`, `delete_content_range`), and a styling
 four (`update_text_style`, `update_paragraph_style`,
-`create_paragraph_bullets`, `delete_paragraph_bullets`), each wrapping
-`documents.batchUpdate` with exactly one of its 40 request types; the rest
-of the union is tracked in issue #35. The styling updates change only the
+`create_paragraph_bullets`, `delete_paragraph_bullets`); the seven editing
+and styling operations each wrap `documents.batchUpdate` with exactly one of
+its 40 request types, and the rest of the union is tracked in issue #35. The styling updates change only the
 fields you provide (the update mask is derived from the keys).
 
 Documents read as **text with indices**: body blocks carry zero-based UTF-16

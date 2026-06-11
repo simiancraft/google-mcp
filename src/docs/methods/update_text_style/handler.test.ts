@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import type { docs_v1 } from '@googleapis/docs';
+import { TextStyle } from '../../entities/TextStyle.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -20,6 +21,14 @@ function fakeDocs(
 }
 
 describe('update_text_style', () => {
+  it('entity keys are REST field names (the mask is built from them)', () => {
+    const keys = Object.keys(TextStyle.shape);
+    // Compile pin: the cast chain fails to compile if an entity key is not a
+    // Schema$TextStyle field name (a rename would silently 400 live).
+    const restKeys: (keyof docs_v1.Schema$TextStyle)[] = keys as (keyof typeof TextStyle.shape)[];
+    expect(restKeys).toEqual(keys as (keyof typeof TextStyle.shape)[]);
+  });
+
   it('derives the field mask from the provided keys and builds the PT dimension', async () => {
     const captured: Captured = {};
     const result = await handler(

@@ -12,22 +12,20 @@ export async function handler(
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     updateTextStyle: {
       range: args.range,
+      // One source object feeds both mask and values: the spread carries every
+      // entity field through, and only fontSize is overridden (points to the
+      // PT Dimension). A future TextStyle field flows into both automatically;
+      // a mask key with no value would make Google RESET that property, which
+      // is exactly the desync this shape makes unrepresentable.
       textStyle: forGoogle({
-        bold: textStyle.bold,
-        italic: textStyle.italic,
-        underline: textStyle.underline,
-        strikethrough: textStyle.strikethrough,
-        smallCaps: textStyle.smallCaps,
-        baselineOffset: textStyle.baselineOffset,
+        ...textStyle,
         fontSize:
           textStyle.fontSize === undefined
             ? undefined
             : { magnitude: textStyle.fontSize, unit: 'PT' },
-        link: textStyle.link,
       }),
-      // The mask is derived from the provided keys (zod strips unknown ones),
-      // so mask and values cannot desync; the key names are the REST JSON
-      // field names, which is what FieldMask accepts.
+      // The key names are the REST JSON field names, which FieldMask accepts;
+      // a compile pin in the test holds that naming.
       fields: Object.keys(textStyle).join(','),
     },
   });

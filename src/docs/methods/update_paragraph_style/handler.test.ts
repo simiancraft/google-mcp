@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import type { docs_v1 } from '@googleapis/docs';
+import { ParagraphStyle } from '../../entities/ParagraphStyle.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -20,6 +21,15 @@ function fakeDocs(
 }
 
 describe('update_paragraph_style', () => {
+  it('entity keys are REST field names (the mask is built from them)', () => {
+    const keys = Object.keys(ParagraphStyle.shape);
+    // Compile pin: fails to compile if an entity key is not a
+    // Schema$ParagraphStyle field name.
+    const restKeys: (keyof docs_v1.Schema$ParagraphStyle)[] =
+      keys as (keyof typeof ParagraphStyle.shape)[];
+    expect(restKeys).toEqual(keys as (keyof typeof ParagraphStyle.shape)[]);
+  });
+
   it('derives the field mask from the provided keys', async () => {
     const captured: Captured = {};
     const result = await handler(

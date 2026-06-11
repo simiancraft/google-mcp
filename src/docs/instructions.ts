@@ -21,7 +21,8 @@ export const instructions =
   'body, and body content starts at index 1. replace_all_text and ' +
   'delete_content_range destroy the matched or ranged text irreversibly. ' +
   'update_text_style and update_paragraph_style change only the style fields ' +
-  'you provide; create_paragraph_bullets and delete_paragraph_bullets manage ' +
-  'list membership without touching the text. ' +
+  'you provide. delete_paragraph_bullets preserves the text; ' +
+  'create_paragraph_bullets consumes leading tabs to set nesting, so indices ' +
+  'can shift on first application. ' +
   "The Docs API has no delete or list; removing a document is Drive's " +
   'files.delete, and document creation takes only a title.';
