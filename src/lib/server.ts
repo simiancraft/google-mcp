@@ -13,8 +13,14 @@ import { type AnyOperation, SOURCE_META_KEY } from './operation.js';
 export type ServerOptions<Client> = {
   /** MCP server name (the service, e.g. 'gmail'). */
   name: string;
+  /** Server version; defaults to the package version. */
   version?: string;
-  /** Human-readable server name for client UIs (MCP `Implementation.title`). */
+  /**
+   * Human-readable server name for client UIs (MCP `Implementation.title`).
+   * `description` and `websiteUrl` postdate the 2025-06-18 `Implementation`
+   * (the shipped SDK carries them); clients that predate them ignore them.
+   * @see https://modelcontextprotocol.io/specification/2025-06-18/schema (Implementation)
+   */
   title?: string;
   /** One-line server summary for client UIs (MCP `Implementation.description`). */
   description?: string;
@@ -22,8 +28,9 @@ export type ServerOptions<Client> = {
   websiteUrl?: string;
   /**
    * Usage notes served in the MCP initialize result (`InitializeResult.instructions`);
-   * clients inject this into the agent's context at connect time, so it is the
-   * one server-authored string an agent reliably reads before calling tools.
+   * clients typically inject this into the agent's context at connect time,
+   * making it the primary server-authored channel for usage guidance (support
+   * varies by client; it is a hint, like the tool annotations).
    * @see https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle
    */
   instructions?: string;
@@ -59,13 +66,16 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
 
 /** A labeled set of operations for the capability table: its provenance + the ops. */
 export type CapabilityGroup<Client> = {
-  /** Provenance shown in the Source column, e.g. 'MCP Tool' or 'REST Method'. */
-  kind: string;
+  /** Provenance shown in the Source column. */
+  kind: CapabilityKind;
   operations: Record<string, AnyOperation<Client>>;
 };
 
+/** The two provenance kinds a capability group can carry (Google's two reference trees). */
+export type CapabilityKind = 'MCP Tool' | 'REST Method';
+
 /** Prose labels for the group kinds; the header sentence is built from these. */
-const KIND_LABELS: Record<string, string> = {
+const KIND_LABELS: Record<CapabilityKind, string> = {
   'MCP Tool': 'MCP tools',
   'REST Method': 'REST methods',
 };
@@ -92,7 +102,7 @@ export function renderCapabilities<Client>(
   );
   // Derived from the groups actually passed in, so a methods-only service
   // (Sheets) does not claim an MCP toolset it does not have.
-  const labels = groups.map(({ kind }) => KIND_LABELS[kind] ?? `${kind}s`);
+  const labels = groups.map(({ kind }) => KIND_LABELS[kind]);
   const sources = labels.length === 1 ? `, all ${labels[0]}` : ` across ${labels.join(' and ')}`;
   return `${[
     `# ${title}`,

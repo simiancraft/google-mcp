@@ -9,7 +9,7 @@ describe('operation', () => {
   it('returns its definition unchanged (identity at runtime)', () => {
     const def = {
       description: 'echo the input',
-      source: 'https://developers.google.com/example/reference/rest/v1/things/get',
+      source: 'https://developers.google.com/example/reference/rest/v1/things/get' as const,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,

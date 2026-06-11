@@ -68,12 +68,13 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
   annotations: OperationAnnotations;
   /**
    * The Google reference page this operation transcribes: the MCP toolset page
-   * for tools, the REST method page for methods. Emitted in `tools/list` as
-   * `_meta[SOURCE_META_KEY]`, so an agent can fetch the authoritative
+   * for tools, the REST method page for methods. The folder's single citation
+   * (schema.ts does not restate it). Emitted in `tools/list` under
+   * {@link SOURCE_META_KEY}, so an agent can fetch the authoritative
    * documentation for any operation it is about to call; the generated
    * CAPABILITIES.md links each operation to it.
    */
-  source: string;
+  source: `https://${string}`;
 };
 
 /**

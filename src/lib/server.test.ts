@@ -183,6 +183,11 @@ describe('server', () => {
 
     const list = await mcp.listTools();
     expect(list.tools.map((t) => t.name)).toContain('echo');
+    // The _meta citation must survive the SDK's wire parsing, not just the
+    // pure toolDefinitions shape; an SDK that stripped it would fail here.
+    expect(list.tools[0]?._meta).toEqual({
+      [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/read',
+    });
 
     const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
     expect(res.structuredContent).toEqual({ shouted: 'HI' });
