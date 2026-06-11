@@ -28,6 +28,7 @@ describe('drive operations', () => {
   it('instructions cite the real _meta key and only real operation names', () => {
     expect(instructions).toContain(SOURCE_META_KEY);
     const mentioned = instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
+    expect(mentioned.length).toBeGreaterThan(0);
     for (const name of mentioned) {
       expect(operations).toHaveProperty(name);
     }
