@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get */
 export const schema = {
   input: z.object({
     messageId: z.string().describe('The id of the message the attachment belongs to.'),

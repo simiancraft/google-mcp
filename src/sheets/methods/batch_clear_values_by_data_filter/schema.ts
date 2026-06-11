@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { DataFilter } from '../../entities/DataFilter.js';
 
-/** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchClearByDataFilter */
 export const schema = {
   input: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),

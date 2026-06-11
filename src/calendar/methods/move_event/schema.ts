@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/move */
 export const schema = {
   input: z.object({
     eventId: z.string().describe('The ID of the event to move.'),

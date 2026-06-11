@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchClear */
 export const schema = {
   input: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),

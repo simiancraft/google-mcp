@@ -46,7 +46,8 @@ with `operation()`. Keep them split.
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
 3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
    documented input/output as zod; reference entities for named objects; keep
-   inline primitives inline. Cite the source URL.
+   inline primitives inline. The folder's citation lives once, in `index.ts`'s
+   `source` field; do not restate the URL in schema.ts.
 4. **`handler.ts`:** `export async function handler(client, args) { … }`, typed
    `args: z.infer<typeof schema.input>` and returning `z.infer<typeof
    schema.output>`. The handler calls the REST method and **projects** the

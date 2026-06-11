@@ -6,7 +6,6 @@ import { UpdateValuesResponse } from '../../entities/UpdateValuesResponse.js';
 import { ValueInputOption } from '../../entities/ValueInputOption.js';
 import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
-/** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/update */
 export const schema = {
   input: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),

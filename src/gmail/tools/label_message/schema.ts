@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/label_message */
 export const schema = {
   input: z.object({
     messageId: z.string().describe('The id of the message to add the labels to.'),

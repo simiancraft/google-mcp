@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Label } from '../../entities/Label.js';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/list_labels */
 export const schema = {
   input: z.object({
     pageSize: z.number().int().optional(),

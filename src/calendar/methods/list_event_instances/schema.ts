@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 import { Reminder } from '../../entities/Reminder.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/instances */
 export const schema = {
   input: z.object({
     eventId: z.string().describe('The ID of the recurring event to expand.'),

@@ -34,9 +34,15 @@ describe('calendar operations', () => {
     }
   });
 
-  it('cites a Google reference page on every operation', () => {
-    for (const op of Object.values(operations)) {
-      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\//);
+  it('cites the matching reference page on every operation', () => {
+    for (const [name, op] of Object.entries(tools)) {
+      expect(op.source).toMatch(
+        new RegExp(`^https://developers\\.google\\.com/.+/mcp/tools_list/${name}$`),
+      );
+    }
+    for (const op of Object.values(methods)) {
+      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\/.+\/reference\//);
+      expect(op.source).not.toContain('mcp/tools_list');
     }
   });
 

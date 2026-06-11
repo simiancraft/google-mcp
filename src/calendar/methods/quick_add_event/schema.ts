@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/quickAdd */
 export const schema = {
   input: z.object({
     text: z

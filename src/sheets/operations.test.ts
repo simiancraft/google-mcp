@@ -32,9 +32,10 @@ describe('sheets operations', () => {
     }
   });
 
-  it('cites a Google reference page on every operation', () => {
-    for (const op of Object.values(operations)) {
-      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\//);
+  it('cites the matching REST reference page on every operation', () => {
+    for (const op of Object.values(methods)) {
+      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\/.+\/reference\/rest\//);
+      expect(op.source).not.toContain('mcp/tools_list');
     }
   });
 

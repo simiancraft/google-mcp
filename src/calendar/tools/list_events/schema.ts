@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 import { Reminder } from '../../entities/Reminder.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/list_events */
 export const schema = {
   input: z.object({
     eventTypeFilter: z

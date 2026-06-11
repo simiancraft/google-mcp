@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/label_thread */
 export const schema = {
   input: z.object({
     threadId: z.string().describe('The id of the thread to add the labels to.'),
