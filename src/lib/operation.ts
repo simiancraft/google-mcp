@@ -73,7 +73,7 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
    * documentation for any operation it is about to call; the generated
    * CAPABILITIES.md links each operation to it.
    */
-  source?: string;
+  source: string;
 };
 
 /**
@@ -88,7 +88,7 @@ export type AnyOperation<Client> = {
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
   annotations: OperationAnnotations;
-  source?: string;
+  source: string;
 };
 
 /**

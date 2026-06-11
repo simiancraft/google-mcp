@@ -53,7 +53,7 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
     inputSchema: z.toJSONSchema(op.schema.input, { io: 'input' }) as Record<string, unknown>,
     outputSchema: z.toJSONSchema(op.schema.output, { io: 'output' }) as Record<string, unknown>,
     annotations: op.annotations,
-    ...(op.source ? { _meta: { [SOURCE_META_KEY]: op.source } } : {}),
+    _meta: { [SOURCE_META_KEY]: op.source },
   }));
 }
 

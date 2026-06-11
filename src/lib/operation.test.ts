@@ -9,6 +9,7 @@ describe('operation', () => {
   it('returns its definition unchanged (identity at runtime)', () => {
     const def = {
       description: 'echo the input',
+      source: 'https://developers.google.com/example/reference/rest/v1/things/get',
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -30,6 +31,7 @@ describe('operation', () => {
         idempotentHint: true,
         openWorldHint: false,
       },
+      source: 'https://developers.google.com/example/reference/rest/v1/things/delete',
       schema: { input: z.object({ id: z.string() }), output: z.object({ id: z.string() }) },
       handler: async (_client: FakeClient, args) => args,
     });
@@ -51,6 +53,7 @@ describe('operation', () => {
         idempotentHint: true,
         openWorldHint: false,
       },
+      source: 'https://developers.google.com/example/reference/rest/v1/things/double',
       schema: { input: z.object({ n: z.number() }), output: z.object({ n: z.number() }) },
       handler: async (client: FakeClient, args) => ({
         n: args.n * (client.tag === 'fake' ? 2 : 1),
@@ -87,6 +90,7 @@ describe('mergeOperations', () => {
         idempotentHint: true,
         openWorldHint: false,
       },
+      source: 'https://developers.google.com/example/reference/rest/v1/things/list',
       schema: { input: z.object({}), output: z.object({}) },
       handler: async (_client: FakeClient) => ({}),
     });

@@ -15,6 +15,7 @@ const echo = operation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
   schema: { input: z.object({ text: z.string() }), output: z.object({ shouted: z.string() }) },
   handler: async (client: FakeClient, args) => ({ shouted: client.upper(args.text) }),
 });
@@ -27,6 +28,7 @@ const boom = operation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
   schema: { input: z.object({}), output: z.object({}) },
   handler: async (_client: FakeClient) => {
     throw new Error('kaboom');
@@ -113,7 +115,9 @@ describe('toolDefinitions', () => {
     expect(dangerDef?._meta).toEqual({
       [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/delete',
     });
-    expect('_meta' in (echoDef ?? {})).toBe(false);
+    expect(echoDef?._meta).toEqual({
+      [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/read',
+    });
   });
 
   it('emits declared tool annotations verbatim', () => {
@@ -125,6 +129,7 @@ describe('toolDefinitions', () => {
         idempotentHint: true,
         openWorldHint: false,
       },
+      source: 'https://developers.google.com/example/reference/rest/v1/things/read',
       schema: { input: z.object({}), output: z.object({}) },
       handler: async (_client: FakeClient) => ({}),
     });
@@ -146,7 +151,9 @@ describe('renderCapabilities', () => {
     ]);
     expect(md).toContain('# Test capabilities');
     expect(md).toContain('2 operations across MCP tools and REST methods.');
-    expect(md).toContain('| `echo` | MCP Tool | Uppercase a string. |');
+    expect(md).toContain(
+      '| [`echo`](https://developers.google.com/example/reference/rest/v1/things/read) | MCP Tool | Uppercase a string. |',
+    );
     expect(md).toContain(
       '| [`danger`](https://developers.google.com/example/reference/rest/v1/things/delete) ⚠️ | REST Method | Irreversible. |',
     );
