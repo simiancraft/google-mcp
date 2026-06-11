@@ -6,6 +6,6 @@ export const schema = {
   }),
   /** Delete returns no body; we confirm the id. Prefer trash_thread unless permanence is intended. */
   output: z.object({
-    threadId: z.string(),
+    threadId: z.string().describe('The id of the permanently deleted thread.'),
   }),
 };

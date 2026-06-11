@@ -6,9 +6,8 @@ export const schema = {
     attachmentId: z.string().describe('The id of the attachment (from a message part).'),
   }),
   output: z.object({
-    attachmentId: z.string(),
-    size: z.number(),
-    /** The attachment bytes, base64url-encoded (as Gmail returns them). */
-    data: z.string(),
+    attachmentId: z.string().describe('The id of the downloaded attachment.'),
+    size: z.number().describe('The decoded size in bytes.'),
+    data: z.string().describe('The attachment bytes, base64url-encoded (as Gmail returns them).'),
   }),
 };

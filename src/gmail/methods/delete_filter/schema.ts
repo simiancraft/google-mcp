@@ -6,6 +6,6 @@ export const schema = {
   }),
   /** Delete returns no body; we confirm the id. */
   output: z.object({
-    filterId: z.string(),
+    filterId: z.string().describe('The id of the deleted filter.'),
   }),
 };

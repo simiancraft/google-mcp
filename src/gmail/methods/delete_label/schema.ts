@@ -6,6 +6,6 @@ export const schema = {
   }),
   /** Delete returns no body; we confirm the id. Removes the label from all messages/threads. */
   output: z.object({
-    labelId: z.string(),
+    labelId: z.string().describe('The id of the deleted label.'),
   }),
 };
