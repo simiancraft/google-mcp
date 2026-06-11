@@ -143,12 +143,14 @@ pages establish:
 - removals (delete, clear, trash, unlabel, unsubscribe) → destructive
   **true**, idempotent true (Google's `unlabel_message` precedent; reversible
   removals still count)
-- sends → destructive true, idempotent false, and open-world true (the one
-  cluster that reaches arbitrary external parties); a standing side effect
-  (`create_filter`) is destructive and not idempotent
+- sends → destructive true, idempotent false, and open-world true (the
+  rubric's one cluster that reaches arbitrary external parties); a standing
+  side effect (`create_filter`) is destructive and not idempotent
 
-Everything else is closed-world (`openWorldHint: false`), matching every
-Google-published page.
+Everything else under the rubric is closed-world (`openWorldHint: false`).
+Toolset transcriptions keep their page's hints verbatim either way; Drive's
+`create_file`/`copy_file` pages publish open-world, so the shipped pair
+carries it.
 
 **The surface pins.** Each wing's `operations.test.ts` asserts, and every
 registry change updates: the tool and method counts; all four hints present
@@ -176,11 +178,14 @@ When a tool's schema references `object (X)`, add `entities/X.ts`:
 
 ```ts
 import { z } from 'zod';
-export const X = z.object({ id: z.string().describe('…, from the docs') });
+export const X = z.object({ id: z.string().describe('..., from the docs') });
 export type X = z.infer<typeof X>;
 ```
 
-Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
+An entity composed into any input schema must be `z.strictObject` (the
+strict-input rule above holds at every depth; the recursive surface pin
+fails otherwise). Follow the chain: if `X` references `object (Y)`, add
+`entities/Y.ts` too. Open
 `entities/` and it should be the complete catalog of the service's nouns.
 Resources and reused elements get entities (shared enum fields too, like
 Calendar's `NotificationLevel` or Sheets' `ValueInputOption`); a one-off

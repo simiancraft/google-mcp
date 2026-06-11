@@ -122,7 +122,7 @@ describe('allStatuses', () => {
 
 describe('humanizeRemaining', () => {
   it('formats edges and units', () => {
-    expect(humanizeRemaining(undefined)).toBe('—');
+    expect(humanizeRemaining(undefined)).toBe('-');
     expect(humanizeRemaining(0)).toBe('expired');
     expect(humanizeRemaining(6 * DAY + 23 * 3600 * 1000)).toBe('6d 23h');
     expect(humanizeRemaining(5 * 3600 * 1000)).toBe('5h');

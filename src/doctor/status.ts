@@ -72,7 +72,7 @@ export function grantedScopes(label: string): string[] | null {
 }
 
 export function humanizeRemaining(ms: number | undefined): string {
-  if (ms === undefined) return '—';
+  if (ms === undefined) return '-';
   if (ms <= 0) return 'expired';
   const hours = Math.floor(ms / 3_600_000);
   const days = Math.floor(hours / 24);
@@ -80,7 +80,7 @@ export function humanizeRemaining(ms: number | undefined): string {
 }
 
 function stamp(d: Date | undefined): string {
-  return d ? d.toISOString().slice(0, 16).replace('T', ' ') : '—';
+  return d ? d.toISOString().slice(0, 16).replace('T', ' ') : '-';
 }
 
 /** `doctor status`: the at-a-glance countdown table. */

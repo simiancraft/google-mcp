@@ -13,8 +13,8 @@ Every tool on the MCP reference is implemented (`tools/`). Each `schema.ts` cite
 its page.
 
 `search_threads`, `get_thread`, `list_drafts`, `create_draft`, `list_labels`,
-`create_label`, `label_message`, `label_thread`, `unlabel_message` ⚠,
-`unlabel_thread` ⚠.
+`create_label`, `label_message`, `label_thread`, `unlabel_message` ⚠️,
+`unlabel_thread` ⚠️.
 
 Each tool also transcribes the Tool Annotations published on its MCP page,
 with one corrected deviation: `list_drafts`' page marks all four hints false
@@ -28,13 +28,13 @@ Operations beyond the MCP toolset, sourced from the REST reference.
 
 | Resource | Implemented |
 |----------|-------------|
-| messages | `get_message`, `list_messages`, `send_message` ⚠, `trash_message` ⚠, `untrash_message`, `delete_message` ⚠, `download_attachment`, `batch_modify_messages` ⚠, `batch_delete_messages` ⚠ |
-| drafts | `get_draft`, `update_draft`, `delete_draft` ⚠, `send_draft` ⚠ |
-| labels | `get_label`, `update_label`, `delete_label` ⚠ |
-| threads | `trash_thread` ⚠, `untrash_thread`, `delete_thread` ⚠ |
-| filters | `create_filter` ⚠, `get_filter`, `list_filters`, `delete_filter` ⚠ |
+| messages | `get_message`, `list_messages`, `send_message` ⚠️, `trash_message` ⚠️, `untrash_message`, `delete_message` ⚠️, `download_attachment`, `batch_modify_messages` ⚠️, `batch_delete_messages` ⚠️ |
+| drafts | `get_draft`, `update_draft`, `delete_draft` ⚠️, `send_draft` ⚠️ |
+| labels | `get_label`, `update_label`, `delete_label` ⚠️ |
+| threads | `trash_thread` ⚠️, `untrash_thread`, `delete_thread` ⚠️ |
+| filters | `create_filter` ⚠️, `get_filter`, `list_filters`, `delete_filter` ⚠️ |
 
-⚠ = destructive (`destructiveHint`): a removal (delete, trash, unlabel), a
+⚠️ = destructive (`destructiveHint`): a removal (delete, trash, unlabel), a
 send, or a standing side effect like a forwarding filter; updates and additive
 modifications are not destructive (see EXTENDING.md's annotation rubric).
 Permanent deletes also require the `https://mail.google.com/` scope. The sends

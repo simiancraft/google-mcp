@@ -5,8 +5,10 @@ import { z } from 'zod';
 /**
  * One typed, validated view of the runtime configuration.
  *
- * `loadConfig()` is the single place that reads `process.env`; everything else
- * reads the returned `Config`. It is read lazily (on call, not at import) so a
+ * `loadConfig()` is the single place configuration is read from `process.env`;
+ * everything else reads the returned `Config`. (One sanctioned exception:
+ * `server()` in src/lib/server.ts reads `GOOGLE_MCP_ACCOUNT` directly at
+ * startup, where instance identity is bound.) It is read lazily (on call, not at import) so a
  * host can set the environment before first use, and so tests can vary it.
  *
  * Canonical credential layout (all overridable by env):
@@ -50,8 +52,9 @@ function clean(value: string | undefined): string | undefined {
 }
 
 /**
- * Parse and validate the environment into one typed `Config`. The only function
- * that touches `process.env`; every other consumer reads the returned object.
+ * Parse and validate the environment into one typed `Config`; consumers read
+ * the returned object, not `process.env` (see the module note for the one
+ * exception).
  */
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const e = EnvSchema.parse(env);

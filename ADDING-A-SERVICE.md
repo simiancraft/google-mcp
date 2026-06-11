@@ -49,8 +49,7 @@ its page, and the executor re-reads the cited page when transcribing.
 ## Phase 1: the plan
 
 Write the plan as a single markdown file at the repo root (Calendar's was
-`add-calendar-service.md`). If the how-to-plan skill is available, load it;
-either way the plan must contain exactly these parts:
+`add-calendar-service.md`). The plan must contain exactly these parts:
 
 - **Goal**, under 150 words, stating what "done" looks like in observable
   terms (check green with N operations on the wire, the bin serves, doctor

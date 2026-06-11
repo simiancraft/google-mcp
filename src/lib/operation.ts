@@ -38,7 +38,8 @@ export type OperationAnnotations = {
   idempotentHint: boolean;
   /**
    * True when the operation reaches arbitrary external entities (Gmail's
-   * sends); false for everything bound to the account's own data.
+   * sends by rubric; Drive's create_file/copy_file pair by Google's own MCP
+   * pages); false for everything bound to the account's own data.
    */
   openWorldHint: boolean;
 };

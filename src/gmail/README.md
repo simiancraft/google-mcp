@@ -61,6 +61,6 @@ Point your MCP client at one instance per account:
 Or run it bare (debugging, smoke tests), bound by the same env var:
 
 ```sh
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-gmail        # serve
-GOOGLE_MCP_ACCOUNT=simiancraft google-mcp-gmail auth   # authorize the account
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-gmail        # serve
+GOOGLE_MCP_ACCOUNT=personal@example.com google-mcp-gmail auth   # authorize the account
 ```
