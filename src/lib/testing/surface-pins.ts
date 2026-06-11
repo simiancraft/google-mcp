@@ -101,6 +101,10 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
     }
   });
 
+  // Constraint worth knowing before writing instruction prose: every
+  // snake_case token in the served instructions must name one of THIS wing's
+  // operations. Cross-wing references dodge it with REST dot notation
+  // ("removing a spreadsheet is Drive's files.delete"), the sheets precedent.
   it('instructions cite the _meta key, carry the content advisory, and name only real operations', () => {
     expect(pins.instructions).toContain(SOURCE_META_KEY);
     expect(pins.instructions).toContain(untrustedContentInstructions().trim());

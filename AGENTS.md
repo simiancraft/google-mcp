@@ -10,7 +10,7 @@ This file is for working **on** the repo. To take the suite into service as a cl
 google-mcp-suite/
 └── src/
     ├── auth/        # shared OAuth: authorizedClient(account), runAuthFlow(account), SCOPES
-    ├── lib/         # operation() + server(): the two MCP primitives
+    ├── lib/         # the protocol surface: root files are the named domain ideas (operation, server, capabilities, instructions, optionality, limits); utils/ holds mechanisms; testing/ is build-excluded scaffolding
     ├── gmail/       # the canary server; new services mirror it as src/<service>/
     │   ├── index.ts          # server({ name, title, description, instructions, operations, client }); the bin entry
     │   ├── operation.ts       # gmailOperation: operation() bound to the client type
