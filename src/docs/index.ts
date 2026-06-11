@@ -3,6 +3,7 @@ import { docs } from '@googleapis/docs';
 import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
+import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 
 // Cloning this for a new service? Add that service's OAuth scopes to `SCOPES` in
@@ -16,6 +17,10 @@ import { methods } from './methods/registry.js';
 // is no tools/ folder and the REST-sourced methods are the whole surface.
 await server({
   name: 'docs',
+  title: 'Google Docs (google-mcp-suite)',
+  description:
+    'Per-account Google Docs MCP server: document reads and creation plus curated text editing.',
+  instructions,
   operations: mergeOperations(methods),
   client: async (account) => docs({ version: 'v1', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,

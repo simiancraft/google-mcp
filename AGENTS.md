@@ -21,6 +21,7 @@ google-mcp-suite/
     │       └── <method>/      # index.ts + handler.ts + schema.ts + handler.test.ts
     ├── calendar/    # the Calendar server; same construction as gmail/
     ├── sheets/      # the Sheets server; methods-only (Google publishes no Sheets MCP toolset, so no tools/)
+    ├── docs/        # the Docs server; methods-only (curated batchUpdate trio is the write surface)
     └── doctor/      # provisioning + auth-health CLI (bin: google-mcp-doctor); see src/doctor/README.md
 ```
 
