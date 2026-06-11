@@ -59,6 +59,36 @@ export function identityInstructions(accountNoun: string): string {
   );
 }
 
+/**
+ * The vocabulary sentence every service's instructions carry after the
+ * identity preamble: where the operation vocabulary comes from, where each
+ * tools/list entry's source link lives (`_meta`), and that the four MCP
+ * behavior hints are always present. Lives here because lib owns the behavior
+ * it describes (`toolDefinitions` emits the link and the hints). Two shapes,
+ * matching Google's two publication shapes: a wing with a hosted MCP toolset
+ * names both vocabularies (optionally with per-wing parameter examples);
+ * `restOnly` names the service Google publishes no toolset for.
+ */
+export function vocabularyInstructions(
+  origin?: { tools: string; methods: string } | { restOnly: string },
+): string {
+  if (origin && 'restOnly' in origin) {
+    return (
+      `Google publishes no MCP toolset for ${origin.restOnly}, so every operation ` +
+      'transcribes the REST reference; each tools/list entry links its source ' +
+      `page under _meta['${SOURCE_META_KEY}'] and carries the four MCP behavior hints. `
+    );
+  }
+  const tools = origin ? ` (${origin.tools})` : '';
+  const methods = origin ? ` (${origin.methods})` : '';
+  return (
+    "Operation vocabulary transcribes Google's documentation: tools keep the " +
+    `MCP toolset's parameter names${tools}, methods keep REST's${methods}, and ` +
+    'every tools/list entry links its source reference page under ' +
+    `_meta['${SOURCE_META_KEY}'] and carries the four MCP behavior hints. `
+  );
+}
+
 function errorResult(message: string): CallToolResult {
   return { content: [{ type: 'text', text: `Error: ${message}` }], isError: true };
 }

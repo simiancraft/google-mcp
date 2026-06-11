@@ -3,14 +3,11 @@
  * src/lib/server.ts. A standalone module so tests can pin the content without
  * booting the server (index.ts's import side effect is `await server()`).
  */
-import { SOURCE_META_KEY } from '../lib/operation.js';
-import { identityInstructions } from '../lib/server.js';
+import { identityInstructions, vocabularyInstructions } from '../lib/server.js';
 
 export const instructions =
   identityInstructions('Google account') +
-  'Google publishes no MCP toolset for Sheets, so every operation transcribes ' +
-  'the REST reference; each tools/list entry links its source page under ' +
-  `_meta['${SOURCE_META_KEY}'] and carries the four MCP behavior hints. ` +
+  vocabularyInstructions({ restOnly: 'Sheets' }) +
   'Ranges use A1 notation (or R1C1); cell data moves as 2D arrays of string, ' +
   'number, boolean, or null values; the values field is absent entirely for ' +
   'an empty range, and rows may be ragged. Every value write requires ' +
