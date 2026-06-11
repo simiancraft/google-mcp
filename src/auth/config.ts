@@ -6,9 +6,10 @@ import { z } from 'zod';
  * One typed, validated view of the runtime configuration.
  *
  * `loadConfig()` is the single place configuration is read from `process.env`;
- * everything else reads the returned `Config`. (One sanctioned exception:
- * `server()` in src/lib/server.ts reads `GOOGLE_MCP_ACCOUNT` directly at
- * startup, where instance identity is bound.) It is read lazily (on call, not at import) so a
+ * everything else reads the returned `Config`. (Two sanctioned non-Config
+ * reads elsewhere: `server()` in src/lib/server.ts reads `GOOGLE_MCP_ACCOUNT`
+ * at startup, where instance identity is bound, and the doctor's `detectWsl`
+ * probes `WSL_DISTRO_NAME` for host detection.) It is read lazily (on call, not at import) so a
  * host can set the environment before first use, and so tests can vary it.
  *
  * Canonical credential layout (all overridable by env):

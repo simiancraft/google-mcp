@@ -45,9 +45,8 @@ emits a self-contained package.
 ## Build toolchain
 
 Single package, plain `tsc` to `dist/` (no bundler: relative imports resolve in
-the published package). This matches the single-package shape of the chromonym /
-unitforge libraries, but uses `tsc` rather than their `tsgo`: these are runtime
-server executables and value build stability over a preview compiler.
+the published package); runtime server executables value build stability over
+a preview compiler.
 
 ## Common commands
 

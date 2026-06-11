@@ -102,9 +102,9 @@ Rules that held up under execution:
   script runs coverage (100%, pinned in `bunfig.toml`); a new function with no
   test fails the gate locally exactly as it would in CI.
 - **A surface-count test pins the registries.** `src/<svc>/operations.test.ts`
-  asserts the tool count, the method count, and the exact read-only and
-  destructive annotation sets, and is updated in the same commit as each
-  registry change.
+  asserts the tool count, the method count, and the exact read-only,
+  destructive, and open-world annotation sets, and is updated in the same
+  commit as each registry change.
 - **Transcribe, do not remember.** Each `schema.ts` cites its source page and
   is written against the fetched page or discovery JSON, not from prior
   knowledge.
@@ -131,11 +131,12 @@ one of them is the kind of drift reviewers catch later:
   count linked; the hero caption; the icon row (see below); the quickstart
   `mcpServers` block gains the new service; any "as those services land"
   prose that just landed.
-- **The icon.** `.github/assets/<svc>.svg` ships dimmed for planned services
-  with a literal `opacity="0.4"` on its root `<g>`. Remove that attribute when
-  the service ships, move the icon next to the other bright (shipped) icons in
-  the README icon row, and update its `alt`/`title` from "(planned)" to the
-  plain service name.
+- **The icon.** `.github/assets/<svc>.svg`. If a dimmed planned icon exists
+  (a literal `opacity="0.4"` on its root `<g>`), remove that attribute, move
+  the icon next to the bright (shipped) icons in the README icon row, and
+  update its `alt`/`title` from "(planned)" to the plain service name; if no
+  icon exists yet (every currently planned icon has shipped), create it
+  bright.
 - `AGENTS.md`: the layout tree gains `<svc>/`.
 - `package.json`: the `bin` entry landed with the doctor flip; now the
   `description` names the new service and `keywords` gain its terms.

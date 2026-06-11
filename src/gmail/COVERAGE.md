@@ -7,7 +7,7 @@ Two reference surfaces: the **MCP toolset** (Google's curated tool list) and the
 - MCP reference: `https://developers.google.com/workspace/gmail/api/reference/mcp`
 - Discovery: `https://gmail.googleapis.com/$discovery/rest?version=v1`
 
-## Tools: MCP toolset (10 / 10)
+## Tools: the MCP toolset (`tools/`, 10 of 10)
 
 Every tool on the MCP reference is implemented (`tools/`). Each `schema.ts` cites
 its page.
@@ -22,7 +22,7 @@ with one corrected deviation: `list_drafts`' page marks all four hints false
 `search_threads`); a list cannot modify the account, so it is annotated
 read-only here.
 
-## Methods: REST reference (`methods/`)
+## Methods: REST reference (`methods/`, 23)
 
 Operations beyond the MCP toolset, sourced from the REST reference.
 

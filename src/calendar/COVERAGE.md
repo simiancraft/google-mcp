@@ -7,7 +7,7 @@ Developer Preview) and the **discovery document** (every REST method).
 - MCP reference: `https://developers.google.com/workspace/calendar/api/v3/reference/mcp`
 - Discovery: `https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest`
 
-## Tools: MCP toolset (8 / 8)
+## Tools: the MCP toolset (`tools/`, 8 of 8)
 
 Every tool on the MCP reference is implemented (`tools/`). Each `schema.ts` cites
 its page.
@@ -20,7 +20,7 @@ equivalent (it is `freebusy.query` plus pure slot computation in
 `lib/suggest.ts`), and `respond_to_event` is an `events.patch` of the
 self-attendee's response status.
 
-## Methods: REST reference (`methods/`)
+## Methods: REST reference (`methods/`, 17)
 
 Operations beyond the MCP toolset, sourced from the REST reference.
 

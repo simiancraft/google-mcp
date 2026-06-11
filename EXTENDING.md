@@ -38,7 +38,7 @@ src/
 ```
 
 A service imports `lib` and `auth` by relative path (`../lib/server.js`,
-`../lib/operation.js`, `../auth/oauth.js`). Each operation is three files:
+`../lib/operation.js`, `../auth/oauth.js`). Each operation is three code files plus a colocated test:
 `schema.ts` is the contract (regenerable from the docs), `handler.ts` is the work
 (the REST call + projection), and `index.ts` is the definition that binds them
 with `operation()`. Keep them split.
@@ -83,9 +83,10 @@ with `operation()`. Keep them split.
    input shape, assert the projection, and `schema.output.parse(result)`.
 7. **Register** it in `tools/registry.ts`.
 8. **Update the surface pins and regenerate the doc.** `operations.test.ts`
-   pins the counts and the read-only/destructive sets (update them in the
-   same commit), and an equality test pins CAPABILITIES.md to the registries,
-   so the suite stays red until `bun run capabilities` regenerates it.
+   pins the counts and the read-only/destructive/open-world sets (update them
+   in the same commit), and an equality test pins CAPABILITIES.md to the
+   registries, so the suite stays red until `bun run capabilities`
+   regenerates it.
 9. `bun run check`, then verify live against a real account (see
    [Live verification](#live-verification)).
 
@@ -102,7 +103,9 @@ toolset alone cannot fully drive a Google service; `methods/` is how the suite
 goes past it to fully instrument an account. The two folders mirror Google's own
 two reference trees (MCP vs REST), which keeps provenance obvious and makes the
 surface self-documenting. It also enables **documentation-driven updates**: a
-reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple,
+reference page maps one-to-one onto a `schema.ts`/`handler.ts`/`index.ts` triple
+(occasionally a page splits into several operations where annotations differ,
+like Drive's `files/update` page behind `update_file` and the trash pair),
 so "here is the page, make the files" is a bounded, repeatable unit of work. The
 merge throws on a duplicate wire name (`mergeOperations`), so the only real hazard
 of the split, a tool and a method colliding on one key, fails loudly rather than
@@ -110,7 +113,8 @@ silently dropping an operation.
 
 Add a method exactly like a tool, but transcribe from the REST method page
 (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
-Sheets v4, Docs v1, Drive v3): that page URL becomes the definition's `source`, and the
+Sheets v4, Docs v1, Drive v3; Calendar's pages deviate, with no `rest`
+segment and the version before `reference`: `…/calendar/api/v3/reference/`): that page URL becomes the definition's `source`, and the
 annotations follow the rubric below, since REST pages publish no Tool
 Annotations section.
 
@@ -154,11 +158,13 @@ carries it.
 
 **The surface pins.** Each wing's `operations.test.ts` asserts, and every
 registry change updates: the tool and method counts; all four hints present
-on every operation; the exact read-only and destructive sets; the citation
-shape per provenance (a tool cites its own `mcp/tools_list/<name>` page, a
-method a REST reference page); the instructions string (cites the real
-`_meta` key, names only real operations); and that CAPABILITIES.md equals a
-fresh render of the registries.
+on every operation; the exact read-only, destructive, and open-world sets;
+strict inputs at every depth (the recursive `additionalProperties: false`
+walk); the citation shape per provenance (a tool cites its own
+`mcp/tools_list/<name>` page, a method a REST reference page); the
+instructions string (cites the real `_meta` key, names only real
+operations); and that CAPABILITIES.md equals a fresh render of the
+registries.
 
 Annotations are written as the four explicit flags at each definition site,
 the same way Google's pages present them; do not abstract them into named
@@ -168,8 +174,9 @@ fit a category scheme.
 
 **Output crosses the wire as JSON.** Every result is JSON-serialized (a `text`
 block plus `structuredContent`); there is no binary or streaming channel. Binary
-payloads (e.g. attachment bytes from `download_attachment`) are base64url-encoded
-into a JSON string field, by design. A service that needs native blob output
+payloads are base64-encoded into a JSON string field per their source API's
+convention (Gmail's `download_attachment` is URL-safe base64url; Drive's
+`download_file_content` is standard base64), by design. A service that needs native blob output
 extends `lib` (`server`/`callOperation`), not a single operation.
 
 ## Add an entity
