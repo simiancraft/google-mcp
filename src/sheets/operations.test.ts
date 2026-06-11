@@ -49,16 +49,16 @@ describe('sheets operations', () => {
 
   it('annotates every operation with the four MCP hints, explicitly', () => {
     for (const op of Object.values(operations)) {
-      expect(typeof op.annotations?.readOnlyHint).toBe('boolean');
-      expect(typeof op.annotations?.destructiveHint).toBe('boolean');
-      expect(typeof op.annotations?.idempotentHint).toBe('boolean');
-      expect(typeof op.annotations?.openWorldHint).toBe('boolean');
+      expect(typeof op.annotations.readOnlyHint).toBe('boolean');
+      expect(typeof op.annotations.destructiveHint).toBe('boolean');
+      expect(typeof op.annotations.idempotentHint).toBe('boolean');
+      expect(typeof op.annotations.openWorldHint).toBe('boolean');
     }
   });
 
   it('marks exactly the read-only operations', () => {
     const readOnly = Object.entries(operations)
-      .filter(([, op]) => op.annotations?.readOnlyHint)
+      .filter(([, op]) => op.annotations.readOnlyHint)
       .map(([name]) => name)
       .sort();
     expect(readOnly).toEqual([
@@ -73,7 +73,7 @@ describe('sheets operations', () => {
 
   it('marks exactly the clears destructive (removals; updates are not, per the rubric)', () => {
     const destructive = Object.entries(operations)
-      .filter(([, op]) => op.annotations?.destructiveHint)
+      .filter(([, op]) => op.annotations.destructiveHint)
       .map(([name]) => name)
       .sort();
     expect(destructive).toEqual([
@@ -84,7 +84,7 @@ describe('sheets operations', () => {
   });
 
   it('declares the whole surface closed-world', () => {
-    const openWorld = Object.values(operations).filter((op) => op.annotations?.openWorldHint);
+    const openWorld = Object.values(operations).filter((op) => op.annotations.openWorldHint);
     expect(openWorld).toEqual([]);
   });
 

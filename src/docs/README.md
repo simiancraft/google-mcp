@@ -16,8 +16,9 @@ the shared [`lib`](../lib) and served by `server()` over an
 four (`update_text_style`, `update_paragraph_style`,
 `create_paragraph_bullets`, `delete_paragraph_bullets`); the seven editing
 and styling operations each wrap `documents.batchUpdate` with exactly one of
-its 40 request types, and the rest of the union is tracked in issue #35. The styling updates change only the
-fields you provide (the update mask is derived from the keys).
+its 40 request types, and the rest of the union is tracked in issue #35.
+The styling updates change only the fields you provide (the update mask is
+derived from the keys).
 
 Documents read as **text with indices**: body blocks carry zero-based UTF-16
 index ranges, which are exactly what the editing operations target; the

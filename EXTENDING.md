@@ -105,7 +105,7 @@ silently dropping an operation.
 
 Add a method exactly like a tool, but transcribe from the REST method page
 (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
-Sheets v4, Docs v1): that page URL becomes the definition's `source`, and the
+Sheets v4, Docs v1, Drive v3): that page URL becomes the definition's `source`, and the
 annotations follow the rubric below, since REST pages publish no Tool
 Annotations section.
 
@@ -183,8 +183,10 @@ response wrapper may stay inline in its `schema.ts`.
 
 **Enum policy.** Inputs are closed `z.enum`s with the `*_UNSPECIFIED` variants
 never exposed. Outputs are closed `z.enum`s with unknown values **dropped** at
-projection (the field goes absent; Sheets' `lib/enums.ts` `narrow()` is the
-helper): the schema stays truthful and a new upstream value degrades to a
+projection (the field goes absent; `narrow()` in the shared `src/lib/enums.ts`
+is the helper, and the allowed list derives from the entity itself,
+`Entity.shape.<field>.unwrap().options`, so projection and schema cannot
+disagree): the schema stays truthful and a new upstream value degrades to a
 missing field, never a wrong one. Never coerce an unknown value to a
 valid-looking default. (Calendar's open-string output fields, e.g.
 `Event.status`, predate this rule and keep their shape for wire stability.)
@@ -221,7 +223,8 @@ the tool/REST reference.
    as the one paragraph an agent should read before calling tools: identity
    binding, vocabulary, and the service's traps. Keep the string in
    `src/<svc>/instructions.ts`, composed from lib's `identityInstructions()`
-   preamble and interpolating `SOURCE_META_KEY` (never hand-typed), so the
+   preamble and `vocabularyInstructions()` sentence (which interpolates
+   `SOURCE_META_KEY`; never hand-typed), so the
    wing test can pin it without booting the server (`index.ts`'s import side
    effect is `await server()`).
    (`import { server } from '../lib/server.js'`,

@@ -19,12 +19,12 @@ Read Google's documentation for the candidate service and write down:
 1. **Is there an MCP toolset reference?** Calendar's lives at
    `developers.google.com/workspace/calendar/api/v3/reference/mcp` (note: the
    path shape varies per service and some 404 on the "obvious" URL; find the
-   real one). If Google publishes no MCP page (Sheets; the MCP-supported
+   real one). If Google publishes no MCP page (Sheets and Docs; the MCP-supported
    products are Gmail, Drive, Calendar, Chat, and People), the service is
    **methods-only**: no `tools/` folder at all, `index.ts` serves
    `mergeOperations(methods)`, `capabilities.ts` renders a single
    `REST Method` section, the surface-count test pins methods only, and
-   COVERAGE.md leads with why. Sheets is the worked example.
+   COVERAGE.md leads with why. Sheets and Docs are the worked examples.
 2. **The REST surface size**, from the discovery document
    (`googleapis.com/discovery/v1/apis/<svc>/<version>/rest`). The discovery
    doc is machine-readable and is the precise source for parameter names,
@@ -143,6 +143,9 @@ one of them is the kind of drift reviewers catch later:
 - Sweep for stale parentheticals: `grep -rn "Gmail, Drive"` style example
   lists in PROVISIONING.md, EXTENDING.md, and the PR template have gone stale
   twice now; check them every time a service ships.
+- The matrix citation lists (AGENTS.md, EXTENDING.md, and this file's Phase 4)
+  gain the new service's issue number once the matrix opens, and EXTENDING's
+  version parenthetical ("Gmail is v1, ...") gains the new service.
 
 ## Phase 4: verification and the operational matrix
 
@@ -167,8 +170,8 @@ and EXTENDING.md (Live verification):
    documents that the cleanup ran outside the served surface.
 
 Then open the **operational matrix issue** (the rubric from #7, instantiated
-for Calendar in #22, Sheets in #29, and Docs in #41): one entry per operation with a `live` and a `unit`
-checkbox, and a **proof line** on every ticked live box stating what was
+for Calendar in #22, Sheets in #29, and Docs in #41): one entry per operation
+with a `live` and a `unit` checkbox, and a **proof line** on every ticked live box stating what was
 created and destroyed, the ids, and the date, for example *created disposable
 calendar c_e7e3…, deleted, confirmed gone from the calendar list on
 6/10/2026*. Findings the live pass surfaces (API quirks, undocumented
@@ -188,7 +191,7 @@ most expensive knowledge the pass produces.
   the config block and succeed). Apply the findings as their own commits.
 - Merge without squashing; semantic-release reads the atomic commits.
 
-## Worked deltas for the likely next services
+## Worked deltas from shipped services
 
 Sheets shipped from this playbook in June 2026: 15 methods-only operations,
 `batchUpdate` deferred as issue #27 and grid data as #28. The predicted
@@ -197,9 +200,15 @@ computes A1, ranges pass through verbatim. Do not build helpers ahead of an
 operation that needs them; knip flags them and the pattern says lift on the
 second use.
 
-- **Drive** (`@googleapis/drive`, v3): scope already in the union. The
-  hostile clusters are media upload/download (resumable uploads do not fit
-  JSON-only output; plan the base64 boundary deliberately) and permissions
-  (the ACL analog); both are deferral-issue candidates from day one.
-- **Docs** (`@googleapis/docs`, v1): same `batchUpdate` union problem as
-  Sheets; the read path (`documents.get`) is simple and ships first.
+Docs shipped June 2026 (also methods-only): a curated `batchUpdate` subset
+instead of a deferral, one operation per request type (editing trio, then the
+styling four), with the rest of the 40-type union tracked in #35 and
+read-path structure in #36. The curation pattern is the delta worth reusing:
+when a service's write surface is one giant union, ship the highest-leverage
+request types as their own operations rather than deferring the method.
+
+Drive shipped June 2026: all 8 MCP toolset tools plus 27 REST methods. The
+predicted hostile clusters were real and became #38 (media beyond the base64
+boundary), #39 (sharing writes), and #40 (changes feed/watch channels); the
+toolset's query vocabulary needed a translator (`lib/query.ts`) because the
+hosted backends accept terms REST v3 spells differently.

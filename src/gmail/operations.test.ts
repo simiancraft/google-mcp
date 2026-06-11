@@ -58,16 +58,16 @@ describe('gmail operations', () => {
 
   it('annotates every operation with the four MCP hints, explicitly', () => {
     for (const op of Object.values(operations)) {
-      expect(typeof op.annotations?.readOnlyHint).toBe('boolean');
-      expect(typeof op.annotations?.destructiveHint).toBe('boolean');
-      expect(typeof op.annotations?.idempotentHint).toBe('boolean');
-      expect(typeof op.annotations?.openWorldHint).toBe('boolean');
+      expect(typeof op.annotations.readOnlyHint).toBe('boolean');
+      expect(typeof op.annotations.destructiveHint).toBe('boolean');
+      expect(typeof op.annotations.idempotentHint).toBe('boolean');
+      expect(typeof op.annotations.openWorldHint).toBe('boolean');
     }
   });
 
   it('marks exactly the read-only operations', () => {
     const readOnly = Object.entries(operations)
-      .filter(([, op]) => op.annotations?.readOnlyHint)
+      .filter(([, op]) => op.annotations.readOnlyHint)
       .map(([name]) => name)
       .sort();
     expect(readOnly).toEqual([
@@ -87,7 +87,7 @@ describe('gmail operations', () => {
 
   it('marks exactly the destructive operations (removals, sends, standing filters)', () => {
     const destructive = Object.entries(operations)
-      .filter(([, op]) => op.annotations?.destructiveHint)
+      .filter(([, op]) => op.annotations.destructiveHint)
       .map(([name]) => name)
       .sort();
     expect(destructive).toEqual([
@@ -110,7 +110,7 @@ describe('gmail operations', () => {
 
   it('marks exactly the sends as open-world', () => {
     const openWorld = Object.entries(operations)
-      .filter(([, op]) => op.annotations?.openWorldHint)
+      .filter(([, op]) => op.annotations.openWorldHint)
       .map(([name]) => name)
       .sort();
     expect(openWorld).toEqual(['send_draft', 'send_message']);
