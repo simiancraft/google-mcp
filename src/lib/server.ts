@@ -9,6 +9,7 @@ import {
 import { z } from 'zod';
 import pkg from '../../package.json' with { type: 'json' };
 import { type AnyOperation, SOURCE_META_KEY } from './operation.js';
+import { errorMessage } from './utils/error.js';
 import { ownLookup } from './utils/lookup.js';
 
 export type ServerOptions<Client> = {
@@ -114,7 +115,7 @@ export async function callOperation<Client>(
     if (error instanceof z.ZodError) {
       return errorResult(`Invalid output from ${name}:\n${z.prettifyError(error)}`);
     }
-    return errorResult(error instanceof Error ? error.message : String(error));
+    return errorResult(errorMessage(error));
   }
 }
 
