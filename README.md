@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <strong>Google MCP servers you can read in an afternoon, one per service.</strong><br />
-  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, one server per service per account: <strong>117 self-describing operations</strong> across five Google services, so an agent can do (nearly) anything your accounts can, on several accounts at once, and never on the wrong one. Every operation cites its Google reference page and validates input and output; test coverage is pinned at 100%.
+  <strong>Google Workspace MCP servers you can read in an afternoon, one per service.</strong><br />
+  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface for Gmail, Google Calendar, Google Drive, Google Docs, and Google Sheets, one server per service per account: <strong>117 self-describing operations</strong> across five Google services, so an AI agent (Claude, Cursor, or any MCP client) can do (nearly) anything your accounts can, on several accounts at once, and never on the wrong one. Every operation cites its Google reference page and validates input and output; test coverage is pinned at 100%.
 </p>
 
 <p align="center">
