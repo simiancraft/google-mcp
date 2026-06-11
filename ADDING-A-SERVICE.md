@@ -170,7 +170,7 @@ and EXTENDING.md (Live verification):
    documents that the cleanup ran outside the served surface.
 
 Then open the **operational matrix issue** (the rubric from #7, instantiated
-for Calendar in #22, Sheets in #29, and Docs in #41): one entry per operation
+for Calendar in #22, Sheets in #29, Docs in #41, and Drive in #44): one entry per operation
 with a `live` and a `unit` checkbox, and a **proof line** on every ticked live box stating what was
 created and destroyed, the ids, and the date, for example *created disposable
 calendar c_e7e3…, deleted, confirmed gone from the calendar list on

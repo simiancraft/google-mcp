@@ -258,7 +258,7 @@ it on every operation.
 Unit tests never touch the network, so every operation is also verified once
 against a real account, tracked per service in an **operational-matrix issue**
 (a live + unit checkbox per operation; Gmail is #7, Calendar is #22, Sheets
-is #29, Docs is #41).
+is #29, Docs is #41, Drive is #44).
 
 Live passes are **pairwise**: pair every destructive operation with its
 antecedent, so the only data ever destroyed is test data the pass itself made,
