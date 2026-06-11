@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { calendar_v3 } from '@googleapis/calendar';
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
 
 /**
  * The conference payload for the requested Meet handling: an explicit

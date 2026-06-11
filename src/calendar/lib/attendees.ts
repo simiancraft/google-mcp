@@ -1,5 +1,5 @@
 import type { calendar_v3 } from '@googleapis/calendar';
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
 
 /**
  * Apply attendee email deltas to a REST attendee array: drop the removed

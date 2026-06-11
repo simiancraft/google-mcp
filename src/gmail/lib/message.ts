@@ -1,7 +1,7 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import addressparser from 'addressparser';
 import { createMimeMessage } from 'mail-mime-builder';
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
 import type { Draft } from '../entities/Draft.js';
 import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';

@@ -1,7 +1,7 @@
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { z } from 'zod';
-import type { Optional } from '../../../lib/types.js';
-import { forGoogle } from '../../../lib/utils/google.js';
+import type { Optional } from '../../../lib/optionality.js';
+import { forGoogle } from '../../../lib/optionality.js';
 import { applyAttendeeDeltas } from '../../lib/attendees.js';
 import { buildEventDateTime } from '../../lib/datetime.js';
 import { projectEvent } from '../../lib/event.js';

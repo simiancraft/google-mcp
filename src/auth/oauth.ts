@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { CodeChallengeMethod, OAuth2Client } from 'google-auth-library';
 import open from 'open';
 import { z } from 'zod';
-import { forGoogle } from '../lib/utils/google.js';
+import { forGoogle } from '../lib/optionality.js';
 import { readJsonFile } from '../lib/utils/json.js';
 import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 

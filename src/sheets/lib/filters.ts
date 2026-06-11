@@ -1,5 +1,5 @@
 import type { sheets_v4 } from '@googleapis/sheets';
-import { forGoogle } from '../../lib/utils/google.js';
+import { forGoogle } from '../../lib/optionality.js';
 import { narrow } from '../../lib/utils/narrow.js';
 import type { DataFilter } from '../entities/DataFilter.js';
 import { DeveloperMetadataLocation } from '../entities/DeveloperMetadataLocation.js';

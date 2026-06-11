@@ -1,6 +1,6 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/utils/google.js';
+import { forGoogle } from '../../../lib/optionality.js';
 import { METHOD_FILE_FIELDS, projectFile } from '../../lib/file.js';
 import type { schema } from './schema.js';
 

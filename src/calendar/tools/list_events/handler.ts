@@ -1,6 +1,6 @@
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/utils/google.js';
+import { forGoogle } from '../../../lib/optionality.js';
 import { projectEvent, projectReminder } from '../../lib/event.js';
 import type { schema } from './schema.js';
 
