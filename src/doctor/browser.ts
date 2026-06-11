@@ -26,7 +26,10 @@ export function browserCommand(
   platform: NodeJS.Platform,
 ): { cmd: string; args: string[] } {
   if (wsl) {
-    return { cmd: 'powershell.exe', args: ['-NoProfile', '-Command', `Start-Process '${url}'`] };
+    // PowerShell single-quote escaping is doubling; without it a literal quote
+    // in the URL would end the argument early.
+    const quoted = url.replace(/'/g, "''");
+    return { cmd: 'powershell.exe', args: ['-NoProfile', '-Command', `Start-Process '${quoted}'`] };
   }
   if (platform === 'darwin') return { cmd: 'open', args: [url] };
   return { cmd: 'xdg-open', args: [url] };

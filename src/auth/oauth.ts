@@ -138,7 +138,9 @@ export async function runAuthFlow(
       clearTimeout(timer);
       reject(err);
     });
-    server.listen(port);
+    // Loopback only (RFC 8252 section 8.3): with no host, Node binds every
+    // interface and the consent port is briefly LAN-reachable.
+    server.listen(port, '127.0.0.1');
     console.error(`Visit this URL to authorize ${acct}:\n${authUrl}`);
     void openBrowser(authUrl);
   });
