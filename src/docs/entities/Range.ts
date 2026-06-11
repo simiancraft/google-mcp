@@ -5,7 +5,7 @@ import { z } from 'zod';
  * units, end-exclusive. The REST Range's `segmentId` and `tabId` are not
  * exposed (issue #36): ranges address the body of the first tab.
  *
- * @see https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/request#Range
+ * @see https://developers.google.com/workspace/docs/api/reference/rest/v1/documents#Range
  */
 export const Range = z.object({
   startIndex: z
@@ -18,7 +18,10 @@ export const Range = z.object({
   endIndex: z
     .number()
     .int()
-    .describe('The zero-based end index of the range, exclusive, in UTF-16 code units.'),
+    .min(2)
+    .describe(
+      'The zero-based end index of the range, exclusive, in UTF-16 code units; must be greater than startIndex.',
+    ),
 });
 
 export type Range = z.infer<typeof Range>;

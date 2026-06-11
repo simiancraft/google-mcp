@@ -2,9 +2,23 @@ import type { docs_v1 } from '@googleapis/docs';
 import type { Document } from '../entities/Document.js';
 import type { StructuralElement } from '../entities/StructuralElement.js';
 
-/** Concatenate a paragraph's text runs; non-text paragraph elements contribute nothing. */
+/**
+ * Concatenate a paragraph's elements into index-faithful text: text runs
+ * verbatim, and every non-text element (inline object, footnote reference,
+ * chip, rule, ...) as one U+FFFC placeholder per UTF-16 unit it occupies, so
+ * `text.length` always equals `endIndex - startIndex` and offsets into the
+ * text can be added to `startIndex` to target edits.
+ */
 function paragraphText(paragraph: docs_v1.Schema$Paragraph): string {
-  return (paragraph.elements ?? []).map((element) => element.textRun?.content ?? '').join('');
+  return (paragraph.elements ?? [])
+    .map((element) => {
+      if (element.textRun) {
+        return element.textRun.content ?? '';
+      }
+      const span = (element.endIndex ?? 0) - (element.startIndex ?? 0);
+      return span > 0 ? '\uFFFC'.repeat(span) : '';
+    })
+    .join('');
 }
 
 /**

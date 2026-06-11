@@ -91,7 +91,7 @@ Calendar shipped in 11 planned commits; the shape generalizes:
 | # | Commit | Content | Gate |
 |---|--------|---------|------|
 | 1 | `docs(<svc>): add the <svc> service plan` | the plan file | reviewed |
-| 2 | `feat(<svc>): scaffold the <svc> service skeleton` | empty registries, `index.ts` bootstrap, `capabilities.ts`, dep in package.json (the **bin lands with the doctor flip**: the bins-equal-implemented invariant test holds them together, and service bootstraps are knip entries) | check green; bin starts, `tools/list` returns 0 |
+| 2 | `feat(<svc>): scaffold the <svc> service skeleton` | empty registries, `index.ts` bootstrap, `capabilities.ts`, dep in package.json (the **bin lands with the doctor flip**: the bins-equal-implemented invariant test holds them together, and service bootstraps are knip entries) | check green; the bootstrap serves, `tools/list` returns 0 |
 | 3..k | `feat(<svc>): add <cluster>` | operations in dependency order: read path first (it forces the entities and projections), then writes, then remaining tools, then methods grouped by REST resource. `operation.ts` (the `<svc>Operation` binder) lands with the **first** operation commit, not the scaffold: an unreferenced file fails knip's unused-file check (Calendar and Sheets both hit this) | check green after every commit; CAPABILITIES.md regenerated whenever a registry changes |
 | k+1 | `feat(doctor): register <svc> as implemented with a live probe` | flip `implemented: true`, add the probe, **cover the probe in `services.probe.test.ts` by mocking the client module**. The probe must be a cheap, id-free, read-only call; when the API has none (Sheets has no list, every read takes an id), probe a stable public artifact (Sheets reads Google's docs sample spreadsheet), and when no stable public artifact exists either (Docs), read a sentinel id and treat a clean 404 as proof of auth and enablement; comment the tradeoff at the probe | check green; `bun run doctor` live-green per account |
 | k+2 | `docs(<svc>): document the shipped service` | COVERAGE.md, service README, root README, AGENTS.md, package.json metadata, the icon, and `src/<svc>/instructions.ts` (the served usage paragraph; lands here because its test pins operation names against the finished registry) | check green; `bun run capabilities` produces no diff; links resolve |
@@ -138,7 +138,7 @@ one of them is the kind of drift reviewers catch later:
   the README icon row, and update its `alt`/`title` from "(planned)" to the
   plain service name.
 - `AGENTS.md`: the layout tree gains `<svc>/`.
-- `package.json`: the `bin` entry landed in the scaffold commit; now the
+- `package.json`: the `bin` entry landed with the doctor flip; now the
   `description` names the new service and `keywords` gain its terms.
 - Sweep for stale parentheticals: `grep -rn "Gmail, Drive"` style example
   lists in PROVISIONING.md, EXTENDING.md, and the PR template have gone stale
@@ -167,7 +167,7 @@ and EXTENDING.md (Live verification):
    documents that the cleanup ran outside the served surface.
 
 Then open the **operational matrix issue** (the rubric from #7, instantiated
-for Calendar in #22 and Sheets in #29): one entry per operation with a `live` and a `unit`
+for Calendar in #22, Sheets in #29, and Docs in #41): one entry per operation with a `live` and a `unit`
 checkbox, and a **proof line** on every ticked live box stating what was
 created and destroyed, the ids, and the date, for example *created disposable
 calendar c_e7e3…, deleted, confirmed gone from the calendar list on

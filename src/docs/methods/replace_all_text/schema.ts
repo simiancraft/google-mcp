@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BatchUpdateReceipt } from '../../entities/BatchUpdateReceipt.js';
 import { SubstringMatchCriteria } from '../../entities/SubstringMatchCriteria.js';
 
 export const schema = {
@@ -11,15 +12,10 @@ export const schema = {
       .string()
       .describe('The text that will replace the matched text; empty deletes the matches.'),
   }),
-  output: z.object({
-    documentId: z.string().describe('The document the update was applied to.'),
+  output: BatchUpdateReceipt.extend({
     occurrencesChanged: z
       .number()
       .int()
       .describe('The number of occurrences changed by replacing all text.'),
-    revisionId: z
-      .string()
-      .optional()
-      .describe('The revision of the document after the write, when Google reports one.'),
   }),
 };

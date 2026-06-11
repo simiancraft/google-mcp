@@ -8,7 +8,7 @@ export async function handler(
   docs: docs_v1.Docs,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
-  const { data, documentId, revisionId } = await applyUpdate(docs, args.documentId, {
+  const { reply, documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     replaceAllText: {
       containsText: forGoogle(args.containsText),
       replaceText: args.replaceText,
@@ -16,7 +16,7 @@ export async function handler(
   });
   return {
     documentId,
-    occurrencesChanged: data.replies?.[0]?.replaceAllText?.occurrencesChanged ?? 0,
+    occurrencesChanged: reply?.replaceAllText?.occurrencesChanged ?? 0,
     revisionId,
   };
 }

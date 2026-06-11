@@ -13,7 +13,7 @@ the REST-sourced `methods/` registry is the whole wire surface.
 ## Methods: REST reference (`methods/`, 5)
 
 The API has 3 methods; the third, `documents.batchUpdate`, is a union of 40
-request types and **is the entire write surface**, so unlike Sheets it cannot
+request types and **is the entire editing surface**, so unlike Sheets it cannot
 be deferred whole. The shipped posture: a curated trio of request types as
 first-class operations, each wrapping `batchUpdate` with exactly one request
 (`lib/batch.ts` is the shared wrapper).
@@ -24,10 +24,11 @@ first-class operations, each wrapping `batchUpdate` with exactly one request
 | documents.batchUpdate (curated) | `insert_text`, `replace_all_text` ⚠, `delete_content_range` ⚠ |
 
 ⚠ = destructive (`destructiveHint`): replaced and deleted text is gone, and
-the API has no undo. `replace_all_text` is idempotent (a second run matches
-nothing); `delete_content_range` is **not** (indices shift, so a repeat
-deletes different content). `insert_text` is additive and not idempotent
-(repeats duplicate).
+the API has no undo. None of the writes is idempotent: a repeated
+`replace_all_text` grows the document whenever the replacement reintroduces
+the match (replace `a` with `aa`), a repeated `delete_content_range` deletes
+different content (indices shift), and repeated inserts and creates
+duplicate.
 
 ## The Document projection
 
@@ -35,7 +36,9 @@ deletes different content). `insert_text` is additive and not idempotent
 projection carries `documentId`, `title`, `revisionId`, and the body's
 structural elements as `{ startIndex, endIndex, type, text }`, where indices
 are zero-based UTF-16 code units (end-exclusive), paragraphs flatten to their
-concatenated run text, tables carry row and column counts only, and an
+concatenated run text (non-text elements appear as one U+FFFC placeholder per
+UTF-16 unit they occupy, so text length always equals the index span), tables
+carry row and column counts only, and an
 element of an unknown structural kind keeps its indices and drops the rest.
 Those index ranges are exactly what the editing operations target; they shift
 on every edit, so agents re-read before computing new ranges.
@@ -54,7 +57,7 @@ content).
 - **Tabs and the recursive document tree**: `includeTabsContent` and
   `suggestionsViewMode` on `documents.get` are not exposed; the legacy
   single-tab body view is served, writes omit `tabId`/`segmentId` (Google
-  applies them to the first tab's body), and table cell trees, styles,
+  applies them to the first tab's body), and table cells, styles,
   inline and positioned objects, footnotes, headers, and footers are not
   projected. Issue #36.
 

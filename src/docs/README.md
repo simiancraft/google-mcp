@@ -21,8 +21,8 @@ index ranges, which are exactly what the editing operations target; the
 ranges shift on every edit, so re-read before computing new ones. Replaced
 and deleted text is unrecoverable through the API (the MCP `destructiveHint`
 marks both), and document deletion is Drive's `files.delete`, not part of
-this surface. Grid-level riches (tabs, tables' cells, styles) are deferred,
-see [`COVERAGE.md`](./COVERAGE.md).
+this surface. Rich document structure (tabs, table cells, styles) is
+deferred, see [`COVERAGE.md`](./COVERAGE.md).
 
 The full, always-current operation list is
 [`CAPABILITIES.md`](./CAPABILITIES.md), regenerated from the registry with

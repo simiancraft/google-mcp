@@ -32,7 +32,7 @@ export const StructuralElement = z.object({
     .string()
     .optional()
     .describe(
-      "A paragraph's text: its runs concatenated, newline-terminated; absent for non-paragraph elements.",
+      "A paragraph's text: its runs concatenated, newline-terminated; absent for non-paragraph elements. Non-text elements (images, footnote references, chips) appear as one U+FFFC placeholder per UTF-16 unit they occupy, so the text length always equals endIndex - startIndex.",
     ),
   rows: z.number().int().optional().describe("A table's row count; absent for non-table elements."),
   columns: z

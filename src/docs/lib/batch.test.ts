@@ -36,6 +36,7 @@ describe('applyUpdate', () => {
     });
     expect(result.documentId).toBe('D1');
     expect(result.revisionId).toBe('rev-2');
+    expect(result.reply).toEqual({});
   });
 
   it('falls back to the requested id and omits an unreported revision', async () => {
@@ -45,5 +46,6 @@ describe('applyUpdate', () => {
     });
     expect(result.documentId).toBe('D9');
     expect(result.revisionId).toBeUndefined();
+    expect(result.reply).toBeUndefined();
   });
 });

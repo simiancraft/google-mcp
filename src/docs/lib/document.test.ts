@@ -2,20 +2,35 @@ import { describe, expect, it } from 'bun:test';
 import { projectDocument, projectStructuralElement } from './document.js';
 
 describe('projectStructuralElement', () => {
-  it('flattens a paragraph to its concatenated run text', () => {
+  it('flattens a paragraph to index-faithful text, placeholding non-text elements', () => {
     expect(
       projectStructuralElement({
         startIndex: 1,
-        endIndex: 8,
+        endIndex: 10,
         paragraph: {
           elements: [
-            { textRun: { content: 'one ' } },
-            { inlineObjectElement: {} },
-            { textRun: { content: 'two\n' } },
+            { startIndex: 1, endIndex: 5, textRun: { content: 'one ' } },
+            { startIndex: 5, endIndex: 6, inlineObjectElement: {} },
+            { startIndex: 6, endIndex: 10, textRun: { content: 'two\n' } },
           ],
         },
       }),
-    ).toEqual({ startIndex: 1, endIndex: 8, type: 'paragraph', text: 'one two\n' });
+    ).toEqual({ startIndex: 1, endIndex: 10, type: 'paragraph', text: 'one \uFFFCtwo\n' });
+  });
+
+  it('keeps text length equal to the index span around placeholders', () => {
+    const projected = projectStructuralElement({
+      startIndex: 1,
+      endIndex: 4,
+      paragraph: {
+        elements: [
+          { startIndex: 1, endIndex: 3, footnoteReference: {} },
+          { startIndex: 3, endIndex: 4, textRun: { content: '\n' } },
+        ],
+      },
+    });
+    expect(projected.text).toBe('\uFFFC\uFFFC\n');
+    expect(projected.text?.length).toBe(3);
   });
 
   it('keeps indices and drops the rest for an unknown structural kind', () => {

@@ -7,7 +7,7 @@ import path from 'node:path';
 // network call. The response holders are read at call time, so each test can
 // vary the response. Note: mock.module patches the module registry
 // process-wide for the test run, so a future test file that value-imports
-// @googleapis/{gmail,calendar,sheets} may receive these mocks depending on
+// @googleapis/{gmail,calendar,sheets,docs} may receive these mocks depending on
 // file order; keep value-level imports of those modules out of other tests.
 let profile: { emailAddress?: string } = {};
 mock.module('@googleapis/gmail', () => ({
@@ -124,9 +124,9 @@ describe('docs probe', () => {
 
   it('rethrows non-404 failures (auth, disabled API)', async () => {
     docsProbeResult = { error: { status: 403, message: 'disabled' } };
-    expect(runProbe('docs', 'acct')).rejects.toMatchObject({ status: 403 });
+    await expect(runProbe('docs', 'acct')).rejects.toMatchObject({ status: 403 });
     docsProbeResult = { error: 'string error' };
-    expect(runProbe('docs', 'acct')).rejects.toBe('string error');
+    await expect(runProbe('docs', 'acct')).rejects.toBe('string error');
   });
 });
 

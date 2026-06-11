@@ -14,7 +14,10 @@ export const instructions =
   'get_document returns the body as text blocks with zero-based UTF-16 index ' +
   'ranges; those ranges are what insert_text and delete_content_range ' +
   'target, and they shift on every edit, so re-read the document before ' +
-  'computing new ranges. insert_text with no index appends at the end of the ' +
+  'computing new ranges. Non-text elements appear as U+FFFC placeholders, one ' +
+  'per UTF-16 unit, so block text length always equals its index span; an ' +
+  'emoji is two units, and ranges must not split a surrogate pair. ' +
+  'insert_text with no index appends at the end of the ' +
   'body, and body content starts at index 1. replace_all_text and ' +
   'delete_content_range destroy the matched or ranged text irreversibly. ' +
   "The Docs API has no delete or list; removing a document is Drive's " +

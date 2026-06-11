@@ -5,7 +5,9 @@ import { schema } from './schema.js';
 /**
  * One ReplaceAllTextRequest applied via `documents.batchUpdate` (the curated
  * subset; issue #35). Destructive: the matched text is gone and the API has
- * no undo. Idempotent: a second run with the same arguments matches nothing.
+ * no undo. Not idempotent: when the replacement reintroduces the match
+ * (replace `a` with `aa`), every repeat grows the document, so the hint
+ * cannot promise repeat-safety for all arguments.
  */
 export const replace_all_text = docsOperation({
   description:
@@ -13,7 +15,7 @@ export const replace_all_text = docsOperation({
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
-    idempotentHint: true,
+    idempotentHint: false,
     openWorldHint: false,
   },
   source:

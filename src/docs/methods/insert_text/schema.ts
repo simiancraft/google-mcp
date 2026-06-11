@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BatchUpdateReceipt } from '../../entities/BatchUpdateReceipt.js';
 
 export const schema = {
   input: z.object({
@@ -18,11 +19,5 @@ export const schema = {
         "The zero-based UTF-16 index to insert at, inside an existing paragraph's bounds (body content starts at index 1). Omitted, the text is appended at the end of the body. Indices shift on every edit; re-read the document before computing them.",
       ),
   }),
-  output: z.object({
-    documentId: z.string().describe('The document the update was applied to.'),
-    revisionId: z
-      .string()
-      .optional()
-      .describe('The revision of the document after the write, when Google reports one.'),
-  }),
+  output: BatchUpdateReceipt,
 };
