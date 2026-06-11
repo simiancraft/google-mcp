@@ -20,8 +20,19 @@ type Interval = { start: number; end: number };
 const MINUTE_MS = 60_000;
 const DAY_MINUTES = 24 * 60;
 
-/** Parse an HH:MM working-hour bound into minutes since local midnight. */
+/** The HH:MM clock format the working-hour bounds require; also enforced by the suggest_time input schema. */
+export const HOUR_OF_DAY = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * Parse an HH:MM working-hour bound into minutes since local midnight. Throws on
+ * any other shape: a malformed bound would otherwise parse to NaN, and every
+ * NaN comparison is false, so the working-hours constraint would be silently
+ * ignored rather than rejected.
+ */
 function toMinutesOfDay(hourMinute: string): number {
+  if (!HOUR_OF_DAY.test(hourMinute)) {
+    throw new Error(`Invalid working-hour bound "${hourMinute}": expected HH:MM, e.g. 09:00.`);
+  }
   return Number(hourMinute.slice(0, 2)) * 60 + Number(hourMinute.slice(3, 5));
 }
 

@@ -32,6 +32,21 @@ describe('suggestSlots', () => {
     ]);
   });
 
+  it('rejects a malformed working-hour bound instead of silently ignoring it', () => {
+    const base = {
+      busy: [],
+      windowStart: '2026-06-10T09:00:00Z',
+      windowEnd: '2026-06-10T12:00:00Z',
+      durationMinutes: 60,
+    };
+    expect(() => suggestSlots({ ...base, preferences: { startHour: '9:00' } })).toThrow(
+      'Invalid working-hour bound',
+    );
+    expect(() => suggestSlots({ ...base, preferences: { endHour: 'noon' } })).toThrow(
+      'Invalid working-hour bound',
+    );
+  });
+
   it('returns no slots when the whole window is busy', () => {
     expect(
       suggestSlots({
