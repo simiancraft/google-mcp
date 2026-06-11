@@ -1,3 +1,18 @@
+# [1.7.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.6.0...v1.7.0) (2026-06-11)
+
+
+### Features
+
+* **doctor:** register drive as implemented with a live probe ([ab0c4a0](https://github.com/simiancraft/google-mcp-suite/commit/ab0c4a0cc455a192ebd37eab46fac6e21fc3793d))
+* **drive:** add the comment and reply methods ([bf5fcc1](https://github.com/simiancraft/google-mcp-suite/commit/bf5fcc1f14798578bdc3da8239c7af5d2d01e232))
+* **drive:** add the file content tools ([db94e44](https://github.com/simiancraft/google-mcp-suite/commit/db94e441e253bf46bc1af50a966ddce5b77c5275)), closes [#38](https://github.com/simiancraft/google-mcp-suite/issues/38)
+* **drive:** add the file metadata methods ([e358a50](https://github.com/simiancraft/google-mcp-suite/commit/e358a50f4c54f5020e9b12a137e4ecc0bc530134))
+* **drive:** add the file read tools ([9120cab](https://github.com/simiancraft/google-mcp-suite/commit/9120cab26b24b6bcd95c8d5af3cdfd4c522aeb0c))
+* **drive:** add the file write tools ([236e5a5](https://github.com/simiancraft/google-mcp-suite/commit/236e5a57655d3cf6ed8e41fbdd8dc20e7ef823af))
+* **drive:** add the revision methods ([777b8c3](https://github.com/simiancraft/google-mcp-suite/commit/777b8c383f7377d3d1ac1821a64d4d9d3d9cf9d2))
+* **drive:** add the shared drive and about methods ([94d9300](https://github.com/simiancraft/google-mcp-suite/commit/94d9300e4c50344d5bc9fa06980f4d615eaebb22))
+* **drive:** scaffold the drive service skeleton ([9f96f90](https://github.com/simiancraft/google-mcp-suite/commit/9f96f9082f50c2badd7a34e447f1de0436a131b5))
+
 # [1.6.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.5.0...v1.6.0) (2026-06-11)
 
 
