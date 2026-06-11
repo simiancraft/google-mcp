@@ -1,3 +1,19 @@
+# [1.5.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.4.1...v1.5.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **docs:** apply the review panel's findings ([5255a64](https://github.com/simiancraft/google-mcp-suite/commit/5255a64f59e9a20c5d064fb8d34f12c4206f42f2)), closes [#41](https://github.com/simiancraft/google-mcp-suite/issues/41)
+
+
+### Features
+
+* **docs:** add document creation ([f8f3464](https://github.com/simiancraft/google-mcp-suite/commit/f8f34648f3fc59c446df3b7366232d98e04bfbdc))
+* **docs:** add the curated text-editing operations ([b98eefe](https://github.com/simiancraft/google-mcp-suite/commit/b98eefebaa77868309d95b3ce88c372c3eedc609)), closes [#35](https://github.com/simiancraft/google-mcp-suite/issues/35)
+* **docs:** add the document read path ([d2b9f07](https://github.com/simiancraft/google-mcp-suite/commit/d2b9f07dfcd9d0159fd7253a8da99912b5b97ee8))
+* **docs:** scaffold the docs service skeleton ([97b7ede](https://github.com/simiancraft/google-mcp-suite/commit/97b7ededad58ce0568e9696912960158e892dcb2))
+* **doctor:** register docs as implemented with a sentinel probe ([252211d](https://github.com/simiancraft/google-mcp-suite/commit/252211d8812b2b43f929ffa069622b2374c13995))
+
 ## [1.4.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.4.0...v1.4.1) (2026-06-11)
 
 # [1.4.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.3.0...v1.4.0) (2026-06-11)
