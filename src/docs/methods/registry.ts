@@ -1,5 +1,6 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
+import { get_document } from './get_document/index.js';
 
 /**
  * REST-sourced operations, from
@@ -9,4 +10,7 @@ import type { AnyOperation } from '../../lib/operation.js';
  * wrap `documents.batchUpdate` with exactly one request type; the rest of the
  * 40-variant union is issue #35.
  */
-export const methods = {} satisfies Record<string, AnyOperation<docs_v1.Docs>>;
+export const methods = {
+  // documents
+  get_document,
+} satisfies Record<string, AnyOperation<docs_v1.Docs>>;
