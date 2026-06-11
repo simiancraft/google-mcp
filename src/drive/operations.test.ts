@@ -10,10 +10,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('drive operations', () => {
-  it('exposes the full surface (8 tools, 15 methods)', () => {
+  it('exposes the full surface (8 tools, 19 methods)', () => {
     expect(Object.keys(tools)).toHaveLength(8);
-    expect(Object.keys(methods)).toHaveLength(15);
-    expect(Object.keys(operations)).toHaveLength(23);
+    expect(Object.keys(methods)).toHaveLength(19);
+    expect(Object.keys(operations)).toHaveLength(27);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -65,9 +65,11 @@ describe('drive operations', () => {
       'get_file_metadata',
       'get_file_permissions',
       'get_reply',
+      'get_revision',
       'list_comments',
       'list_recent_files',
       'list_replies',
+      'list_revisions',
       'read_file_content',
       'search_files',
     ]);
@@ -82,6 +84,7 @@ describe('drive operations', () => {
       'delete_comment',
       'delete_file',
       'delete_reply',
+      'delete_revision',
       'empty_trash',
       'trash_file',
     ]);
