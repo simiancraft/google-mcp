@@ -1,3 +1,37 @@
+## [1.9.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.8.0...v1.9.0) (2026-06-11)
+
+### Features
+
+* extend strict inputs to every nested object ([74a0aa2](https://github.com/simiancraft/google-mcp-suite/commit/74a0aa25f8ac659274f52ab052be1daf76fc53ee))
+* **lib:** prettify validation errors in the tool envelope ([928f504](https://github.com/simiancraft/google-mcp-suite/commit/928f504a6c69f1aaa92f82f122b70cdf96b4f941))
+* reject unknown input keys suite-wide (strictObject) ([c334de2](https://github.com/simiancraft/google-mcp-suite/commit/c334de24fddd4566bbfbf14445baafe4edf85a94))
+
+### Bug Fixes
+
+* **auth:** add CSRF state and PKCE to the consent flow ([585c272](https://github.com/simiancraft/google-mcp-suite/commit/585c2727cd90076dae838c6190a430c13bc37c58))
+* **auth:** answer absolute-form request targets with 400 ([8cf4801](https://github.com/simiancraft/google-mcp-suite/commit/8cf480117d958b01f708ff889caa37edd9c0952c))
+* **auth:** bind the consent callback to loopback only ([d38ef6e](https://github.com/simiancraft/google-mcp-suite/commit/d38ef6e67b5a3a19aa49b6f5e7ff5e53d2048831))
+* close the iteration-4 review tail ([42c6b7b](https://github.com/simiancraft/google-mcp-suite/commit/42c6b7ba6e74f5bf44650087edbb7a4bbee3e189))
+* **drive:** cap read_file_content at the suite's content ceiling ([26785f5](https://github.com/simiancraft/google-mcp-suite/commit/26785f560afc67b9005b15e5da8587ce956d720a))
+* **drive:** guard the conversions map and centralize the cap errors ([b41707a](https://github.com/simiancraft/google-mcp-suite/commit/b41707ac3c86474e87055d49949d455d76637c06))
+* harden the consent flow edges and cap the suggest scan ([8069ec5](https://github.com/simiancraft/google-mcp-suite/commit/8069ec58aaee7b296d61930ad2cf0d0064e66a77))
+
+### Refactoring
+
+* centralize the media cast and the transfer ceiling ([52273c1](https://github.com/simiancraft/google-mcp-suite/commit/52273c14c34914b7adbd4116ba8af34a602394bb))
+* derive enum narrows from entities and harden projections ([160ed92](https://github.com/simiancraft/google-mcp-suite/commit/160ed92b4fab7eaa49025a5e75958c4a6c5df667))
+* **drive:** make the last map lookup and cap call sites uniform ([0f695f9](https://github.com/simiancraft/google-mcp-suite/commit/0f695f9f12e52cb7356f2104e3cb4f9fed08563f))
+* **lib:** lift capabilities ceremony and vocabulary sentence ([3dfe462](https://github.com/simiancraft/google-mcp-suite/commit/3dfe46220430138d20fc2277a565ae6658a28bac))
+* **lib:** lift the wing surface-pin ceremony into one helper ([70cbe07](https://github.com/simiancraft/google-mcp-suite/commit/70cbe0794be561a5285711f68085283f9e2fafc7))
+
+### Documentation
+
+* cite the Drive operational matrix ([#44](https://github.com/simiancraft/google-mcp-suite/issues/44)) alongside the others ([a4fbebd](https://github.com/simiancraft/google-mcp-suite/commit/a4fbebde9d31702a0522f3b800918fe54c0dcc8b))
+* correct the security policy, license attribution, and stale claims ([cdfbc82](https://github.com/simiancraft/google-mcp-suite/commit/cdfbc827605b133162c32b9a20dfc0dacbacb8f4))
+* **gmail:** backfill .describe() on operation schemas ([9d53bda](https://github.com/simiancraft/google-mcp-suite/commit/9d53bda747972b289c723383a0326c917b3c7fe0))
+* iteration-3 prose corrections ([aedd84b](https://github.com/simiancraft/google-mcp-suite/commit/aedd84b361536de7ce2f7d5ec94d57b85a2f8495))
+* sweep the guides and READMEs current with the shipped tree ([b720d51](https://github.com/simiancraft/google-mcp-suite/commit/b720d51727496383bfb1ab642db587e8ea6acf12))
+
 # [1.8.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.7.0...v1.8.0) (2026-06-11)
 
 
