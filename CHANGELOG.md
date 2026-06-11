@@ -1,3 +1,11 @@
+## [1.9.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.9.0...v1.9.1) (2026-06-11)
+
+### Documentation
+
+* **adopting:** cite doctor's identity mapping in the verify gate ([d3caf77](https://github.com/simiancraft/google-mcp-suite/commit/d3caf776ea2f89bb20ade35276739785a932416b))
+* **provisioning:** genericize the Phase 6 example ([012ba39](https://github.com/simiancraft/google-mcp-suite/commit/012ba39d929b3f54c86ad966370c8976f7c3c2ca))
+* **readme:** align the quickstart auth and registration examples ([ade3cd4](https://github.com/simiancraft/google-mcp-suite/commit/ade3cd48e8efa73ee0a6f28efa72d57f0b3401c6))
+
 ## [1.9.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.8.0...v1.9.0) (2026-06-11)
 
 ### Features
