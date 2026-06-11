@@ -44,6 +44,16 @@ describe('callOperation', () => {
     expect(result.isError).toBe(true);
   });
 
+  it('treats inherited Object keys as unknown operations, not dispatch targets', async () => {
+    for (const name of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) {
+      const result = await callOperation(operations, client, name, {});
+      expect(result.isError).toBe(true);
+      expect(result.content[0]).toMatchObject({
+        text: expect.stringContaining(`Unknown tool: ${name}`),
+      });
+    }
+  });
+
   it('returns an error result for invalid input', async () => {
     const result = await callOperation(operations, client, 'echo', { text: 42 });
     expect(result.isError).toBe(true);
@@ -79,6 +89,14 @@ describe('renderCapabilities', () => {
     expect(md).toContain('2 operations across MCP tools and REST methods.');
     expect(md).toContain('| `echo` | MCP Tool | Uppercase a string. |');
     expect(md).toContain('| `danger` ⚠️ | REST Method | Irreversible. |');
+  });
+
+  it('describes a single-source surface without claiming the other source', () => {
+    const md = renderCapabilities('Methods-only capabilities', [
+      { kind: 'REST Method', operations: { echo, danger } },
+    ]);
+    expect(md).toContain('2 operations, all REST methods.');
+    expect(md).not.toContain('across MCP tools');
   });
 });
 

@@ -9,6 +9,6 @@ import { type Operation, operation } from '../lib/operation.js';
  * here (the client can no longer silently infer `unknown` and slip into the
  * registry) rather than surfacing as a confusing `unknown` deep in the body.
  */
-export const gmailOperation = <In extends z.ZodType, Out extends z.ZodType>(
+export const gmailOperation = <In extends z.ZodObject, Out extends z.ZodObject>(
   def: Operation<gmail_v1.Gmail, In, Out>,
 ): Operation<gmail_v1.Gmail, In, Out> => operation(def);

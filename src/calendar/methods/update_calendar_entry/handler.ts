@@ -22,7 +22,7 @@ export async function handler(
         foregroundColor: args.foregroundColor,
         hidden: args.hidden,
         selected: args.selected,
-        defaultReminders: args.defaultReminders,
+        defaultReminders: args.defaultReminders?.map((reminder) => forGoogle(reminder)),
       }),
     }),
   );

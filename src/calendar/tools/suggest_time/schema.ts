@@ -1,7 +1,5 @@
 import { z } from 'zod';
-
-/** An HH:MM hour-of-day bound, for example 09:00. */
-const hourOfDay = /^([01]\d|2[0-3]):[0-5]\d$/;
+import { HOUR_OF_DAY } from '../../lib/suggest.js';
 
 /** Source: https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/suggest_time */
 export const schema = {
@@ -35,12 +33,12 @@ export const schema = {
       .object({
         startHour: z
           .string()
-          .regex(hourOfDay, 'Expected an HH:MM hour of day, for example 09:00.')
+          .regex(HOUR_OF_DAY, 'Expected an HH:MM hour of day, for example 09:00.')
           .optional()
           .describe('The preferred start hour of day, as HH:MM (for example 09:00).'),
         endHour: z
           .string()
-          .regex(hourOfDay, 'Expected an HH:MM hour of day, for example 17:00.')
+          .regex(HOUR_OF_DAY, 'Expected an HH:MM hour of day, for example 17:00.')
           .optional()
           .describe('The preferred end hour of day, as HH:MM (for example 17:00).'),
         excludeWeekends: z

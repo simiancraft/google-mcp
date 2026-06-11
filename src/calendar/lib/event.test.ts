@@ -131,7 +131,7 @@ describe('projectEvent', () => {
       id: '',
       start: { date: '2026-06-10' },
       attendees: [{ email: '' }],
-      overrideReminders: [{ method: 'popup', minutes: 0 }],
+      overrideReminders: [{ minutes: 0 }],
     } as Event);
     expect(() => Event.parse(result)).not.toThrow();
   });
@@ -150,7 +150,12 @@ describe('projectReminder', () => {
     });
   });
 
-  it('defaults an absent method and minutes to a popup at zero', () => {
-    expect(projectReminder({})).toEqual({ method: 'popup', minutes: 0 });
+  it('keeps the popup method and defaults absent minutes to zero', () => {
+    expect(projectReminder({ method: 'popup' })).toEqual({ method: 'popup', minutes: 0 });
+  });
+
+  it('drops absent or unknown methods instead of coercing them to popup', () => {
+    expect(projectReminder({})).toEqual({ minutes: 0 });
+    expect(projectReminder({ method: 'sms', minutes: 5 })).toEqual({ minutes: 5 });
   });
 });

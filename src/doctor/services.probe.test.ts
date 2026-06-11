@@ -5,7 +5,10 @@ import path from 'node:path';
 
 // Mock the Google clients so each probe exercises its code path without a
 // network call. The response holders are read at call time, so each test can
-// vary the response.
+// vary the response. Note: mock.module patches the module registry
+// process-wide for the test run, so a future test file that value-imports
+// @googleapis/{gmail,calendar,sheets} may receive these mocks depending on
+// file order; keep value-level imports of those modules out of other tests.
 let profile: { emailAddress?: string } = {};
 mock.module('@googleapis/gmail', () => ({
   gmail: () => ({ users: { getProfile: async () => ({ data: profile }) } }),
@@ -14,6 +17,19 @@ mock.module('@googleapis/gmail', () => ({
 let primaryCalendar: { summary?: string; timeZone?: string } = {};
 mock.module('@googleapis/calendar', () => ({
   calendar: () => ({ calendars: { get: async () => ({ data: primaryCalendar }) } }),
+}));
+
+let sampleSpreadsheet: { properties?: { title?: string } } = {};
+let spreadsheetIdAsked: string | undefined;
+mock.module('@googleapis/sheets', () => ({
+  sheets: () => ({
+    spreadsheets: {
+      get: async (params: { spreadsheetId: string }) => {
+        spreadsheetIdAsked = params.spreadsheetId;
+        return { data: sampleSpreadsheet };
+      },
+    },
+  }),
 }));
 
 const ENV = [
@@ -65,6 +81,19 @@ describe('gmail probe', () => {
   it('falls back to a reachable marker when no email is returned', async () => {
     profile = {};
     expect(await runProbe('gmail', 'acct')).toBe('(reachable)');
+  });
+});
+
+describe('sheets probe', () => {
+  it('returns the public sample spreadsheet title', async () => {
+    sampleSpreadsheet = { properties: { title: 'Example Spreadsheet' } };
+    expect(await runProbe('sheets', 'acct')).toBe('Example Spreadsheet');
+    expect(spreadsheetIdAsked).toBe('1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms');
+  });
+
+  it('falls back to a reachable marker when the title is absent', async () => {
+    sampleSpreadsheet = {};
+    expect(await runProbe('sheets', 'acct')).toBe('(reachable)');
   });
 });
 

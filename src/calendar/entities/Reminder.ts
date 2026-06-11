@@ -12,7 +12,10 @@ import { z } from 'zod';
 export const Reminder = z.object({
   method: z
     .enum(['email', 'popup'])
-    .describe('The delivery method of the reminder: email or a UI popup.'),
+    .optional()
+    .describe(
+      'The delivery method of the reminder: email or a UI popup. Required when writing a reminder; absent on read only if Google reports a method this server does not know.',
+    ),
   minutes: z
     .number()
     .int()

@@ -33,10 +33,11 @@ function projectAttendee(attendee: calendar_v3.Schema$EventAttendee): Attendee {
   };
 }
 
-/** Project a REST reminder onto the Reminder shape (an absent method defaults to popup). */
+/** Project a REST reminder onto the Reminder shape; unknown delivery methods drop rather than masquerade as popups. */
 export function projectReminder(reminder: calendar_v3.Schema$EventReminder): Reminder {
   return {
-    method: reminder.method === 'email' ? 'email' : 'popup',
+    method:
+      reminder.method === 'email' || reminder.method === 'popup' ? reminder.method : undefined,
     minutes: reminder.minutes ?? 0,
   };
 }

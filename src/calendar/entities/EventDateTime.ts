@@ -32,6 +32,11 @@ export const EventDateTime = z
   })
   .refine((value) => (value.date === undefined) !== (value.dateTime === undefined), {
     message: 'Exactly one of date or dateTime must be set.',
-  });
+  })
+  // The refinement does not survive into the emitted JSON Schema, so the rule is
+  // restated as the object's description, where an MCP client can read it.
+  .describe(
+    'The start or end of an event. Exactly one of date (all-day) or dateTime (timed) must be set; timeZone is required for recurring events.',
+  );
 
 export type EventDateTime = z.infer<typeof EventDateTime>;

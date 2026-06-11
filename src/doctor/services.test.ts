@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
+import pkg from '../../package.json' with { type: 'json' };
 import { SCOPES } from '../auth/config.js';
-import { requiredApis, requiredScopes, scopeRegistryDrift } from './services.js';
+import { requiredApis, requiredScopes, SERVICES, scopeRegistryDrift } from './services.js';
 
 describe('scopeRegistryDrift', () => {
   it('is clean: the registry matches the canonical SCOPES', () => {
@@ -18,6 +19,24 @@ describe('scopeRegistryDrift', () => {
   it('reports canonical scopes not declared (missing)', () => {
     const drift = scopeRegistryDrift([...SCOPES, 'https://extra.example/'], []);
     expect(drift.missing).toContain('https://extra.example/');
+  });
+});
+
+describe('SERVICES registration', () => {
+  it('every implemented service has a live probe', () => {
+    for (const service of SERVICES.filter((s) => s.implemented)) {
+      expect(service.probe, `${service.name} is implemented but has no probe`).toBeDefined();
+    }
+  });
+
+  it('the implemented set matches the published bins', () => {
+    const implemented = SERVICES.filter((s) => s.implemented)
+      .map((s) => `google-mcp-${s.name}`)
+      .sort();
+    const bins = Object.keys(pkg.bin)
+      .filter((bin) => bin !== 'google-mcp-doctor')
+      .sort();
+    expect(implemented).toEqual(bins);
   });
 });
 

@@ -82,7 +82,14 @@ of the split, a tool and a method colliding on one key, fails loudly rather than
 silently dropping an operation.
 
 Add a method exactly like a tool, but source `schema.ts` from the REST method
-page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3).
+page (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
+Sheets v4).
+
+Where Google publishes no MCP toolset at all (Sheets; its MCP-supported
+products are Gmail, Drive, Calendar, Chat, and People), the service is
+**methods-only**: no `tools/` folder, `index.ts` serves
+`mergeOperations(methods)`, and `capabilities.ts` renders a single
+`REST Method` section. The service's COVERAGE.md leads with why.
 
 Mark with `destructive: true` any operation that is irreversible (`send`,
 permanent `delete`, `batchDelete`, `obliterate`) **or** establishes a persistent
@@ -109,6 +116,23 @@ export type X = z.infer<typeof X>;
 
 Follow the chain: if `X` references `object (Y)`, add `entities/Y.ts` too. Open
 `entities/` and it should be the complete catalog of the service's nouns.
+Resources and reused elements get entities (shared enum fields too, like
+Calendar's `NotificationLevel` or Sheets' `ValueInputOption`); a one-off
+response wrapper may stay inline in its `schema.ts`.
+
+**Enum policy.** Inputs are closed `z.enum`s with the `*_UNSPECIFIED` variants
+never exposed. Outputs are closed `z.enum`s with unknown values **dropped** at
+projection (the field goes absent; Sheets' `lib/enums.ts` `narrow()` is the
+helper): the schema stays truthful and a new upstream value degrades to a
+missing field, never a wrong one. Never coerce an unknown value to a
+valid-looking default. (Calendar's open-string output fields, e.g.
+`Event.status`, predate this rule and keep their shape for wire stability.)
+
+**Identity fields fall back to sentinels.** Projections default a missing
+required identity to `''`/`0` (`id: data.id ?? ''`, `sheetId ?? 0`), uniform
+across services; Google always sends these in practice. Where the input
+already carries the true value, prefer it over a sentinel
+(`data.spreadsheetId ?? args.spreadsheetId`).
 
 **Doc comments are sourced too.** Give the entity a TSDoc comment from the API
 guides **Concepts** page (Google's own definition of the noun) with an `@see`
@@ -134,10 +158,18 @@ the tool/REST reference.
    `import { authorizedClient, runAuthFlow } from '../auth/oauth.js'`,
    `import { <svc> } from '@googleapis/<svc>'`,
    `import { tools } from './tools/registry.js'`,
-   `import { methods } from './methods/registry.js'`). The operation's client
-   type is inferred from each handler's first parameter; there is no per-service
-   factory to bind. `mergeOperations` throws if a tool and a method share a wire
-   name. The server's `version` defaults to the package version, so do not pass it.
+   `import { methods } from './methods/registry.js'`). `mergeOperations` throws
+   if a tool and a method share a wire name. The server's `version` defaults to
+   the package version, so do not pass it.
+   Also add `src/<svc>/operation.ts`, the per-service binder: a one-liner
+   exporting `<svc>Operation`, which is `operation()` bound to the service's
+   client type (`sheets_v4.Sheets`, ...). Every op's `index.ts` uses the binder
+   instead of raw `operation()`, so a handler that drops or mistypes its client
+   annotation fails at the definition rather than inferring `unknown`. The
+   binder lands with the first operation commit, not the scaffold (an
+   unreferenced file fails knip). The registry's `satisfies
+   Record<string, AnyOperation<Client>>` checks only the client binding;
+   schema-handler agreement is enforced by the binder.
 4. Stamp tools (above), one per page on the service's MCP reference (or, where
    Google publishes no MCP page, from the REST reference). Track gaps in a
    `COVERAGE.md`.
@@ -151,7 +183,8 @@ it on every operation.
 
 Unit tests never touch the network, so every operation is also verified once
 against a real account, tracked per service in an **operational-matrix issue**
-(a live + unit checkbox per operation; Gmail is #7, Calendar is #22).
+(a live + unit checkbox per operation; Gmail is #7, Calendar is #22, Sheets
+is #29).
 
 Live passes are **pairwise**: pair every destructive operation with its
 antecedent, so the only data ever destroyed is test data the pass itself made,

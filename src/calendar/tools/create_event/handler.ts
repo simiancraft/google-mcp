@@ -34,7 +34,10 @@ export async function handler(
         attendees: args.attendeeEmails?.map((email) => ({ email })),
         recurrence: args.recurrenceData,
         reminders: args.overrideReminders
-          ? { useDefault: false, overrides: args.overrideReminders }
+          ? {
+              useDefault: false,
+              overrides: args.overrideReminders.map((reminder) => forGoogle(reminder)),
+            }
           : undefined,
         conferenceData,
         visibility: args.visibility,

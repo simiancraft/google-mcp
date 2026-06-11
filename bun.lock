@@ -7,6 +7,7 @@
       "dependencies": {
         "@googleapis/calendar": "^15.0.0",
         "@googleapis/gmail": "^17.0.0",
+        "@googleapis/sheets": "^13.0.2",
         "@modelcontextprotocol/sdk": "^1.29.0",
         "addressparser": "^1.0.1",
         "google-auth-library": "^10.5.0",
@@ -70,6 +71,8 @@
     "@googleapis/calendar": ["@googleapis/calendar@15.0.0", "", { "dependencies": { "googleapis-common": "^8.0.0" } }, "sha512-K5FVIhFOgAaNsfshvOEmGkT7kkowM69MzMYATGDA6Ol3ZwqIK0nZJnS9/keFVYkId6MT2elAy+omcAMUdadHww=="],
 
     "@googleapis/gmail": ["@googleapis/gmail@17.0.0", "", { "dependencies": { "googleapis-common": "^8.0.0" } }, "sha512-pV0E+has0ZCqIJoaTmQkOyuRXDtcC8bvH+hmoqGH+J2qxEzhsLT3VX69v6Ef7bifhwokYH82rgQlMRHpFDLrmw=="],
+
+    "@googleapis/sheets": ["@googleapis/sheets@13.0.2", "", { "dependencies": { "googleapis-common": "^8.0.0" } }, "sha512-b1tBlMcfvNEziM4DZCikLOc9iqSlgCK1e5bMKtNQIADRXr1CQmbkHV3ZBVvTsFsjLErgihqO58Itn/kzCnSZ0A=="],
 
     "@hono/node-server": ["@hono/node-server@1.19.14", "", { "peerDependencies": { "hono": "^4" } }, "sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw=="],
 
