@@ -10,11 +10,14 @@ the shared [`lib`](../lib) and served by `server()` over an
 
 ## Capabilities
 
-5 operations: document reads and creation (`get_document`,
-`create_document`) plus a curated trio of text-editing operations
-(`insert_text`, `replace_all_text`, `delete_content_range`), each wrapping
+9 operations: document reads and creation (`get_document`,
+`create_document`), a curated trio of text-editing operations
+(`insert_text`, `replace_all_text`, `delete_content_range`), and a styling
+four (`update_text_style`, `update_paragraph_style`,
+`create_paragraph_bullets`, `delete_paragraph_bullets`), each wrapping
 `documents.batchUpdate` with exactly one of its 40 request types; the rest
-of the union is tracked in issue #35.
+of the union is tracked in issue #35. The styling updates change only the
+fields you provide (the update mask is derived from the keys).
 
 Documents read as **text with indices**: body blocks carry zero-based UTF-16
 index ranges, which are exactly what the editing operations target; the

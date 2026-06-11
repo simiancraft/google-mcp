@@ -14,9 +14,9 @@ import { update_text_style } from './update_text_style/index.js';
  * REST-sourced operations, from
  * `developers.google.com/workspace/docs/api/reference/rest`. Google publishes
  * no MCP toolset for Docs, so there is no `tools/` folder and this registry is
- * the service's whole wire surface. The three text-editing operations each
- * wrap `documents.batchUpdate` with exactly one request type; the rest of the
- * 40-variant union is issue #35.
+ * the service's whole wire surface. The curated editing and styling
+ * operations each wrap `documents.batchUpdate` with exactly one request type;
+ * the rest of the 40-variant union is issue #35.
  */
 export const methods = {
   // documents
