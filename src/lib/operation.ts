@@ -1,3 +1,4 @@
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import type { z } from 'zod';
 
 /**
@@ -13,7 +14,16 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
   description: string;
   schema: { input: In; output: Out };
   handler: (client: Client, args: z.infer<In>) => Promise<z.infer<Out>>;
-  /** Irreversible (send, permanent delete) or a standing side effect (a forwarding filter); surfaced as MCP `destructiveHint`. */
+  /**
+   * MCP tool annotations, emitted verbatim in `tools/list`: the four behavior
+   * hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint),
+   * declared explicitly per operation. Tools transcribe the Tool Annotations
+   * section of their Google MCP reference page; methods are classified by the
+   * same rubric (see EXTENDING.md).
+   * @see https://modelcontextprotocol.io/specification/2025-06-18/schema (ToolAnnotations)
+   */
+  annotations?: ToolAnnotations;
+  /** @deprecated migration shim: pre-annotations destructive flag; replaced by `annotations.destructiveHint`. */
   destructive?: boolean;
 };
 
@@ -28,6 +38,8 @@ export type AnyOperation<Client> = {
   description: string;
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
+  annotations?: ToolAnnotations;
+  /** @deprecated migration shim; see `Operation.destructive`. */
   destructive?: boolean;
 };
 

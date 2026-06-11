@@ -77,6 +77,27 @@ describe('toolDefinitions', () => {
     expect('annotations' in (echoDef ?? {})).toBe(false);
     expect(dangerDef?.annotations).toEqual({ destructiveHint: true });
   });
+
+  it('emits declared tool annotations verbatim', () => {
+    const reader = operation({
+      description: 'Reads things.',
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      schema: { input: z.object({}), output: z.object({}) },
+      handler: async (_client: FakeClient) => ({}),
+    });
+    const defs = toolDefinitions({ reader });
+    expect(defs[0]?.annotations).toEqual({
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    });
+  });
 });
 
 describe('renderCapabilities', () => {
