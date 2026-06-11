@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const label_message = gmailOperation({
   description: 'Add labels to a message.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

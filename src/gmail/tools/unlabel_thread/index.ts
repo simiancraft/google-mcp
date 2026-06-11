@@ -9,6 +9,12 @@ import { schema } from './schema.js';
  */
 export const unlabel_thread = gmailOperation({
   description: 'Remove labels from a thread.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

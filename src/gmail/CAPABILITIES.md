@@ -14,28 +14,28 @@
 | `create_label` | MCP Tool | Create a new label. |
 | `label_message` | MCP Tool | Add labels to a message. |
 | `label_thread` | MCP Tool | Add labels to a thread. |
-| `unlabel_message` | MCP Tool | Remove labels from a message. |
-| `unlabel_thread` | MCP Tool | Remove labels from a thread. |
+| `unlabel_message` ⚠️ | MCP Tool | Remove labels from a message. |
+| `unlabel_thread` ⚠️ | MCP Tool | Remove labels from a thread. |
 | `get_message` | REST Method | Get a single message by id. |
 | `list_messages` | REST Method | List messages using Gmail query syntax. |
 | `send_message` ⚠️ | REST Method | Send an email immediately. |
-| `trash_message` | REST Method | Move a message to the trash. |
+| `trash_message` ⚠️ | REST Method | Move a message to the trash. |
 | `untrash_message` | REST Method | Remove a message from the trash. |
 | `delete_message` ⚠️ | REST Method | Permanently delete a message (bypasses the trash). |
 | `download_attachment` | REST Method | Download a message attachment (base64url-encoded bytes). |
-| `batch_modify_messages` | REST Method | Add and/or remove labels across many messages at once. |
+| `batch_modify_messages` ⚠️ | REST Method | Add and/or remove labels across many messages at once. |
 | `batch_delete_messages` ⚠️ | REST Method | Permanently delete many messages at once (bypasses the trash). |
 | `get_draft` | REST Method | Get a draft by id. |
 | `update_draft` | REST Method | Replace the content of an existing draft. |
-| `delete_draft` | REST Method | Delete a draft. |
+| `delete_draft` ⚠️ | REST Method | Delete a draft. |
 | `send_draft` ⚠️ | REST Method | Send an existing draft. |
 | `get_label` | REST Method | Get a label by id (includes color and thread counts). |
 | `update_label` | REST Method | Update a label name and/or color. |
-| `delete_label` | REST Method | Delete a user label. |
-| `trash_thread` | REST Method | Move a thread to the trash. |
+| `delete_label` ⚠️ | REST Method | Delete a user label. |
+| `trash_thread` ⚠️ | REST Method | Move a thread to the trash. |
 | `untrash_thread` | REST Method | Remove a thread from the trash. |
 | `delete_thread` ⚠️ | REST Method | Permanently delete a thread and all its messages (bypasses the trash). |
 | `create_filter` ⚠️ | REST Method | Create a filter (criteria plus actions). |
 | `get_filter` | REST Method | Get a filter by id. |
 | `list_filters` | REST Method | List all filters for the account. |
-| `delete_filter` | REST Method | Delete a filter. |
+| `delete_filter` ⚠️ | REST Method | Delete a filter. |

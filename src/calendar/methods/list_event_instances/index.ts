@@ -12,6 +12,12 @@ import { schema } from './schema.js';
  */
 export const list_event_instances = calendarOperation({
   description: 'List the instances of a recurring event, optionally filtered and paginated.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const list_labels = gmailOperation({
   description: 'List the labels in the mailbox.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

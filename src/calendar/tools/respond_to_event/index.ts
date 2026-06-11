@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const respond_to_event = calendarOperation({
   description: 'Respond to an event invitation: declined, tentative, or accepted.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

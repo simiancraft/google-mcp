@@ -39,7 +39,7 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
     description: op.description,
     inputSchema: z.toJSONSchema(op.schema.input, { io: 'input' }) as Record<string, unknown>,
     outputSchema: z.toJSONSchema(op.schema.output, { io: 'output' }) as Record<string, unknown>,
-    ...(op.destructive ? { annotations: { destructiveHint: true } } : {}),
+    annotations: op.annotations,
   }));
 }
 
@@ -72,7 +72,8 @@ export function renderCapabilities<Client>(
 ): string {
   const rows = groups.flatMap(({ kind, operations }) =>
     Object.entries(operations).map(
-      ([name, op]) => `| \`${name}\`${op.destructive ? ' ⚠️' : ''} | ${kind} | ${op.description} |`,
+      ([name, op]) =>
+        `| \`${name}\`${op.annotations.destructiveHint ? ' ⚠️' : ''} | ${kind} | ${op.description} |`,
     ),
   );
   // Derived from the groups actually passed in, so a methods-only service

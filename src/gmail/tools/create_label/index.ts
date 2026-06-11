@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const create_label = gmailOperation({
   description: 'Create a new label.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

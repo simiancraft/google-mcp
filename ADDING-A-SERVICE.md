@@ -66,7 +66,9 @@ either way the plan must contain exactly these parts:
   document, minus the hostile clusters. Name the wire vocabulary rule in the
   plan: tools keep the MCP pages' parameter names (`startTime`, `pageSize`,
   `notificationLevel`); methods keep REST's (`timeMin`, `maxResults`,
-  `sendUpdates`). Check each wire name against the service's other resources:
+  `sendUpdates`). Tools also transcribe the Tool Annotations section of their
+  MCP page verbatim; methods are classified by the annotation rubric in
+  EXTENDING.md. Check each wire name against the service's other resources:
   a name must not be misreadable as a different resource's operation
   (Calendar's `add_calendar_entry` reads like creating an event;
   `subscribe_calendar` would have dodged it).
@@ -101,8 +103,9 @@ Rules that held up under execution:
   script runs coverage (100%, pinned in `bunfig.toml`); a new function with no
   test fails the gate locally exactly as it would in CI.
 - **A surface-count test pins the registries.** `src/<svc>/operations.test.ts`
-  asserts the tool count, the method count, and the exact destructive set, and
-  is updated in the same commit as each registry change.
+  asserts the tool count, the method count, and the exact read-only and
+  destructive annotation sets, and is updated in the same commit as each
+  registry change.
 - **Transcribe, do not remember.** Each `schema.ts` cites its source page and
   is written against the fetched page or discovery JSON, not from prior
   knowledge.

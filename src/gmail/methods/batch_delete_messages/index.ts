@@ -10,7 +10,12 @@ import { schema } from './schema.js';
  */
 export const batch_delete_messages = gmailOperation({
   description: 'Permanently delete many messages at once (bypasses the trash).',
-  destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const get_calendar = calendarOperation({
   description: 'Get a calendar (its title, description, location, and time zone) by id.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -9,6 +9,12 @@ import { schema } from './schema.js';
  */
 export const update_draft = gmailOperation({
   description: 'Replace the content of an existing draft.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

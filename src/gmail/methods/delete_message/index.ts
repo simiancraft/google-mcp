@@ -10,7 +10,12 @@ import { schema } from './schema.js';
  */
 export const delete_message = gmailOperation({
   description: 'Permanently delete a message (bypasses the trash).',
-  destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -12,6 +12,12 @@ import { schema } from './schema.js';
 export const create_spreadsheet = sheetsOperation({
   description:
     'Create a spreadsheet with a title and optionally named sheets (tabs); returns the new spreadsheet and its id.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

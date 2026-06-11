@@ -11,6 +11,12 @@ import { schema } from './schema.js';
 export const get_calendar_entry = calendarOperation({
   description:
     "Get the user's calendar list entry for a calendar: access role, colors, visibility, and default reminders.",
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

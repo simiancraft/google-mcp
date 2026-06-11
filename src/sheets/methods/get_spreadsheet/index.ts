@@ -13,6 +13,12 @@ import { schema } from './schema.js';
 export const get_spreadsheet = sheetsOperation({
   description:
     'Get a spreadsheet by id: its properties (title, locale, time zone) and the properties of every sheet (tab). Cell data is read with the values operations.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -11,7 +11,12 @@ import { schema } from './schema.js';
 export const clear_values = sheetsOperation({
   description:
     'Clear the values in a range, irreversibly; formatting and data validation are kept.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
-  destructive: true,
 });

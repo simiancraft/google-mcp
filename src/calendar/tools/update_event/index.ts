@@ -13,6 +13,12 @@ import { schema } from './schema.js';
 export const update_event = calendarOperation({
   description:
     'Update fields of an existing event; unset fields are left unchanged. Attendee changes are deltas; for whole-list replacement and the REST-only fields (recurrence, transparency, extendedProperties), use patch_event.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

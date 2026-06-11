@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const batch_modify_messages = gmailOperation({
   description: 'Add and/or remove labels across many messages at once.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

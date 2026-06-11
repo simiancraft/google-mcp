@@ -12,7 +12,12 @@ import { schema } from './schema.js';
  */
 export const delete_calendar = calendarOperation({
   description: 'Permanently delete a secondary calendar and all of its events.',
-  destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

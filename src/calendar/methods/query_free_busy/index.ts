@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const query_free_busy = calendarOperation({
   description: 'Query the busy intervals of a set of calendars over a time window.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -24,19 +24,64 @@ describe('gmail operations', () => {
     }
   });
 
-  it('marks exactly the irreversible operations destructive', () => {
+  it('annotates every operation with the four MCP hints, explicitly', () => {
+    for (const op of Object.values(operations)) {
+      expect(typeof op.annotations?.readOnlyHint).toBe('boolean');
+      expect(typeof op.annotations?.destructiveHint).toBe('boolean');
+      expect(typeof op.annotations?.idempotentHint).toBe('boolean');
+      expect(typeof op.annotations?.openWorldHint).toBe('boolean');
+    }
+  });
+
+  it('marks exactly the read-only operations', () => {
+    const readOnly = Object.entries(operations)
+      .filter(([, op]) => op.annotations?.readOnlyHint)
+      .map(([name]) => name)
+      .sort();
+    expect(readOnly).toEqual([
+      'download_attachment',
+      'get_draft',
+      'get_filter',
+      'get_label',
+      'get_message',
+      'get_thread',
+      'list_drafts',
+      'list_filters',
+      'list_labels',
+      'list_messages',
+      'search_threads',
+    ]);
+  });
+
+  it('marks exactly the destructive operations (removals, sends, standing filters)', () => {
     const destructive = Object.entries(operations)
-      .filter(([, op]) => op.destructive)
+      .filter(([, op]) => op.annotations?.destructiveHint)
       .map(([name]) => name)
       .sort();
     expect(destructive).toEqual([
       'batch_delete_messages',
+      'batch_modify_messages',
       'create_filter',
+      'delete_draft',
+      'delete_filter',
+      'delete_label',
       'delete_message',
       'delete_thread',
       'send_draft',
       'send_message',
+      'trash_message',
+      'trash_thread',
+      'unlabel_message',
+      'unlabel_thread',
     ]);
+  });
+
+  it('marks exactly the sends as open-world', () => {
+    const openWorld = Object.entries(operations)
+      .filter(([, op]) => op.annotations?.openWorldHint)
+      .map(([name]) => name)
+      .sort();
+    expect(openWorld).toEqual(['send_draft', 'send_message']);
   });
 
   it('CAPABILITIES.md is the current render of these registries', () => {

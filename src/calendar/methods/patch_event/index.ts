@@ -14,6 +14,12 @@ import { schema } from './schema.js';
 export const patch_event = calendarOperation({
   description:
     'Patch any REST field of an event, including those update_event omits; unset fields are left unchanged.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

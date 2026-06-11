@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const download_attachment = gmailOperation({
   description: 'Download a message attachment (base64url-encoded bytes).',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

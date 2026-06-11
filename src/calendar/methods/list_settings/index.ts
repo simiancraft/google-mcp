@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const list_settings = calendarOperation({
   description: "List the user's Calendar settings, paginated.",
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

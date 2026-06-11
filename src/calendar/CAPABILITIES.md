@@ -26,7 +26,7 @@
 | `get_calendar_entry` | REST Method | Get the user's calendar list entry for a calendar: access role, colors, visibility, and default reminders. |
 | `add_calendar_entry` | REST Method | Add an existing calendar to the user's calendar list (subscribe). |
 | `update_calendar_entry` | REST Method | Update the user's view of a calendar (title override, colors, visibility, default reminders); unset fields are left unchanged. |
-| `remove_calendar_entry` | REST Method | Remove a calendar from the user's calendar list (unsubscribe); the calendar itself is untouched. |
+| `remove_calendar_entry` ⚠️ | REST Method | Remove a calendar from the user's calendar list (unsubscribe); the calendar itself is untouched. |
 | `query_free_busy` | REST Method | Query the busy intervals of a set of calendars over a time window. |
 | `get_colors` | REST Method | Get the color palettes for calendars and events, keyed by color ID. |
 | `list_settings` | REST Method | List the user's Calendar settings, paginated. |

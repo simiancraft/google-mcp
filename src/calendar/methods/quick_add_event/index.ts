@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const quick_add_event = calendarOperation({
   description: 'Create an event from a natural-language description.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

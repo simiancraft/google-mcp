@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const search_threads = gmailOperation({
   description: 'Search threads. Returns thread ids and snippets; use get_thread for messages.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

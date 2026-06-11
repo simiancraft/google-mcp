@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const create_calendar = calendarOperation({
   description: 'Create a secondary calendar.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const get_thread = gmailOperation({
   description: 'Get a thread and its messages by id.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });
