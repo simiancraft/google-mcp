@@ -5,7 +5,10 @@ import path from 'node:path';
 
 // Mock the Google clients so each probe exercises its code path without a
 // network call. The response holders are read at call time, so each test can
-// vary the response.
+// vary the response. Note: mock.module patches the module registry
+// process-wide for the test run, so a future test file that value-imports
+// @googleapis/{gmail,calendar,sheets} may receive these mocks depending on
+// file order; keep value-level imports of those modules out of other tests.
 let profile: { emailAddress?: string } = {};
 mock.module('@googleapis/gmail', () => ({
   gmail: () => ({ users: { getProfile: async () => ({ data: profile }) } }),

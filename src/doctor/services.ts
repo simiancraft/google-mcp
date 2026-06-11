@@ -28,6 +28,9 @@ export type ServiceInfo = {
   probe?: ServiceProbe;
 };
 
+// Probe API versions duplicate each service's index.ts on purpose (doctor never
+// imports service internals); when a service moves versions, move its probe too.
+
 async function gmailProbe(account: string): Promise<string> {
   const client = gmail({ version: 'v1', auth: await authorizedClient(account) });
   const res = await client.users.getProfile({ userId: 'me' });
