@@ -90,6 +90,14 @@ describe('renderCapabilities', () => {
     expect(md).toContain('| `echo` | MCP Tool | Uppercase a string. |');
     expect(md).toContain('| `danger` ⚠️ | REST Method | Irreversible. |');
   });
+
+  it('describes a single-source surface without claiming the other source', () => {
+    const md = renderCapabilities('Methods-only capabilities', [
+      { kind: 'REST Method', operations: { echo, danger } },
+    ]);
+    expect(md).toContain('2 operations, all REST methods.');
+    expect(md).not.toContain('across MCP tools');
+  });
 });
 
 describe('server', () => {
