@@ -46,9 +46,10 @@ its contracts through REST v3, which cannot do everything those backends do:
   download as UTF-8. The hosted toolset's PDF/Office/image text extraction
   has no REST equivalent, so those types are refused with guidance toward
   `download_file_content`.
-- **`download_file_content` is capped.** Blob downloads over 25 MiB decoded
+- **Both content tools are capped.** Blob transfers over 25 MiB decoded
   (the suite's base64-in-JSON ceiling, Gmail's attachment maximum) are
-  refused with an error citing #38 rather than degraded.
+  refused with an error citing #38 rather than degraded; `read_file_content`
+  and `download_file_content` enforce the same ceiling.
 - **`create_file`'s deprecated parameters** (`mimeType`, `content`,
   superseded on the page itself by `contentMimeType` and
   `textContent`/`base64Content`) are not transcribed.

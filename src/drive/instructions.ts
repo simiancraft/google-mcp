@@ -18,8 +18,8 @@ export const instructions =
   'search_files speaks its own documented query terms (title, parentId, ' +
   'owner), which this server translates to REST v3 syntax. read_file_content ' +
   'serves text representations (Docs, Sheets, and Slides exports, and ' +
-  'text-like blobs); download_file_content returns base64 and refuses blobs ' +
-  'over 25 MiB. create_file converts text/plain to Google Docs and text/csv ' +
+  'text-like blobs); download_file_content returns base64; both content tools ' +
+  'refuse blobs over 25 MiB. create_file converts text/plain to Google Docs and text/csv ' +
   'to Google Sheets unless disableConversionToGoogleType is set. Shared ' +
   'drives have their own methods (list_shared_drives through ' +
   'delete_shared_drive), distinct from file operations.';
