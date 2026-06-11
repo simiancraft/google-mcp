@@ -10,7 +10,9 @@ google-mcp-suite/
     ├── auth/        # shared OAuth: authorizedClient(account), runAuthFlow(account), SCOPES
     ├── lib/         # operation() + server(): the two MCP primitives
     ├── gmail/       # the canary server; new services mirror it as src/<service>/
-    │   ├── index.ts          # server({ name, operations, client }); the bin entry
+    │   ├── index.ts          # server({ name, title, description, instructions, operations, client }); the bin entry
+    │   ├── operation.ts       # gmailOperation: operation() bound to the client type
+    │   ├── instructions.ts    # served usage paragraph (MCP initialize result)
     │   ├── entities/          # PascalCase zod nouns (Label, Thread, Draft, ...)
     │   ├── lib/               # projection helpers (REST entity -> documented shape)
     │   ├── tools/             # MCP-sourced ops; registry.ts + one folder per tool
