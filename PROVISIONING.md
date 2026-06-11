@@ -25,7 +25,7 @@ scope without enabling the API and consent succeeds but every call returns
 
 This project uses a **per-user OAuth** model: one OAuth app (one client secret),
 and each Google account consents once to the **full scope union** for all planned
-services. The union is front-loaded in code at [`src/auth/config.ts`](./src/auth/config.ts)
+services. The union is front-loaded in code at [`src/auth/config.ts`](https://github.com/simiancraft/google-mcp-suite/blob/main/src/auth/config.ts)
 (`SCOPES`); Google issues a refresh token only on a fresh grant, so adding a scope
 later forces every account to re-consent. Add all the scopes you expect to need
 before the first authorization.
@@ -127,7 +127,7 @@ Then:
    and, at the bottom, a **"Manually add scopes"** text box.
 3. In the **manual box** (the table is huge and easy to mis-click; many scopes
    look almost identical), paste the **exact** contents of `SCOPES` from
-   [`src/auth/config.ts`](./src/auth/config.ts), one per line. As of this writing:
+   [`src/auth/config.ts`](https://github.com/simiancraft/google-mcp-suite/blob/main/src/auth/config.ts), one per line. As of this writing:
 
    ```
    https://mail.google.com/
@@ -268,7 +268,7 @@ location. Restart the host (or reconnect the server) after editing.
 ## Appendix A: adding a new service's scopes
 
 1. Enable its API (Phase 2).
-2. Add its scope(s) to `SCOPES` in [`src/auth/config.ts`](./src/auth/config.ts).
+2. Add its scope(s) to `SCOPES` in [`src/auth/config.ts`](https://github.com/simiancraft/google-mcp-suite/blob/main/src/auth/config.ts).
 3. Add the same scope strings on the consent screen (Phase 4).
 4. Re-run `auth` for every account (Phase 5); a new scope is only granted on a
    fresh consent.

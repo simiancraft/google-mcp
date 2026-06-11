@@ -145,6 +145,8 @@ one of them is the kind of drift reviewers catch later:
 - The matrix citation lists (AGENTS.md, EXTENDING.md, and this file's Phase 4)
   gain the new service's issue number once the matrix opens, and EXTENDING's
   version parenthetical ("Gmail is v1, ...") gains the new service.
+- **The operation total.** Bump it when a service ships or grows; the total
+  lives in README.md (two sites above the fold) and ADOPTING.md (one site).
 
 ## Phase 4: verification and the operational matrix
 

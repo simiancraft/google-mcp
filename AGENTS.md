@@ -2,6 +2,8 @@
 
 A single package of **Google MCP servers**: one thin [Model Context Protocol](https://modelcontextprotocol.io/) server per Google service, each authorized per account, all sharing one auth implementation. The organizing entity is a Google **account**; its children are **services** (Gmail, Calendar, ...); each service exposes **operations**. One package, one version; each service ships as its own `bin`.
 
+This file is for working **on** the repo. To take the suite into service as a client's Google surface (register instances, supersede built-in connectors, decommission), follow [ADOPTING.md](./ADOPTING.md) instead.
+
 ## Quick orientation
 
 ```

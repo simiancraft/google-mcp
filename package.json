@@ -1,6 +1,6 @@
 {
   "name": "google-mcp-suite",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "type": "module",
   "description": "Per-account MCP servers for Gmail, Google Calendar, Google Drive, Google Sheets, and Google Docs: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes Google's curated MCP toolset (where one exists) plus the broader REST surface.",
   "keywords": [
@@ -48,6 +48,9 @@
   "files": [
     "dist",
     "README.md",
+    "ADOPTING.md",
+    "PROVISIONING.md",
+    "llms-install.md",
     "LICENSE",
     "NOTICE.md"
   ],
