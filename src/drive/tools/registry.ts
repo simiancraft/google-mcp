@@ -1,8 +1,10 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { AnyOperation } from '../../lib/operation.js';
+import { download_file_content } from './download_file_content/index.js';
 import { get_file_metadata } from './get_file_metadata/index.js';
 import { get_file_permissions } from './get_file_permissions/index.js';
 import { list_recent_files } from './list_recent_files/index.js';
+import { read_file_content } from './read_file_content/index.js';
 import { search_files } from './search_files/index.js';
 
 /**
@@ -15,4 +17,6 @@ export const tools = {
   list_recent_files,
   get_file_metadata,
   get_file_permissions,
+  read_file_content,
+  download_file_content,
 } satisfies Record<string, AnyOperation<drive_v3.Drive>>;
