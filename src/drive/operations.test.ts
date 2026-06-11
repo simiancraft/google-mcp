@@ -10,10 +10,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('drive operations', () => {
-  it('exposes the full surface (8 tools, 5 methods)', () => {
+  it('exposes the full surface (8 tools, 15 methods)', () => {
     expect(Object.keys(tools)).toHaveLength(8);
-    expect(Object.keys(methods)).toHaveLength(5);
-    expect(Object.keys(operations)).toHaveLength(13);
+    expect(Object.keys(methods)).toHaveLength(15);
+    expect(Object.keys(operations)).toHaveLength(23);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -61,9 +61,13 @@ describe('drive operations', () => {
       .sort();
     expect(readOnly).toEqual([
       'download_file_content',
+      'get_comment',
       'get_file_metadata',
       'get_file_permissions',
+      'get_reply',
+      'list_comments',
       'list_recent_files',
+      'list_replies',
       'read_file_content',
       'search_files',
     ]);
@@ -74,7 +78,13 @@ describe('drive operations', () => {
       .filter(([, op]) => op.annotations?.destructiveHint)
       .map(([name]) => name)
       .sort();
-    expect(destructive).toEqual(['delete_file', 'empty_trash', 'trash_file']);
+    expect(destructive).toEqual([
+      'delete_comment',
+      'delete_file',
+      'delete_reply',
+      'empty_trash',
+      'trash_file',
+    ]);
   });
 
   it('marks exactly the open-world operations (the toolset-published pair)', () => {
