@@ -8,12 +8,25 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import pkg from '../../package.json' with { type: 'json' };
-import type { AnyOperation } from './operation.js';
+import { type AnyOperation, SOURCE_META_KEY } from './operation.js';
 
 export type ServerOptions<Client> = {
   /** MCP server name (the service, e.g. 'gmail'). */
   name: string;
   version?: string;
+  /** Human-readable server name for client UIs (MCP `Implementation.title`). */
+  title?: string;
+  /** One-line server summary for client UIs (MCP `Implementation.description`). */
+  description?: string;
+  /** Project URL for client UIs (MCP `Implementation.websiteUrl`); defaults to the package homepage. */
+  websiteUrl?: string;
+  /**
+   * Usage notes served in the MCP initialize result (`InitializeResult.instructions`);
+   * clients inject this into the agent's context at connect time, so it is the
+   * one server-authored string an agent reliably reads before calling tools.
+   * @see https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle
+   */
+  instructions?: string;
   /** Every operation this server exposes, keyed by wire name (tools and methods merged). */
   operations: Record<string, AnyOperation<Client>>;
   /** Build the authenticated client for the account this instance is bound to. */
@@ -40,6 +53,7 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
     inputSchema: z.toJSONSchema(op.schema.input, { io: 'input' }) as Record<string, unknown>,
     outputSchema: z.toJSONSchema(op.schema.output, { io: 'output' }) as Record<string, unknown>,
     annotations: op.annotations,
+    ...(op.source ? { _meta: { [SOURCE_META_KEY]: op.source } } : {}),
   }));
 }
 
@@ -71,10 +85,10 @@ export function renderCapabilities<Client>(
   groups: CapabilityGroup<Client>[],
 ): string {
   const rows = groups.flatMap(({ kind, operations }) =>
-    Object.entries(operations).map(
-      ([name, op]) =>
-        `| \`${name}\`${op.annotations.destructiveHint ? ' ⚠️' : ''} | ${kind} | ${op.description} |`,
-    ),
+    Object.entries(operations).map(([name, op]) => {
+      const label = op.source ? `[\`${name}\`](${op.source})` : `\`${name}\``;
+      return `| ${label}${op.annotations.destructiveHint ? ' ⚠️' : ''} | ${kind} | ${op.description} |`;
+    }),
   );
   // Derived from the groups actually passed in, so a methods-only service
   // (Sheets) does not claim an MCP toolset it does not have.
@@ -143,6 +157,7 @@ export async function callOperation<Client>(
  */
 export async function server<Client>(options: ServerOptions<Client>): Promise<void> {
   const { name, version = pkg.version, operations, client, runAuth } = options;
+  const { title, description, websiteUrl = pkg.homepage, instructions } = options;
 
   if (process.argv[2] === 'auth') {
     if (!runAuth) {
@@ -154,7 +169,16 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
   }
 
   const authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
-  const mcp = new Server({ name, version }, { capabilities: { tools: {} } });
+  const mcp = new Server(
+    {
+      name,
+      version,
+      websiteUrl,
+      ...(title ? { title } : {}),
+      ...(description ? { description } : {}),
+    },
+    { capabilities: { tools: {} }, ...(instructions ? { instructions } : {}) },
+  );
 
   mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: toolDefinitions(operations),
