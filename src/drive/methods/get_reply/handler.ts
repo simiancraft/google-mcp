@@ -1,6 +1,6 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/utils/google.js';
 import { projectReply, REPLY_FIELDS } from '../../lib/comment.js';
 import type { schema } from './schema.js';
 

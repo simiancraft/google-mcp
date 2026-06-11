@@ -32,7 +32,7 @@ export async function handler(
       { responseType: 'arraybuffer' },
     );
     // Native exports stay uncapped on purpose: Google's own export limit
-    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
+    // (about 10 MB) sits under the suite ceiling (src/lib/consts.ts).
     return { fileContent: mediaBuffer(res).toString('utf8') };
   }
 

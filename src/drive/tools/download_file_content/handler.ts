@@ -18,7 +18,7 @@ export async function handler(
   let contentMime = mimeType;
   if (isGoogleNative(mimeType)) {
     // Native exports stay uncapped on purpose: Google's own export limit
-    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
+    // (about 10 MB) sits under the suite ceiling (src/lib/consts.ts).
     contentMime = args.exportMimeType ?? 'text/plain';
     const res = await drive.files.export(
       { fileId: args.fileId, mimeType: contentMime },

@@ -1,4 +1,4 @@
-import { MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+import { MAX_DOWNLOAD_BYTES } from '../../lib/consts.js';
 
 /**
  * The content boundary for the two content tools (see the COVERAGE.md

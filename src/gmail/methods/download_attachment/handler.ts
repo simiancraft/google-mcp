@@ -1,6 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
-import { MAX_DOWNLOAD_BYTES } from '../../../lib/limits.js';
+import { MAX_DOWNLOAD_BYTES } from '../../../lib/consts.js';
 import type { schema } from './schema.js';
 
 export async function handler(

@@ -1,13 +1,10 @@
 import { expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { mergeOperations, SOURCE_META_KEY } from './operation.js';
-import {
-  type CapabilityGroup,
-  renderCapabilities,
-  toolDefinitions,
-  untrustedContentInstructions,
-} from './server.js';
+import { type CapabilityGroup, renderCapabilities } from '../capabilities.js';
+import { untrustedContentInstructions } from '../instructions.js';
+import { mergeOperations, SOURCE_META_KEY } from '../operation.js';
+import { toolDefinitions } from '../server.js';
 
 /**
  * The per-wing surface-pin data: everything a service must keep current when

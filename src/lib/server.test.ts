@@ -3,7 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { z } from 'zod';
 import { operation, SOURCE_META_KEY } from './operation.js';
-import { callOperation, renderCapabilities, server, toolDefinitions } from './server.js';
+import { callOperation, server, toolDefinitions } from './server.js';
 
 type FakeClient = { upper: (s: string) => string };
 
@@ -165,31 +165,6 @@ describe('toolDefinitions', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-  });
-});
-
-describe('renderCapabilities', () => {
-  it('renders a Markdown table, marking only destructive operations', () => {
-    const md = renderCapabilities('Test capabilities', [
-      { kind: 'MCP Tool', operations: { echo } },
-      { kind: 'REST Method', operations: { danger } },
-    ]);
-    expect(md).toContain('# Test capabilities');
-    expect(md).toContain('2 operations across MCP tools and REST methods.');
-    expect(md).toContain(
-      '| [`echo`](https://developers.google.com/example/reference/rest/v1/things/read) | MCP Tool | Uppercase a string. |',
-    );
-    expect(md).toContain(
-      '| [`danger`](https://developers.google.com/example/reference/rest/v1/things/delete) ⚠️ | REST Method | Irreversible. |',
-    );
-  });
-
-  it('describes a single-source surface without claiming the other source', () => {
-    const md = renderCapabilities('Methods-only capabilities', [
-      { kind: 'REST Method', operations: { echo, danger } },
-    ]);
-    expect(md).toContain('2 operations, all REST methods.');
-    expect(md).not.toContain('across MCP tools');
   });
 });
 

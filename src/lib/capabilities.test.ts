@@ -4,9 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
-import { writeCapabilities } from './capabilities.js';
+import { renderCapabilities, writeCapabilities } from './capabilities.js';
 import { operation } from './operation.js';
-import { renderCapabilities } from './server.js';
 
 const read = operation({
   description: 'Read a thing.',
@@ -36,5 +35,59 @@ describe('writeCapabilities', () => {
       errSpy.mockRestore();
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+});
+
+const echo = operation({
+  description: 'Uppercase a string.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
+  schema: {
+    input: z.strictObject({ text: z.string() }),
+    output: z.object({ shouted: z.string() }),
+  },
+  handler: async (_client: unknown, args: { text: string }) => ({ shouted: args.text }),
+});
+
+const danger = operation({
+  description: 'Irreversible.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/delete',
+  schema: { input: z.strictObject({ id: z.string() }), output: z.object({ ok: z.boolean() }) },
+  handler: async (_client: unknown) => ({ ok: true }),
+});
+
+describe('renderCapabilities', () => {
+  it('renders a Markdown table, marking only destructive operations', () => {
+    const md = renderCapabilities('Test capabilities', [
+      { kind: 'MCP Tool', operations: { echo } },
+      { kind: 'REST Method', operations: { danger } },
+    ]);
+    expect(md).toContain('# Test capabilities');
+    expect(md).toContain('2 operations across MCP tools and REST methods.');
+    expect(md).toContain(
+      '| [`echo`](https://developers.google.com/example/reference/rest/v1/things/read) | MCP Tool | Uppercase a string. |',
+    );
+    expect(md).toContain(
+      '| [`danger`](https://developers.google.com/example/reference/rest/v1/things/delete) ⚠️ | REST Method | Irreversible. |',
+    );
+  });
+
+  it('describes a single-source surface without claiming the other source', () => {
+    const md = renderCapabilities('Methods-only capabilities', [
+      { kind: 'REST Method', operations: { echo, danger } },
+    ]);
+    expect(md).toContain('2 operations, all REST methods.');
+    expect(md).not.toContain('across MCP tools');
   });
 });

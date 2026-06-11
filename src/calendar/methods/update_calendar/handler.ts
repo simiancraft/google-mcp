@@ -1,6 +1,6 @@
 import type { calendar_v3 } from '@googleapis/calendar';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/utils/google.js';
 import { projectCalendar } from '../../lib/calendar.js';
 import type { schema } from './schema.js';
 

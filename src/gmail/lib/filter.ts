@@ -1,5 +1,5 @@
 import type { gmail_v1 } from '@googleapis/gmail';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { Filter } from '../entities/Filter.js';
 import { FilterCriteria } from '../entities/FilterCriteria.js';
 

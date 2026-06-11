@@ -201,7 +201,7 @@ response wrapper may stay inline in its `schema.ts`.
 
 **Enum policy.** Inputs are closed `z.enum`s with the `*_UNSPECIFIED` variants
 never exposed. Outputs are closed `z.enum`s with unknown values **dropped** at
-projection (the field goes absent; `narrow()` in the shared `src/lib/enums.ts`
+projection (the field goes absent; `narrow()` in the shared `src/lib/utils/narrow.ts`
 is the helper, and the allowed list derives from the entity itself,
 `Entity.shape.<field>.unwrap().options`, so projection and schema cannot
 disagree): the schema stays truthful and a new upstream value degrades to a

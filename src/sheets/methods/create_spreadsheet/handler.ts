@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/utils/google.js';
 import { projectSpreadsheet } from '../../lib/spreadsheet.js';
 import type { schema } from './schema.js';
 

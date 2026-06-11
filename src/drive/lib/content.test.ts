@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+import { MAX_DOWNLOAD_BYTES } from '../../lib/consts.js';
 import { isGoogleNative, isTextLike, mediaBuffer, textExportMime } from './content.js';
 
 describe('isGoogleNative', () => {

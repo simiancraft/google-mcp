@@ -1,5 +1,5 @@
 import type { drive_v3 } from '@googleapis/drive';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { File } from '../entities/File.js';
 import { Permission } from '../entities/Permission.js';
 

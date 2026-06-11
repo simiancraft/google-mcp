@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/utils/google.js';
 import { projectFile, TOOL_FILE_FIELDS } from '../../lib/file.js';
 import type { schema } from './schema.js';
 
