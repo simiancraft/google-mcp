@@ -44,6 +44,21 @@ export type ServerOptions<Client> = {
   transport?: Transport;
 };
 
+/**
+ * The identity-binding preamble every service's instructions open with. Lives
+ * here because lib owns the behavior it describes (`server()` binds
+ * `GOOGLE_MCP_ACCOUNT` at startup); a service composes it with its own
+ * vocabulary and traps. `accountNoun` names the account flavor ('Gmail
+ * account', 'Google account').
+ */
+export function identityInstructions(accountNoun: string): string {
+  return (
+    `This server is bound to exactly one ${accountNoun}, fixed at startup; no ` +
+    'operation takes an account parameter, so to act on a different account, ' +
+    "use that account's instance. "
+  );
+}
+
 function errorResult(message: string): CallToolResult {
   return { content: [{ type: 'text', text: `Error: ${message}` }], isError: true };
 }
