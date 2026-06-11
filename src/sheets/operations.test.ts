@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { mergeOperations } from '../lib/operation.js';
+import { renderCapabilities } from '../lib/server.js';
 import { methods } from './methods/registry.js';
 
 const operations = mergeOperations(methods);
@@ -29,5 +32,12 @@ describe('sheets operations', () => {
       'batch_clear_values_by_data_filter',
       'clear_values',
     ]);
+  });
+
+  it('CAPABILITIES.md is the current render of these registries', () => {
+    const doc = readFileSync(fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url)), 'utf8');
+    expect(doc).toBe(
+      renderCapabilities('Sheets capabilities', [{ kind: 'REST Method', operations: methods }]),
+    );
   });
 });

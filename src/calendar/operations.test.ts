@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { mergeOperations } from '../lib/operation.js';
+import { renderCapabilities } from '../lib/server.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
@@ -27,5 +30,15 @@ describe('calendar operations', () => {
       .map(([name]) => name)
       .sort();
     expect(destructive).toEqual(['clear_calendar', 'delete_calendar', 'delete_event']);
+  });
+
+  it('CAPABILITIES.md is the current render of these registries', () => {
+    const doc = readFileSync(fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url)), 'utf8');
+    expect(doc).toBe(
+      renderCapabilities('Calendar capabilities', [
+        { kind: 'MCP Tool', operations: tools },
+        { kind: 'REST Method', operations: methods },
+      ]),
+    );
   });
 });
