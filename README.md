@@ -14,7 +14,7 @@
 
 <p align="center">
   <strong>Google MCP servers you can read in an afternoon, one per service.</strong><br />
-  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, in one server per account, so an agent can run several Google accounts at once and can never act on the wrong one. A folder tree that mirrors Google's API reference page-for-page, with 100% test coverage.
+  The curated <a href="https://modelcontextprotocol.io/">MCP</a> toolset plus the broader REST surface, one server per service per account: <strong>117 self-describing operations</strong> across five Google services, so an agent can do (nearly) anything your accounts can, on several accounts at once, and never on the wrong one. Every operation cites its Google reference page and validates input and output; test coverage is pinned at 100%.
 </p>
 
 <p align="center">
@@ -30,8 +30,10 @@
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>), <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>), <strong>Sheets</strong> (<a href="./src/sheets/CAPABILITIES.md">15 operations</a>), <strong>Docs</strong> (<a href="./src/docs/CAPABILITIES.md">9 operations</a>), and <strong>Drive</strong> (<a href="./src/drive/CAPABILITIES.md">35 operations</a>) ship today.</sub>
+  <sub><strong>117 operations</strong> ship today: <strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33</a>), <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25</a>), <strong>Sheets</strong> (<a href="./src/sheets/CAPABILITIES.md">15</a>), <strong>Docs</strong> (<a href="./src/docs/CAPABILITIES.md">9</a>), and <strong>Drive</strong> (<a href="./src/drive/CAPABILITIES.md">35</a>).</sub>
 </p>
+
+<p align="center"><sub><strong>Replacing a built-in connector?</strong> Hand your agent <a href="./ADOPTING.md">ADOPTING.md</a>: the playbook to adopt, supersede, verify, and decommission.</sub></p>
 
 ## What it does
 
@@ -70,6 +72,8 @@ The split is Google's own (its MCP reference and its REST reference are separate
 ## Quickstart
 
 One thing first: a Google Cloud OAuth client (roughly ten minutes of console clicks, once; the friction is Google's, not ours). [PROVISIONING.md](./PROVISIONING.md) walks every click, and `doctor` tells you which step you are on.
+
+**Driving this with an agent?** Hand it [ADOPTING.md](./ADOPTING.md): the literal adopt, supersede-the-built-ins, verify, and decommission playbook, with a hand-off prompt to paste.
 
 ```sh
 npm install -g google-mcp-suite

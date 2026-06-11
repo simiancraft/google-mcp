@@ -48,6 +48,9 @@
   "files": [
     "dist",
     "README.md",
+    "ADOPTING.md",
+    "PROVISIONING.md",
+    "llms-install.md",
     "LICENSE",
     "NOTICE.md"
   ],
