@@ -1,76 +1,22 @@
-import { describe, expect, it } from 'bun:test';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { mergeOperations, SOURCE_META_KEY } from '../lib/operation.js';
-import { renderCapabilities, toolDefinitions } from '../lib/server.js';
+import { describe } from 'bun:test';
+import { pinOperationSurface } from '../lib/surface-pins.js';
 import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
-const operations = mergeOperations(tools, methods);
-
 describe('gmail operations', () => {
-  it('exposes the full surface (10 tools + 23 methods)', () => {
-    expect(Object.keys(tools)).toHaveLength(10);
-    expect(Object.keys(methods)).toHaveLength(23);
-    expect(Object.keys(operations)).toHaveLength(33);
-  });
-
-  it('every operation has a description, a schema, and a handler', () => {
-    for (const op of Object.values(operations)) {
-      expect(op.description.length).toBeGreaterThan(0);
-      expect(op.schema.input).toBeDefined();
-      expect(op.schema.output).toBeDefined();
-      expect(typeof op.handler).toBe('function');
-    }
-  });
-
-  it('declares strict inputs on the wire (additionalProperties: false)', () => {
-    for (const def of toolDefinitions(operations)) {
-      expect(def.inputSchema['additionalProperties']).toBe(false);
-    }
-  });
-
-  it('instructions cite the real _meta key and only real operation names', () => {
-    expect(instructions).toContain(SOURCE_META_KEY);
-    const mentioned = instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
-    expect(mentioned.length).toBeGreaterThan(0);
-    for (const name of mentioned) {
-      expect(operations).toHaveProperty(name);
-    }
-  });
-
-  it('cites the matching reference page on every operation', () => {
-    for (const [name, op] of Object.entries(tools)) {
-      expect(op.source).toMatch(
-        new RegExp(
-          `^https://developers\\.google\\.com/workspace/gmail/api/reference/mcp/tools_list/${name}$`,
-        ),
-      );
-    }
-    for (const op of Object.values(methods)) {
-      expect(op.source).toMatch(
-        /^https:\/\/developers\.google\.com\/workspace\/gmail\/api\/reference\/rest\/v1\//,
-      );
-      expect(op.source).not.toContain('mcp/tools_list');
-    }
-  });
-
-  it('annotates every operation with the four MCP hints, explicitly', () => {
-    for (const op of Object.values(operations)) {
-      expect(typeof op.annotations.readOnlyHint).toBe('boolean');
-      expect(typeof op.annotations.destructiveHint).toBe('boolean');
-      expect(typeof op.annotations.idempotentHint).toBe('boolean');
-      expect(typeof op.annotations.openWorldHint).toBe('boolean');
-    }
-  });
-
-  it('marks exactly the read-only operations', () => {
-    const readOnly = Object.entries(operations)
-      .filter(([, op]) => op.annotations.readOnlyHint)
-      .map(([name]) => name)
-      .sort();
-    expect(readOnly).toEqual([
+  pinOperationSurface({
+    moduleUrl: import.meta.url,
+    capabilitiesTitle: 'Gmail capabilities',
+    instructions,
+    groups: [
+      { kind: 'MCP Tool', operations: tools },
+      { kind: 'REST Method', operations: methods },
+    ],
+    toolSourcePrefix: 'https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/',
+    methodSourcePrefix: 'https://developers.google.com/workspace/gmail/api/reference/rest/v1/',
+    counts: { tools: 10, methods: 23 },
+    readOnly: [
       'download_attachment',
       'get_draft',
       'get_filter',
@@ -82,15 +28,8 @@ describe('gmail operations', () => {
       'list_labels',
       'list_messages',
       'search_threads',
-    ]);
-  });
-
-  it('marks exactly the destructive operations (removals, sends, standing filters)', () => {
-    const destructive = Object.entries(operations)
-      .filter(([, op]) => op.annotations.destructiveHint)
-      .map(([name]) => name)
-      .sort();
-    expect(destructive).toEqual([
+    ],
+    destructive: [
       'batch_delete_messages',
       'batch_modify_messages',
       'create_filter',
@@ -105,24 +44,7 @@ describe('gmail operations', () => {
       'trash_thread',
       'unlabel_message',
       'unlabel_thread',
-    ]);
-  });
-
-  it('marks exactly the sends as open-world', () => {
-    const openWorld = Object.entries(operations)
-      .filter(([, op]) => op.annotations.openWorldHint)
-      .map(([name]) => name)
-      .sort();
-    expect(openWorld).toEqual(['send_draft', 'send_message']);
-  });
-
-  it('CAPABILITIES.md is the current render of these registries', () => {
-    const doc = readFileSync(fileURLToPath(new URL('./CAPABILITIES.md', import.meta.url)), 'utf8');
-    expect(doc).toBe(
-      renderCapabilities('Gmail capabilities', [
-        { kind: 'MCP Tool', operations: tools },
-        { kind: 'REST Method', operations: methods },
-      ]),
-    );
+    ],
+    openWorld: ['send_draft', 'send_message'],
   });
 });

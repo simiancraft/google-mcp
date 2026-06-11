@@ -1,0 +1,121 @@
+import { expect, it } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { mergeOperations, SOURCE_META_KEY } from './operation.js';
+import { type CapabilityGroup, renderCapabilities, toolDefinitions } from './server.js';
+
+/**
+ * The per-wing surface-pin data: everything a service must keep current when
+ * its surface changes. The expected counts, annotation sets, and URL prefixes
+ * stay in the wing (transcription explicitness); the assertion ceremony lives
+ * here once.
+ */
+export type SurfacePins<Client> = {
+  /** The wing test's `import.meta.url`; CAPABILITIES.md is read from beside it. */
+  moduleUrl: string;
+  /** The doc title the wing's capabilities.ts renders with. */
+  capabilitiesTitle: string;
+  /** The served instructions string. */
+  instructions: string;
+  /** The wing's registries, in rendered order (tools first where present). */
+  groups: CapabilityGroup<Client>[];
+  /**
+   * The exact page-URL prefix for MCP-toolset tools; each tool's `source` must
+   * be `prefix + its wire name`. Omit for methods-only wings.
+   */
+  toolSourcePrefix?: string;
+  /** The service+version-exact prefix every method's `source` must start with. */
+  methodSourcePrefix: string;
+  counts: { tools?: number; methods: number };
+  readOnly: string[];
+  destructive: string[];
+  openWorld: string[];
+};
+
+/**
+ * Register the suite-wide surface pins for one wing: counts, definition
+ * completeness, strict inputs on the wire, instructions citing the real
+ * `_meta` key and only real operation names, source citations with
+ * service-exact prefixes, the explicit four-hint quad, the exact
+ * read-only/destructive/open-world sets, and CAPABILITIES.md equality.
+ * Call inside the wing's `describe` block.
+ */
+export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
+  const tools = pins.groups.find((g) => g.kind === 'MCP Tool')?.operations ?? {};
+  const methods = pins.groups.find((g) => g.kind === 'REST Method')?.operations ?? {};
+  const operations = mergeOperations(...pins.groups.map((g) => g.operations));
+
+  it('exposes the full surface (pinned counts)', () => {
+    if (pins.counts.tools !== undefined) {
+      expect(Object.keys(tools)).toHaveLength(pins.counts.tools);
+    }
+    expect(Object.keys(methods)).toHaveLength(pins.counts.methods);
+    expect(Object.keys(operations)).toHaveLength((pins.counts.tools ?? 0) + pins.counts.methods);
+  });
+
+  it('every operation has a description, a schema, and a handler', () => {
+    for (const op of Object.values(operations)) {
+      expect(op.description.length).toBeGreaterThan(0);
+      expect(op.schema.input).toBeDefined();
+      expect(op.schema.output).toBeDefined();
+      expect(typeof op.handler).toBe('function');
+    }
+  });
+
+  it('declares strict inputs on the wire (additionalProperties: false)', () => {
+    for (const def of toolDefinitions(operations)) {
+      expect(def.inputSchema['additionalProperties']).toBe(false);
+    }
+  });
+
+  it('instructions cite the real _meta key and only real operation names', () => {
+    expect(pins.instructions).toContain(SOURCE_META_KEY);
+    const mentioned = pins.instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
+    expect(mentioned.length).toBeGreaterThan(0);
+    for (const name of mentioned) {
+      expect(operations).toHaveProperty(name);
+    }
+  });
+
+  it('cites the matching reference page on every operation', () => {
+    for (const [name, op] of Object.entries(tools)) {
+      expect(op.source).toBe(`${pins.toolSourcePrefix}${name}`);
+    }
+    for (const op of Object.values(methods)) {
+      expect(op.source).toStartWith(pins.methodSourcePrefix);
+      expect(op.source).not.toContain('mcp/tools_list');
+    }
+  });
+
+  it('annotates every operation with the four MCP hints, explicitly', () => {
+    for (const op of Object.values(operations)) {
+      expect(typeof op.annotations.readOnlyHint).toBe('boolean');
+      expect(typeof op.annotations.destructiveHint).toBe('boolean');
+      expect(typeof op.annotations.idempotentHint).toBe('boolean');
+      expect(typeof op.annotations.openWorldHint).toBe('boolean');
+    }
+  });
+
+  const named = (hint: 'readOnlyHint' | 'destructiveHint' | 'openWorldHint') =>
+    Object.entries(operations)
+      .filter(([, op]) => op.annotations[hint])
+      .map(([name]) => name)
+      .sort();
+
+  it('marks exactly the read-only operations', () => {
+    expect(named('readOnlyHint')).toEqual([...pins.readOnly].sort());
+  });
+
+  it('marks exactly the destructive operations', () => {
+    expect(named('destructiveHint')).toEqual([...pins.destructive].sort());
+  });
+
+  it('marks exactly the open-world operations', () => {
+    expect(named('openWorldHint')).toEqual([...pins.openWorld].sort());
+  });
+
+  it('CAPABILITIES.md is the current render of these registries', () => {
+    const doc = readFileSync(fileURLToPath(new URL('./CAPABILITIES.md', pins.moduleUrl)), 'utf8');
+    expect(doc).toBe(renderCapabilities(pins.capabilitiesTitle, pins.groups));
+  });
+}
