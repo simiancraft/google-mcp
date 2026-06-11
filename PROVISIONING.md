@@ -238,22 +238,24 @@ Default layout (all overridable by env, read lazily):
 
 ## Phase 6: register the MCP server
 
-One server instance per account, each pinned via `GOOGLE_MCP_ACCOUNT`. Example
-entries for an MCP host config (e.g. `~/.claude.json` `mcpServers`):
+One server instance per account, each pinned via `GOOGLE_MCP_ACCOUNT`. The
+value must be a label Phase 5 actually created: a bare email, or a roster
+alias like `work` ([ADOPTING.md](./ADOPTING.md) step 3 writes the roster).
+Example entries for an MCP host config (e.g. `~/.claude.json` `mcpServers`):
 
 ```jsonc
 {
-  "gmail-simiancraft": {
+  "gmail-work": {
     "type": "stdio",
     "command": "google-mcp-gmail",
-    "env": { "GOOGLE_MCP_ACCOUNT": "simiancraft" }
+    "env": { "GOOGLE_MCP_ACCOUNT": "work" }
   },
   // or, from a source checkout:
   "gmail-from-source": {
     "type": "stdio",
     "command": "node",
     "args": ["<abs-path-to-repo>/dist/gmail/index.js"],
-    "env": { "GOOGLE_MCP_ACCOUNT": "simiancraft" }
+    "env": { "GOOGLE_MCP_ACCOUNT": "work" }
   }
 }
 ```

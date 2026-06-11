@@ -335,7 +335,9 @@ Start a fresh session of the client, then:
    and Drive `get_about`. Where an operation returns identity, check it
    against the label's intended account: Drive `get_about` returns the
    account's `emailAddress`, and the Calendar list contains the primary
-   calendar, whose id is the account's email. A consent mis-click in step 3
+   calendar, whose id is the account's email. `google-mcp-doctor` prints the
+   same mapping from outside the client: its Services table shows each label
+   beside the email its probes resolved. A consent mis-click in step 3
    surfaces here as the wrong email; fix it with
    `google-mcp-doctor auth <label>` and a more careful click.
 3. The superseded surfaces are gone. Claude Code: in a fresh session, no
