@@ -9,6 +9,6 @@ import { type Operation, operation } from '../lib/operation.js';
  * fails here (the client can no longer silently infer `unknown` and slip into
  * the registry) rather than surfacing as a confusing `unknown` deep in the body.
  */
-export const sheetsOperation = <In extends z.ZodType, Out extends z.ZodType>(
+export const sheetsOperation = <In extends z.ZodObject, Out extends z.ZodObject>(
   def: Operation<sheets_v4.Sheets, In, Out>,
 ): Operation<sheets_v4.Sheets, In, Out> => operation(def);

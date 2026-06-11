@@ -9,6 +9,6 @@ import { type Operation, operation } from '../lib/operation.js';
  * fails here (the client can no longer silently infer `unknown` and slip into the
  * registry) rather than surfacing as a confusing `unknown` deep in the body.
  */
-export const calendarOperation = <In extends z.ZodType, Out extends z.ZodType>(
+export const calendarOperation = <In extends z.ZodObject, Out extends z.ZodObject>(
   def: Operation<calendar_v3.Calendar, In, Out>,
 ): Operation<calendar_v3.Calendar, In, Out> => operation(def);

@@ -50,21 +50,22 @@ export type CapabilityGroup<Client> = {
   operations: Record<string, AnyOperation<Client>>;
 };
 
-/**
- * Render the operations as a Markdown capability table (name, source, description,
- * and an irreversible marker), derived from the same registries the server
- * dispatches. The Source column makes the dual surface explicit: the suite is both
- * an MCP-toolset wrapper and a REST wrapper, because MCP's toolset alone cannot
- * fully drive a service. A static mirror; agents that speak MCP discover the live,
- * fully-schema'd surface via `tools/list`. Pure; a service regenerates its
- * CAPABILITIES.md from this so the doc cannot drift from the code.
- */
 /** Prose labels for the group kinds; the header sentence is built from these. */
 const KIND_LABELS: Record<string, string> = {
   'MCP Tool': 'MCP tools',
   'REST Method': 'REST methods',
 };
 
+/**
+ * Render the operations as a Markdown capability table (name, source, description,
+ * and an irreversible marker), derived from the same registries the server
+ * dispatches. The Source column makes the provenance explicit: a service is an
+ * MCP-toolset wrapper and a REST wrapper (or REST only, where Google publishes
+ * no toolset), because MCP's toolset alone cannot fully drive a service. A
+ * static mirror; agents that speak MCP discover the live, fully-schema'd
+ * surface via `tools/list`. Pure; a service regenerates its CAPABILITIES.md
+ * from this (and a test pins the file to it) so the doc cannot drift from the code.
+ */
 export function renderCapabilities<Client>(
   title: string,
   groups: CapabilityGroup<Client>[],
@@ -126,7 +127,7 @@ export async function callOperation<Client>(
     const validated = op.schema.output.parse(result);
     return {
       content: [{ type: 'text', text: JSON.stringify(validated, null, 2) }],
-      structuredContent: validated as Record<string, unknown>,
+      structuredContent: validated,
     };
   } catch (error) {
     return errorResult(error instanceof Error ? error.message : String(error));

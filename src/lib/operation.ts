@@ -9,7 +9,7 @@ import type { z } from 'zod';
  * service's authenticated client and the validated input and returns a value that
  * conforms to `schema.output`.
  */
-export type Operation<Client, In extends z.ZodType, Out extends z.ZodType> = {
+export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> = {
   description: string;
   schema: { input: In; output: Out };
   handler: (client: Client, args: z.infer<In>) => Promise<z.infer<Out>>;
@@ -26,7 +26,7 @@ export type Operation<Client, In extends z.ZodType, Out extends z.ZodType> = {
  */
 export type AnyOperation<Client> = {
   description: string;
-  schema: { input: z.ZodType; output: z.ZodType };
+  schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
   destructive?: boolean;
 };
@@ -37,7 +37,7 @@ export type AnyOperation<Client> = {
  * from `schema`) and the front-door check that the handler consumes exactly what
  * the schema declares.
  */
-export const operation = <Client, In extends z.ZodType, Out extends z.ZodType>(
+export const operation = <Client, In extends z.ZodObject, Out extends z.ZodObject>(
   def: Operation<Client, In, Out>,
 ): Operation<Client, In, Out> => def;
 
