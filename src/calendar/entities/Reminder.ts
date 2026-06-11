@@ -9,7 +9,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/calendar/api/concepts/events-calendars
  */
-export const Reminder = z.object({
+export const Reminder = z.strictObject({
   method: z
     .enum(['email', 'popup'])
     .optional()

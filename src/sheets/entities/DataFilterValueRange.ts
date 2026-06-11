@@ -9,7 +9,7 @@ import { MajorDimension } from './MajorDimension.js';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdateByDataFilter#DataFilterValueRange
  */
-export const DataFilterValueRange = z.object({
+export const DataFilterValueRange = z.strictObject({
   dataFilter: DataFilter.describe(
     'The data filter describing the location of the values in the spreadsheet.',
   ),

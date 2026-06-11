@@ -52,10 +52,15 @@ with `operation()`. Keep them split.
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
 3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
    documented input/output as zod; reference entities for named objects; keep
-   inline primitives inline. The input wrapper is `z.strictObject` (suite-wide
-   decision: an unknown key is an agent typo and must reject loudly, and the
-   wire schema carries `additionalProperties: false`; `operations.test.ts`
-   pins this); the output wrapper and entities stay `z.object`. The folder's
+   inline primitives inline. The input wrapper and every object nested under
+   it are `z.strictObject` (suite-wide decision: an unknown key is an agent
+   typo and must reject loudly at any depth; a typo'd key inside a nested
+   noun like `textStyle` or `criteria` would otherwise strip silently into a
+   no-op). The wire schema carries `additionalProperties: false` on every
+   object node, and the surface pin walks the emitted input schema
+   recursively. Strictness rides into outputs where an input entity is also
+   projected there (projections construct exactly, so this is free);
+   output-only wrappers and entities stay `z.object`. The folder's
    citation lives once, in `index.ts`'s `source` field; do not restate the URL
    in schema.ts.
 4. **`handler.ts`:** `export async function handler(client, args) { … }`, typed

@@ -20,7 +20,7 @@ export const schema = {
           'of possible driveThemes can be retrieved from a get_about response.',
       ),
     restrictions: z
-      .object({
+      .strictObject({
         adminManagedRestrictions: z
           .boolean()
           .optional()

@@ -6,7 +6,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#DimensionRange
  */
-export const DimensionRange = z.object({
+export const DimensionRange = z.strictObject({
   sheetId: z.number().int().optional().describe('The sheet this span is on.'),
   dimension: z.enum(['ROWS', 'COLUMNS']).optional().describe('The dimension of the span.'),
   startIndex: z

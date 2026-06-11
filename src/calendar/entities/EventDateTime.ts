@@ -12,7 +12,7 @@ import { z } from 'zod';
  * @see https://developers.google.com/workspace/calendar/api/concepts/events-calendars
  */
 export const EventDateTime = z
-  .object({
+  .strictObject({
     date: z
       .string()
       .optional()

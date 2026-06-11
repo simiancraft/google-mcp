@@ -29,7 +29,7 @@ export const schema = {
         'Minimum duration of a free time slot in minutes (default 30); suggested slots are exactly this length.',
       ),
     preferences: z
-      .object({
+      .strictObject({
         startHour: z
           .string()
           .regex(HOUR_OF_DAY, 'Expected an HH:MM hour of day, for example 09:00.')

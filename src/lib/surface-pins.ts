@@ -33,6 +33,26 @@ export type SurfacePins<Client> = {
 };
 
 /**
+ * Every object node in a JSON Schema that is not strict
+ * (`additionalProperties: false`). Strictness must hold at every depth: a
+ * nested unknown key (an agent typo inside textStyle, criteria, ...) silently
+ * strips under plain `z.object`, which is worse than a loud rejection.
+ */
+export function nonStrictObjectPaths(node: unknown, path: string): string[] {
+  if (typeof node !== 'object' || node === null) return [];
+  const rec = node as Record<string, unknown>;
+  const own =
+    rec['type'] === 'object' &&
+    rec['properties'] !== undefined &&
+    rec['additionalProperties'] !== false
+      ? [path]
+      : [];
+  return own.concat(
+    Object.entries(rec).flatMap(([key, child]) => nonStrictObjectPaths(child, `${path}.${key}`)),
+  );
+}
+
+/**
  * Register the suite-wide surface pins for one wing: counts, definition
  * completeness, strict inputs on the wire, instructions citing the real
  * `_meta` key and only real operation names, source citations with
@@ -62,9 +82,9 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
     }
   });
 
-  it('declares strict inputs on the wire (additionalProperties: false)', () => {
+  it('declares strict inputs on the wire (additionalProperties: false, recursively)', () => {
     for (const def of toolDefinitions(operations)) {
-      expect(def.inputSchema['additionalProperties']).toBe(false);
+      expect(nonStrictObjectPaths(def.inputSchema, def.name)).toEqual([]);
     }
   });
 

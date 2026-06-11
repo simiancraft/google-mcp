@@ -7,7 +7,7 @@ import { DimensionRange } from './DimensionRange.js';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.developerMetadata#DeveloperMetadataLocation
  */
-export const DeveloperMetadataLocation = z.object({
+export const DeveloperMetadataLocation = z.strictObject({
   locationType: z
     .enum(['ROW', 'COLUMN', 'SHEET', 'SPREADSHEET'])
     .optional()

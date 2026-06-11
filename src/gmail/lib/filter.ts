@@ -1,5 +1,7 @@
 import type { gmail_v1 } from '@googleapis/gmail';
+import { narrow } from '../../lib/enums.js';
 import type { Filter } from '../entities/Filter.js';
+import { FilterCriteria } from '../entities/FilterCriteria.js';
 
 /** Project a raw Gmail filter onto the Filter shape, dropping nulls. */
 export function projectFilter(filter: gmail_v1.Schema$Filter): Filter {
@@ -14,7 +16,10 @@ export function projectFilter(filter: gmail_v1.Schema$Filter): Filter {
       hasAttachment: filter.criteria?.hasAttachment ?? undefined,
       excludeChats: filter.criteria?.excludeChats ?? undefined,
       size: filter.criteria?.size ?? undefined,
-      sizeComparison: filter.criteria?.sizeComparison ?? undefined,
+      sizeComparison: narrow(
+        filter.criteria?.sizeComparison,
+        FilterCriteria.shape.sizeComparison.unwrap().options,
+      ),
     },
     action: {
       addLabelIds: filter.action?.addLabelIds ?? undefined,

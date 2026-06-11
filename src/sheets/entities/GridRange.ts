@@ -7,7 +7,7 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#GridRange
  */
-export const GridRange = z.object({
+export const GridRange = z.strictObject({
   sheetId: z.number().int().optional().describe('The sheet this range is on.'),
   startRowIndex: z
     .number()

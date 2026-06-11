@@ -20,7 +20,7 @@ export const schema = {
       .optional()
       .describe('The time zone of the spreadsheet, in CLDR format such as America/New_York.'),
     sheets: z
-      .array(z.object({ title: z.string().describe('The name of the sheet.') }))
+      .array(z.strictObject({ title: z.string().describe('The name of the sheet.') }))
       .optional()
       .describe(
         'The sheets (tabs) to create the spreadsheet with, by title. Omitted, the spreadsheet gets one default sheet.',

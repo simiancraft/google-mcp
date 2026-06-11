@@ -15,7 +15,7 @@ export const schema = {
       ),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           id: z
             .string()
             .describe("A calendar id to query; use 'primary' for the user's primary calendar."),
