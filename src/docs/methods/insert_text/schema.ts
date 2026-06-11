@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { BatchUpdateReceipt } from '../../entities/BatchUpdateReceipt.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     documentId: z.string().describe('The ID of the document to update.'),
     text: z
       .string()

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     messageId: z.string().describe('The id of the message the attachment belongs to.'),
     attachmentId: z.string().describe('The id of the attachment (from a message part).'),
   }),

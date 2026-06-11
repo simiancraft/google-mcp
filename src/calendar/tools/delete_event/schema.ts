@@ -3,7 +3,7 @@ import { Event } from '../../entities/Event.js';
 import { NotificationLevel } from '../../entities/NotificationLevel.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventId: z.string().describe('The ID of the event to delete.'),
     calendarId: z
       .string()

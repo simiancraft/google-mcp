@@ -3,7 +3,7 @@ import { Event } from '../../entities/Event.js';
 import { Reminder } from '../../entities/Reminder.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventTypeFilter: z
       .array(
         z.enum(['default', 'outOfOffice', 'focusTime', 'workingLocation', 'birthday', 'fromGmail']),

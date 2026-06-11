@@ -3,7 +3,7 @@ import { BatchUpdateReceipt } from '../../entities/BatchUpdateReceipt.js';
 import { SubstringMatchCriteria } from '../../entities/SubstringMatchCriteria.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     documentId: z.string().describe('The ID of the document to update.'),
     containsText: SubstringMatchCriteria.describe(
       'Finds text in the document matching this substring.',

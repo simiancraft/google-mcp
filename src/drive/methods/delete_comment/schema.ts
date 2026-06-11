@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     fileId: z.string().describe('The ID of the file.'),
     commentId: z.string().describe('The ID of the comment to delete.'),
   }),

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Permission } from '../../entities/Permission.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     fileId: z.string().describe('The ID of the file to get permissions for.'),
   }),
   output: z.object({

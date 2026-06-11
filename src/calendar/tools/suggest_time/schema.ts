@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { HOUR_OF_DAY } from '../../lib/suggest.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     attendeeEmails: z
       .array(z.string())
       .describe(

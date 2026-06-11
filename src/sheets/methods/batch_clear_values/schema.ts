@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),
     ranges: z
       .array(z.string())

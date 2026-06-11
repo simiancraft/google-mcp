@@ -3,7 +3,7 @@ import { Draft } from '../../entities/Draft.js';
 import { headerSafe } from '../../lib/headers.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     draftId: z.string().describe('The id of the draft to replace.'),
     to: z
       .array(headerSafe)

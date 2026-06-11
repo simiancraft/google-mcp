@@ -33,7 +33,7 @@ const RestAttendee = z.object({
 });
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventId: z.string().describe('The ID of the event to patch.'),
     calendarId: z
       .string()

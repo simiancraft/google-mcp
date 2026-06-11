@@ -4,7 +4,7 @@ import { FilterAction } from '../../entities/FilterAction.js';
 import { FilterCriteria } from '../../entities/FilterCriteria.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     criteria: FilterCriteria.describe('The criteria a message must match.'),
     action: FilterAction.describe('The actions applied to matching messages.'),
   }),

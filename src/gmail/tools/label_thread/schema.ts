@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     threadId: z.string().describe('The id of the thread to add the labels to.'),
     labelIds: z.array(z.string()).describe('The ids of the labels to add.'),
   }),

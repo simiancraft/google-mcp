@@ -3,7 +3,7 @@ import { Message } from '../../entities/Message.js';
 import { headerSafe } from '../../lib/headers.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     to: z.array(headerSafe).min(1).describe('Primary recipients.'),
     cc: z.array(headerSafe).optional().describe('Cc recipients.'),
     bcc: z.array(headerSafe).optional().describe('Bcc recipients.'),

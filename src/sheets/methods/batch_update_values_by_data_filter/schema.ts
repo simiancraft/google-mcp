@@ -6,7 +6,7 @@ import { ValueInputOption } from '../../entities/ValueInputOption.js';
 import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),
     data: z
       .array(DataFilterValueRange)

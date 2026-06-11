@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     driveId: z.string().describe('The ID of the shared drive to permanently delete.'),
     useDomainAdminAccess: z
       .boolean()

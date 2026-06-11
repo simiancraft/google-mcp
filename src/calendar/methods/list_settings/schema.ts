@@ -6,7 +6,7 @@ import { Setting } from '../../entities/Setting.js';
  * sync is deferred (issue #21).
  */
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     maxResults: z
       .number()
       .int()

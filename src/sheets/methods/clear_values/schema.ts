@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to update.'),
     range: z.string().describe('The A1 notation or R1C1 notation of the values to clear.'),
   }),

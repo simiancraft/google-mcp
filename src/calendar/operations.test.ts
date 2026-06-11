@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { mergeOperations, SOURCE_META_KEY } from '../lib/operation.js';
-import { renderCapabilities } from '../lib/server.js';
+import { renderCapabilities, toolDefinitions } from '../lib/server.js';
 import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
@@ -25,6 +25,12 @@ describe('calendar operations', () => {
     }
   });
 
+  it('declares strict inputs on the wire (additionalProperties: false)', () => {
+    for (const def of toolDefinitions(operations)) {
+      expect(def.inputSchema['additionalProperties']).toBe(false);
+    }
+  });
+
   it('instructions cite the real _meta key and only real operation names', () => {
     expect(instructions).toContain(SOURCE_META_KEY);
     const mentioned = instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
@@ -37,11 +43,15 @@ describe('calendar operations', () => {
   it('cites the matching reference page on every operation', () => {
     for (const [name, op] of Object.entries(tools)) {
       expect(op.source).toMatch(
-        new RegExp(`^https://developers\\.google\\.com/.+/mcp/tools_list/${name}$`),
+        new RegExp(
+          `^https://developers\\.google\\.com/workspace/calendar/api/v3/reference/mcp/tools_list/${name}$`,
+        ),
       );
     }
     for (const op of Object.values(methods)) {
-      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\/.+\/reference\//);
+      expect(op.source).toMatch(
+        /^https:\/\/developers\.google\.com\/workspace\/calendar\/api\/v3\/reference\//,
+      );
       expect(op.source).not.toContain('mcp/tools_list');
     }
   });

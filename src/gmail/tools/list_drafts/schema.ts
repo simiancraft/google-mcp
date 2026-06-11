@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Draft } from '../../entities/Draft.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     query: z.string().optional().describe('Gmail search query to filter drafts.'),
     pageSize: z
       .number()

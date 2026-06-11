@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     messageIds: z.array(z.string()).describe('The ids of the messages to modify.'),
     addLabelIds: z.array(z.string()).optional().describe('The ids of the labels to add.'),
     removeLabelIds: z.array(z.string()).optional().describe('The ids of the labels to remove.'),

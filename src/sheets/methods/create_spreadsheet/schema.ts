@@ -7,7 +7,7 @@ import { Spreadsheet } from '../../entities/Spreadsheet.js';
  * formatting and grid data, deferred with issues #27 and #28).
  */
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     title: z.string().describe('The title of the spreadsheet.'),
     locale: z
       .string()

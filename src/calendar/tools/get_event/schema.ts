@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 
 export const schema = {
-  input: z.object({
+  input: z.strictObject({
     eventId: z.string().describe('The ID of the event to get.'),
     calendarId: z
       .string()
