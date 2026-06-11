@@ -5,6 +5,7 @@ import { delete_content_range } from './delete_content_range/index.js';
 import { get_document } from './get_document/index.js';
 import { insert_text } from './insert_text/index.js';
 import { replace_all_text } from './replace_all_text/index.js';
+import { update_paragraph_style } from './update_paragraph_style/index.js';
 import { update_text_style } from './update_text_style/index.js';
 
 /**
@@ -25,4 +26,5 @@ export const methods = {
   delete_content_range,
   // styling (curated batchUpdate requests)
   update_text_style,
+  update_paragraph_style,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;
