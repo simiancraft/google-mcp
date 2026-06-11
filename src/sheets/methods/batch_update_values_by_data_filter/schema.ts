@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import { DataFilter } from '../../entities/DataFilter.js';
 import { DataFilterValueRange } from '../../entities/DataFilterValueRange.js';
 import { DateTimeRenderOption } from '../../entities/DateTimeRenderOption.js';
+import { UpdateValuesByDataFilterResponse } from '../../entities/UpdateValuesByDataFilterResponse.js';
 import { ValueInputOption } from '../../entities/ValueInputOption.js';
-import { ValueRange } from '../../entities/ValueRange.js';
 import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
 /** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdateByDataFilter */
@@ -45,31 +44,7 @@ export const schema = {
       .optional()
       .describe('The total number of sheets where at least one cell in the sheet was updated.'),
     responses: z
-      .array(
-        z.object({
-          updatedRange: z
-            .string()
-            .optional()
-            .describe('The range (in A1 notation) that updates were applied to.'),
-          updatedRows: z
-            .number()
-            .int()
-            .optional()
-            .describe('The number of rows where at least one cell in the row was updated.'),
-          updatedColumns: z
-            .number()
-            .int()
-            .optional()
-            .describe('The number of columns where at least one cell in the column was updated.'),
-          updatedCells: z.number().int().optional().describe('The number of cells updated.'),
-          dataFilter: DataFilter.optional().describe(
-            'The data filter that selected the range that was updated.',
-          ),
-          updatedData: ValueRange.optional().describe(
-            "The values of the cells in the matched range after updates; only included when the request's includeValuesInResponse was true.",
-          ),
-        }),
-      )
+      .array(UpdateValuesByDataFilterResponse)
       .describe('The response for each range updated.'),
   }),
 };
