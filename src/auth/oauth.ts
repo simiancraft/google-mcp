@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { CodeChallengeMethod, OAuth2Client } from 'google-auth-library';
+import { CodeChallengeMethod, type Credentials, OAuth2Client } from 'google-auth-library';
 import open from 'open';
 import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 
@@ -37,7 +37,7 @@ function newClient(port = 3000): OAuth2Client {
 export async function authorizedClient(account?: string): Promise<OAuth2Client> {
   const client = newClient();
   const config = loadConfig();
-  const token = JSON.parse(
+  const token: Credentials = JSON.parse(
     readFileSync(tokenPath(resolveAccount(account, config), config), 'utf8'),
   );
   client.setCredentials(token);

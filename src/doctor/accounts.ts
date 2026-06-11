@@ -23,14 +23,21 @@ import { loadConfig } from '../auth/config.js';
 
 export type Account = { label: string; email?: string };
 
+function isAccount(value: unknown): value is Account {
+  if (typeof value !== 'object' || value === null || !('label' in value)) return false;
+  if (typeof value.label !== 'string') return false;
+  const email = 'email' in value ? value.email : undefined;
+  return email === undefined || typeof email === 'string';
+}
+
 export function accountsFile(): string {
   return path.join(loadConfig().dir, 'accounts.json');
 }
 
 export function loadAccounts(): Account[] {
   try {
-    const raw = JSON.parse(readFileSync(accountsFile(), 'utf8')) as Account[];
-    if (Array.isArray(raw) && raw.every((a) => typeof a?.label === 'string')) {
+    const raw: unknown = JSON.parse(readFileSync(accountsFile(), 'utf8'));
+    if (Array.isArray(raw) && raw.every(isAccount)) {
       return raw;
     }
     throw new Error('accounts.json must be an array of { label, email? }.');

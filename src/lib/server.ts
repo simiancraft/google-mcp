@@ -95,15 +95,17 @@ function errorResult(message: string): CallToolResult {
 
 /**
  * Build the MCP `tools/list` payload from the operations: each one's input and
- * output JSON Schema, plus a destructive hint for irreversible ops. On the wire,
- * every operation is a "tool" (MCP has no other word). Pure; exported for tests.
+ * output JSON Schema, the four-hint annotations quad declared on its
+ * definition, and the source reference page under `_meta[SOURCE_META_KEY]`.
+ * On the wire, every operation is a "tool" (MCP has no other word). Pure;
+ * exported for tests.
  */
 export function toolDefinitions<Client>(operations: Record<string, AnyOperation<Client>>) {
   return Object.entries(operations).map(([name, op]) => ({
     name,
     description: op.description,
-    inputSchema: z.toJSONSchema(op.schema.input, { io: 'input' }) as Record<string, unknown>,
-    outputSchema: z.toJSONSchema(op.schema.output, { io: 'output' }) as Record<string, unknown>,
+    inputSchema: z.toJSONSchema(op.schema.input, { io: 'input' }),
+    outputSchema: z.toJSONSchema(op.schema.output, { io: 'output' }),
     annotations: op.annotations,
     _meta: { [SOURCE_META_KEY]: op.source },
   }));

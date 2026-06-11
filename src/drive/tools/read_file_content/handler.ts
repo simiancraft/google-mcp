@@ -1,11 +1,7 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import {
-  isGoogleNative,
-  isTextLike,
-  MAX_DOWNLOAD_BYTES,
-  textExportMime,
-} from '../../lib/content.js';
+import { MAX_DOWNLOAD_BYTES } from '../../../lib/limits.js';
+import { isGoogleNative, isTextLike, mediaBuffer, textExportMime } from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -30,7 +26,7 @@ export async function handler(
       { fileId: args.fileId, mimeType: exportMime },
       { responseType: 'arraybuffer' },
     );
-    return { fileContent: Buffer.from(res.data as ArrayBuffer).toString('utf8') };
+    return { fileContent: mediaBuffer(res).toString('utf8') };
   }
 
   if (!isTextLike(mimeType)) {
@@ -53,5 +49,5 @@ export async function handler(
     { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
     { responseType: 'arraybuffer' },
   );
-  return { fileContent: Buffer.from(res.data as ArrayBuffer).toString('utf8') };
+  return { fileContent: mediaBuffer(res).toString('utf8') };
 }

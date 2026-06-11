@@ -1,6 +1,7 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { isGoogleNative, MAX_DOWNLOAD_BYTES } from '../../lib/content.js';
+import { MAX_DOWNLOAD_BYTES } from '../../../lib/limits.js';
+import { isGoogleNative, mediaBuffer } from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -22,7 +23,7 @@ export async function handler(
       { fileId: args.fileId, mimeType: contentMime },
       { responseType: 'arraybuffer' },
     );
-    bytes = Buffer.from(res.data as ArrayBuffer);
+    bytes = mediaBuffer(res);
   } else {
     const size = Number(meta.size ?? 0);
     if (size > MAX_DOWNLOAD_BYTES) {
@@ -36,7 +37,7 @@ export async function handler(
       { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
       { responseType: 'arraybuffer' },
     );
-    bytes = Buffer.from(res.data as ArrayBuffer);
+    bytes = mediaBuffer(res);
   }
 
   return {

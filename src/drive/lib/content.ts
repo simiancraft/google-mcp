@@ -40,8 +40,11 @@ export function isTextLike(mimeType: string): boolean {
 }
 
 /**
- * The decoded-size ceiling for `download_file_content` blob downloads: 25 MiB,
- * the suite's de facto base64-in-JSON boundary (Gmail's attachment maximum).
- * Larger transfers are deferred to the media issue (#38).
+ * The bytes of a media-shaped response. googleapis types `res.data` from the
+ * resource schema, not the request's `responseType`; with
+ * `{ responseType: 'arraybuffer' }` the body is an ArrayBuffer at runtime,
+ * and this helper owns that one cast for both content tools.
  */
-export const MAX_DOWNLOAD_BYTES = 25 * 1024 * 1024;
+export function mediaBuffer(res: { data: unknown }): Buffer {
+  return Buffer.from(res.data as ArrayBuffer);
+}
