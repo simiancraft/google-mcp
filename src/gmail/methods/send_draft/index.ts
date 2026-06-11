@@ -11,6 +11,12 @@ import { schema } from './schema.js';
 export const send_draft = gmailOperation({
   description: 'Send an existing draft.',
   destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
   schema,
   handler,
 });

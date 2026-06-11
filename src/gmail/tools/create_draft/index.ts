@@ -11,6 +11,12 @@ import { schema } from './schema.js';
  */
 export const create_draft = gmailOperation({
   description: 'Create a draft email.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

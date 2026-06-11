@@ -9,6 +9,12 @@ export const create_filter = gmailOperation({
   // action keeps acting on mail after the call, so it is destructive even though
   // delete_filter can undo it.
   destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

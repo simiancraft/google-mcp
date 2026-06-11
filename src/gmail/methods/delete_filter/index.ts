@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const delete_filter = gmailOperation({
   description: 'Delete a filter.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

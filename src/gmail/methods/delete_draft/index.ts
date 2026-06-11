@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const delete_draft = gmailOperation({
   description: 'Delete a draft.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const get_label = gmailOperation({
   description: 'Get a label by id (includes color and thread counts).',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

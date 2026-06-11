@@ -9,6 +9,12 @@ import { schema } from './schema.js';
  */
 export const delete_label = gmailOperation({
   description: 'Delete a user label.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -9,6 +9,12 @@ import { schema } from './schema.js';
  */
 export const get_message = gmailOperation({
   description: 'Get a single message by id.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

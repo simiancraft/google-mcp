@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const untrash_thread = gmailOperation({
   description: 'Remove a thread from the trash.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

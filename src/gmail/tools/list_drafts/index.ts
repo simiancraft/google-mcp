@@ -10,6 +10,16 @@ import { schema } from './schema.js';
  */
 export const list_drafts = gmailOperation({
   description: 'List draft messages, with optional Gmail query filtering.',
+  // Deviation: Google's page marks all four hints false, contradicting its
+  // sibling list operations (list_labels, search_threads are read-only); a
+  // list cannot modify the account, so this transcribes the corrected values.
+  // See COVERAGE.md.
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

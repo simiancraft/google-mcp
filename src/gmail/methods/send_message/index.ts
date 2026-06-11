@@ -12,6 +12,12 @@ import { schema } from './schema.js';
 export const send_message = gmailOperation({
   description: 'Send an email immediately.',
   destructive: true,
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
   schema,
   handler,
 });

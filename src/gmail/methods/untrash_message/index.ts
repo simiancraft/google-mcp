@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const untrash_message = gmailOperation({
   description: 'Remove a message from the trash.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

@@ -9,6 +9,12 @@ import { schema } from './schema.js';
  */
 export const list_messages = gmailOperation({
   description: 'List messages using Gmail query syntax.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

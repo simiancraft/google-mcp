@@ -8,6 +8,12 @@ import { schema } from './schema.js';
  */
 export const update_label = gmailOperation({
   description: 'Update a label name and/or color.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

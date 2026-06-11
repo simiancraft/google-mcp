@@ -10,6 +10,12 @@ import { schema } from './schema.js';
  */
 export const unlabel_message = gmailOperation({
   description: 'Remove labels from a message.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });
