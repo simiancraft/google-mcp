@@ -1,5 +1,47 @@
-import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import type { z } from 'zod';
+
+/**
+ * The four MCP tool-behavior hints, all required: every operation declares its
+ * full annotation quad explicitly, the same way Google's MCP reference pages
+ * present them (each page ends with a Tool Annotations section listing all
+ * four). Structurally a strict subset of the SDK's `ToolAnnotations`, whose
+ * fields are all optional with dangerous defaults (an absent `destructiveHint`
+ * means true on the wire); requiring all four here keeps an unclassified
+ * operation from compiling and keeps the emitted payload free of default
+ * ambiguity. Do not abstract the quads into named profiles or category
+ * constants; the explicit flags are the transcription.
+ *
+ * Design provenance:
+ * - Field semantics: the MCP specification's `ToolAnnotations`,
+ *   https://modelcontextprotocol.io/specification/2025-06-18/schema
+ * - Classification: tools transcribe their Google MCP reference page's
+ *   Tool Annotations section verbatim; methods follow the rubric those pages
+ *   establish (EXTENDING.md, "Annotations")
+ * - Per the spec, annotations are hints, not guarantees; clients treat them
+ *   as untrusted
+ */
+export type OperationAnnotations = {
+  /** True when the operation does not modify its environment (a pure read). */
+  readOnlyHint: boolean;
+  /**
+   * True when the operation may perform non-additive updates: removals
+   * (delete, clear, trash, unlabel, unsubscribe), sends, and standing side
+   * effects. Updates and additive modifications are false, per Google's own
+   * `update_event` classification.
+   */
+  destructiveHint: boolean;
+  /**
+   * True when repeating the call with the same arguments has no additional
+   * effect (reads, updates, removals); false for creates and sends, which
+   * duplicate their effect.
+   */
+  idempotentHint: boolean;
+  /**
+   * True when the operation reaches arbitrary external entities (Gmail's
+   * sends); false for everything bound to the account's own data.
+   */
+  openWorldHint: boolean;
+};
 
 /**
  * A single operation: its documented I/O contract plus the work that fulfills it.
@@ -14,15 +56,8 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
   description: string;
   schema: { input: In; output: Out };
   handler: (client: Client, args: z.infer<In>) => Promise<z.infer<Out>>;
-  /**
-   * MCP tool annotations, emitted verbatim in `tools/list`: the four behavior
-   * hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint),
-   * declared explicitly per operation. Tools transcribe the Tool Annotations
-   * section of their Google MCP reference page; methods are classified by the
-   * same rubric (see EXTENDING.md).
-   * @see https://modelcontextprotocol.io/specification/2025-06-18/schema (ToolAnnotations)
-   */
-  annotations: ToolAnnotations;
+  /** The four MCP behavior hints, emitted verbatim in `tools/list`; see {@link OperationAnnotations}. */
+  annotations: OperationAnnotations;
 };
 
 /**
@@ -36,7 +71,7 @@ export type AnyOperation<Client> = {
   description: string;
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
-  annotations: ToolAnnotations;
+  annotations: OperationAnnotations;
 };
 
 /**

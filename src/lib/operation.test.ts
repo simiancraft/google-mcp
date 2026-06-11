@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { type AnyOperation, mergeOperations, type Operation, operation } from './operation.js';
 
@@ -34,12 +35,22 @@ describe('operation', () => {
     });
     expect(danger.annotations.destructiveHint).toBe(true);
     expect(danger.annotations.readOnlyHint).toBe(false);
+
+    // The house quad must stay assignable to the SDK's wire type; if the SDK
+    // reshapes ToolAnnotations, this stops compiling rather than mis-emitting.
+    const wire: ToolAnnotations = danger.annotations;
+    expect(wire.destructiveHint).toBe(true);
   });
 
   it('infers Client from the handler and I/O from the schema', async () => {
     const op = operation({
       description: 'double a count',
-      annotations: { readOnlyHint: true },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
       schema: { input: z.object({ n: z.number() }), output: z.object({ n: z.number() }) },
       handler: async (client: FakeClient, args) => ({
         n: args.n * (client.tag === 'fake' ? 2 : 1),
@@ -70,7 +81,12 @@ describe('mergeOperations', () => {
   const make = (description: string) =>
     operation({
       description,
-      annotations: { readOnlyHint: true },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
       schema: { input: z.object({}), output: z.object({}) },
       handler: async (_client: FakeClient) => ({}),
     });

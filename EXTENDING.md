@@ -91,9 +91,12 @@ products are Gmail, Drive, Calendar, Chat, and People), the service is
 `mergeOperations(methods)`, and `capabilities.ts` renders a single
 `REST Method` section. The service's COVERAGE.md leads with why.
 
-**Annotations.** Every operation declares all four MCP `ToolAnnotations`
-hints explicitly (`readOnlyHint`, `destructiveHint`, `idempotentHint`,
-`openWorldHint`; emitted verbatim in `tools/list`). The semantics are the
+**Annotations.** Every operation declares all four MCP behavior hints
+explicitly (`readOnlyHint`, `destructiveHint`, `idempotentHint`,
+`openWorldHint`), typed as `OperationAnnotations` (`src/lib/operation.ts`,
+which carries the full provenance TSDoc; all four fields are required, so an
+unclassified operation does not compile) and emitted verbatim in
+`tools/list`. The semantics are the
 spec's (`modelcontextprotocol.io/specification/2025-06-18/schema`,
 ToolAnnotations): read-only = does not modify the environment; destructive =
 may perform non-additive updates; idempotent = repeating with the same args

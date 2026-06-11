@@ -21,7 +21,12 @@ const echo = operation({
 
 const boom = operation({
   description: 'Always throws.',
-  annotations: { readOnlyHint: true },
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema: { input: z.object({}), output: z.object({}) },
   handler: async (_client: FakeClient) => {
     throw new Error('kaboom');
@@ -30,7 +35,12 @@ const boom = operation({
 
 const danger = operation({
   description: 'Irreversible.',
-  annotations: { destructiveHint: true },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema: { input: z.object({ id: z.string() }), output: z.object({ ok: z.boolean() }) },
   handler: async (_client: FakeClient) => ({ ok: true }),
 });
@@ -87,7 +97,12 @@ describe('toolDefinitions', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-    expect(dangerDef?.annotations).toEqual({ destructiveHint: true });
+    expect(dangerDef?.annotations).toEqual({
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    });
   });
 
   it('emits declared tool annotations verbatim', () => {
