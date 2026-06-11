@@ -1,6 +1,7 @@
+import { randomBytes } from 'node:crypto';
 import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { OAuth2Client } from 'google-auth-library';
+import { CodeChallengeMethod, OAuth2Client } from 'google-auth-library';
 import open from 'open';
 import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 
@@ -46,10 +47,16 @@ export async function authorizedClient(account?: string): Promise<OAuth2Client> 
 /**
  * Run the browser consent flow for `account` and persist its token. The token
  * file is written 0600 inside a 0700 tokens dir; the consent requests offline
- * access and forces the screen so a refresh token is always returned. `port` and
- * `openBrowser` are injectable for testing; the callback server is closed on
- * every exit path. `loginHint` prefills the Google account chooser when the
- * account label is not itself an email (e.g. a short alias like `personal`).
+ * access and forces the screen so a refresh token is always returned. The flow
+ * carries a random `state` (verified at the callback: any browser tab can fire
+ * requests at the loopback port, since CORS blocks reads, not sends, so only
+ * the redirect Google issued for this flow is accepted) and PKCE (RFC 8252
+ * section 8.1: a local process that wins a race for the port cannot exchange
+ * an intercepted code without the verifier). `port`, `openBrowser`, and
+ * `timeoutMs` are injectable for testing; the callback server is closed on
+ * every exit path, including an abandoned consent. `loginHint` prefills the
+ * Google account chooser when the account label is not itself an email
+ * (e.g. a short alias like `personal`).
  */
 export async function runAuthFlow(
   account?: string,
@@ -57,18 +64,28 @@ export async function runAuthFlow(
     port?: number;
     openBrowser?: (url: string) => unknown;
     loginHint?: string;
+    timeoutMs?: number;
   } = {},
 ): Promise<void> {
   const port = options.port ?? 3000;
   const openBrowser = options.openBrowser ?? open;
+  const timeoutMs = options.timeoutMs ?? 5 * 60 * 1000;
   const config = loadConfig();
   const acct = resolveAccount(account, config);
   const client = newClient(port);
   const loginHint = options.loginHint ?? (acct.includes('@') ? acct : undefined);
+  const { codeVerifier, codeChallenge } = await client.generateCodeVerifierAsync();
+  if (!codeChallenge) {
+    throw new Error('PKCE challenge generation failed; cannot start the consent flow.');
+  }
+  const state = randomBytes(16).toString('hex');
   const authUrl = client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: SCOPES,
+    state,
+    code_challenge_method: CodeChallengeMethod.S256,
+    code_challenge: codeChallenge,
     ...(loginHint ? { login_hint: loginHint } : {}),
   });
 
@@ -78,6 +95,7 @@ export async function runAuthFlow(
       const finish = (status: number, body: string, err?: unknown) => {
         res.writeHead(status);
         res.end(body);
+        clearTimeout(timer);
         server.close();
         if (err) {
           reject(err);
@@ -85,7 +103,12 @@ export async function runAuthFlow(
           resolve();
         }
       };
-      const code = new URL(req.url, redirectUri(port)).searchParams.get('code');
+      const params = new URL(req.url, redirectUri(port)).searchParams;
+      if (params.get('state') !== state) {
+        finish(403, 'State mismatch.', new Error('OAuth state mismatch; possible CSRF.'));
+        return;
+      }
+      const code = params.get('code');
       if (!code) {
         finish(
           400,
@@ -95,7 +118,7 @@ export async function runAuthFlow(
         return;
       }
       try {
-        const { tokens } = await client.getToken(code);
+        const { tokens } = await client.getToken({ code, codeVerifier });
         mkdirSync(config.tokensDir, { recursive: true, mode: 0o700 });
         const file = tokenPath(acct, config);
         writeFileSync(file, JSON.stringify(tokens), { mode: 0o600 });
@@ -106,6 +129,14 @@ export async function runAuthFlow(
       } catch (error) {
         finish(500, 'Authentication failed.', error);
       }
+    });
+    const timer = setTimeout(() => {
+      server.close();
+      reject(new Error(`Authorization timed out after ${timeoutMs}ms; rerun doctor auth.`));
+    }, timeoutMs);
+    server.on('error', (err) => {
+      clearTimeout(timer);
+      reject(err);
     });
     server.listen(port);
     console.error(`Visit this URL to authorize ${acct}:\n${authUrl}`);
