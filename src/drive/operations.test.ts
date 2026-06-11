@@ -10,10 +10,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('drive operations', () => {
-  it('exposes the full surface (0 tools, 0 methods)', () => {
-    expect(Object.keys(tools)).toHaveLength(0);
+  it('exposes the full surface (4 tools, 0 methods)', () => {
+    expect(Object.keys(tools)).toHaveLength(4);
     expect(Object.keys(methods)).toHaveLength(0);
-    expect(Object.keys(operations)).toHaveLength(0);
+    expect(Object.keys(operations)).toHaveLength(4);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -59,7 +59,12 @@ describe('drive operations', () => {
       .filter(([, op]) => op.annotations?.readOnlyHint)
       .map(([name]) => name)
       .sort();
-    expect(readOnly).toEqual([]);
+    expect(readOnly).toEqual([
+      'get_file_metadata',
+      'get_file_permissions',
+      'list_recent_files',
+      'search_files',
+    ]);
   });
 
   it('marks exactly the destructive operations (deletes, trash, empty trash)', () => {
