@@ -143,6 +143,8 @@ one of them is the kind of drift reviewers catch later:
 - Sweep for stale parentheticals: `grep -rn "Gmail, Drive"` style example
   lists in PROVISIONING.md, EXTENDING.md, and the PR template have gone stale
   twice now; check them every time a service ships.
+- **The operation total.** Bump it when a service ships or grows; the total
+  lives in README.md (two sites above the fold) and ADOPTING.md (one site).
 
 ## Phase 4: verification and the operational matrix
 
