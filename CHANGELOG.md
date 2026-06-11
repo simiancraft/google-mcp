@@ -1,3 +1,17 @@
+# [1.4.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.3.0...v1.4.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **lib:** make the capability link unconditional ([998a9bd](https://github.com/simiancraft/google-mcp-suite/commit/998a9bdfc2edb83338a49324ed21b657e5f92e40))
+
+
+### Features
+
+* cite the source reference page on every operation ([7fa46a2](https://github.com/simiancraft/google-mcp-suite/commit/7fa46a2a62afc351329f312ca5b1ee4f219bd04a))
+* **lib:** serve provenance, identity metadata, and instructions ([c06d854](https://github.com/simiancraft/google-mcp-suite/commit/c06d8543a8a4917a540c49f3d567e278f95533b9))
+* serve per-service instructions and identity metadata ([5ce7ccd](https://github.com/simiancraft/google-mcp-suite/commit/5ce7ccdf8a88839d1e0b750d7ef1a590df6875f8))
+
 # [1.3.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.2.0...v1.3.0) (2026-06-11)
 
 
