@@ -1,3 +1,26 @@
+# [1.2.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.1.0...v1.2.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **calendar:** drop unknown reminder methods instead of coercing to popup ([b5f8aa3](https://github.com/simiancraft/google-mcp-suite/commit/b5f8aa3c7f3ef67606796a030e1dd04568bfa845))
+* **calendar:** reject malformed working-hour bounds in suggestSlots ([87936da](https://github.com/simiancraft/google-mcp-suite/commit/87936da23d7edfe938104eb9b9c632399668a2af))
+* **lib:** derive the capabilities header from the rendered groups ([6614b68](https://github.com/simiancraft/google-mcp-suite/commit/6614b688344069cbff69f0f5bb9f264119ab60a4))
+* **lib:** guard operation dispatch against inherited Object keys ([52a1a96](https://github.com/simiancraft/google-mcp-suite/commit/52a1a960cd99896497091b1539dc2d1b82737651))
+* **sheets:** drop the typographic apostrophe from copy_sheet's description ([9a5c89f](https://github.com/simiancraft/google-mcp-suite/commit/9a5c89fc279b0e2dfa6e9ed9d73d26581b8300e0))
+
+
+### Features
+
+* **doctor:** register sheets as implemented with a live probe ([c24140e](https://github.com/simiancraft/google-mcp-suite/commit/c24140ed6340c6f090a14e4b36c3771e6048df11))
+* **sheets:** add the batch values operations ([913ec4c](https://github.com/simiancraft/google-mcp-suite/commit/913ec4ceed7d7214e9046e507c5bd02438a1f91a))
+* **sheets:** add the data-filter values operations ([d06b175](https://github.com/simiancraft/google-mcp-suite/commit/d06b1755e86c1861deaa32cf1943d8d97d122e11))
+* **sheets:** add the developer metadata operations ([dd8e8b3](https://github.com/simiancraft/google-mcp-suite/commit/dd8e8b37ebbb6b43ed174c1a5b0596847266212e))
+* **sheets:** add the sheet copy operation ([38729c1](https://github.com/simiancraft/google-mcp-suite/commit/38729c10df6321a8358bf3d4d147250040cba996))
+* **sheets:** add the spreadsheet and values read path ([6757dc7](https://github.com/simiancraft/google-mcp-suite/commit/6757dc7f35d8b6c5f332b19defc14d493b11f0ad)), closes [#28](https://github.com/simiancraft/google-mcp-suite/issues/28)
+* **sheets:** add the spreadsheet and values write path ([99c6ac0](https://github.com/simiancraft/google-mcp-suite/commit/99c6ac03a0e2f96983e372a7763d1dd5f880b541))
+* **sheets:** scaffold the sheets service skeleton ([fb3268f](https://github.com/simiancraft/google-mcp-suite/commit/fb3268f981d66b93ac5666e257cf32f08e9c7dab))
+
 # [1.1.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.0.0...v1.1.0) (2026-06-10)
 
 
