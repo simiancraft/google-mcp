@@ -118,6 +118,12 @@ Everything else is closed-world (`openWorldHint: false`), matching every
 Google-published page. The surface-count test pins each wing's read-only and
 destructive sets.
 
+Annotations are written as the four explicit flags at each definition site,
+the same way Google's pages present them; do not abstract them into named
+profiles or category constants. The flags are the transcription, and the
+one-offs (`create_filter`, the sends, the `list_drafts` deviation) do not
+fit a category scheme.
+
 **Output crosses the wire as JSON.** Every result is JSON-serialized (a `text`
 block plus `structuredContent`); there is no binary or streaming channel. Binary
 payloads (e.g. attachment bytes from `download_attachment`) are base64url-encoded
