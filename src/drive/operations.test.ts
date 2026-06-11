@@ -10,10 +10,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('drive operations', () => {
-  it('exposes the full surface (8 tools, 0 methods)', () => {
+  it('exposes the full surface (8 tools, 5 methods)', () => {
     expect(Object.keys(tools)).toHaveLength(8);
-    expect(Object.keys(methods)).toHaveLength(0);
-    expect(Object.keys(operations)).toHaveLength(8);
+    expect(Object.keys(methods)).toHaveLength(5);
+    expect(Object.keys(operations)).toHaveLength(13);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -74,7 +74,7 @@ describe('drive operations', () => {
       .filter(([, op]) => op.annotations?.destructiveHint)
       .map(([name]) => name)
       .sort();
-    expect(destructive).toEqual([]);
+    expect(destructive).toEqual(['delete_file', 'empty_trash', 'trash_file']);
   });
 
   it('marks exactly the open-world operations (the toolset-published pair)', () => {
