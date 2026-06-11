@@ -1,4 +1,3 @@
-import { MAX_DOWNLOAD_BYTES } from '../../lib/consts.js';
 import { ownLookup } from '../../lib/utils/lookup.js';
 
 /**
@@ -42,27 +41,8 @@ export function isTextLike(mimeType: string): boolean {
   );
 }
 
-const MIB_LABEL = `${MAX_DOWNLOAD_BYTES / (1024 * 1024)} MiB`;
-
-/**
- * Refuse a blob transfer over the suite ceiling, citing the media deferral.
- * One construction site for the four cap errors (pre-fetch on the metadata
- * size, post-fetch on the bytes that actually arrived, in both content
- * tools), so the prose cannot drift from the constant.
- */
-export function assertWithinCap(
-  byteLength: number,
-  subject: 'File' | 'File content',
-  action: 'content reads' | 'base64 downloads',
-): void {
-  if (byteLength > MAX_DOWNLOAD_BYTES) {
-    throw new Error(
-      `${subject} is ${byteLength} bytes; this server caps ${action} at ` +
-        `${MAX_DOWNLOAD_BYTES} bytes (${MIB_LABEL}). Larger transfers are deferred to ` +
-        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
-    );
-  }
-}
+/** The Drive media deferral every cap refusal in this wing cites. */
+export const MEDIA_DEFERRAL = 'https://github.com/simiancraft/google-mcp-suite/issues/38';
 
 /**
  * The bytes of a media-shaped response. googleapis types `res.data` from the

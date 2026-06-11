@@ -1,9 +1,10 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
+import { assertWithinDownloadCap } from '../../../lib/limits.js';
 import {
-  assertWithinCap,
   isGoogleNative,
   isTextLike,
+  MEDIA_DEFERRAL,
   mediaBuffer,
   textExportMime,
 } from '../../lib/content.js';
@@ -32,7 +33,7 @@ export async function handler(
       { responseType: 'arraybuffer' },
     );
     // Native exports stay uncapped on purpose: Google's own export limit
-    // (about 10 MB) sits under the suite ceiling (src/lib/consts.ts).
+    // (about 10 MB) sits under the suite ceiling (src/lib/limits.ts).
     return { fileContent: mediaBuffer(res).toString('utf8') };
   }
 
@@ -44,7 +45,11 @@ export async function handler(
   }
   // The same ceiling download_file_content enforces: blobs buffer whole into a
   // JSON string, so an uncapped read is a self-inflicted OOM on a large CSV.
-  assertWithinCap(Number(meta.size ?? 0), 'File', 'content reads');
+  assertWithinDownloadCap(meta.size, {
+    subject: 'File',
+    action: 'content reads',
+    deferral: MEDIA_DEFERRAL,
+  });
   const res = await drive.files.get(
     { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
     { responseType: 'arraybuffer' },
@@ -52,6 +57,10 @@ export async function handler(
   const bytes = mediaBuffer(res);
   // Re-check what actually arrived: the metadata size is a separate earlier
   // call, absent on some blobs, and content can change between the two.
-  assertWithinCap(bytes.byteLength, 'File content', 'content reads');
+  assertWithinDownloadCap(bytes.byteLength, {
+    subject: 'File content',
+    action: 'content reads',
+    deferral: MEDIA_DEFERRAL,
+  });
   return { fileContent: bytes.toString('utf8') };
 }
