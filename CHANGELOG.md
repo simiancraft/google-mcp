@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.5.0...v1.6.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **docs:** apply the styling panel's findings ([202187f](https://github.com/simiancraft/google-mcp-suite/commit/202187f4a6a27ce32000643ce5716af4dbe93046))
+
+
+### Features
+
+* **docs:** add the bullet operations ([506d063](https://github.com/simiancraft/google-mcp-suite/commit/506d0635b216f265cd305d61af6beb64ed8898da))
+* **docs:** add the paragraph styling operation ([e2d2d02](https://github.com/simiancraft/google-mcp-suite/commit/e2d2d02e6719de95764e0fc60d01c0cdd9bbd48f))
+* **docs:** add the text styling operation ([535651e](https://github.com/simiancraft/google-mcp-suite/commit/535651ead9e316467517ee3e4a13b9886e43302e))
+
 # [1.5.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.4.1...v1.5.0) (2026-06-11)
 
 
