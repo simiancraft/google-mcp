@@ -55,7 +55,7 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "capabilities": "bun run src/gmail/capabilities.ts && bun run src/calendar/capabilities.ts && bun run src/sheets/capabilities.ts",
+    "capabilities": "for f in src/*/capabilities.ts; do bun run \"$f\" || exit 1; done",
     "doctor": "bun run src/doctor/index.ts",
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
