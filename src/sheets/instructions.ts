@@ -3,11 +3,16 @@
  * src/lib/server.ts. A standalone module so tests can pin the content without
  * booting the server (index.ts's import side effect is `await server()`).
  */
-import { identityInstructions, vocabularyInstructions } from '../lib/server.js';
+import {
+  identityInstructions,
+  untrustedContentInstructions,
+  vocabularyInstructions,
+} from '../lib/server.js';
 
 export const instructions =
   identityInstructions('Google account') +
   vocabularyInstructions({ restOnly: 'Sheets' }) +
+  untrustedContentInstructions() +
   'Ranges use A1 notation (or R1C1); cell data moves as 2D arrays of string, ' +
   'number, boolean, or null values; the values field is absent entirely for ' +
   'an empty range, and rows may be ragged. Every value write requires ' +

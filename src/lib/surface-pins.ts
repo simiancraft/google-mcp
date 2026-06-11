@@ -10,7 +10,7 @@ import { type CapabilityGroup, renderCapabilities, toolDefinitions } from './ser
  * stay in the wing (transcription explicitness); the assertion ceremony lives
  * here once.
  */
-export type SurfacePins<Client> = {
+type CommonPins<Client> = {
   /** The wing test's `import.meta.url`; CAPABILITIES.md is read from beside it. */
   moduleUrl: string;
   /** The doc title the wing's capabilities.ts renders with. */
@@ -19,18 +19,29 @@ export type SurfacePins<Client> = {
   instructions: string;
   /** The wing's registries, in rendered order (tools first where present). */
   groups: CapabilityGroup<Client>[];
-  /**
-   * The exact page-URL prefix for MCP-toolset tools; each tool's `source` must
-   * be `prefix + its wire name`. Omit for methods-only wings.
-   */
-  toolSourcePrefix?: string;
   /** The service+version-exact prefix every method's `source` must start with. */
-  methodSourcePrefix: string;
-  counts: { tools?: number; methods: number };
+  methodSourcePrefix: `https://${string}`;
   readOnly: string[];
   destructive: string[];
   openWorld: string[];
 };
+
+/**
+ * Tools-bearing wings must supply both the toolset page prefix and the tool
+ * count; methods-only wings can supply neither. The union makes the mismatch
+ * (a tool count without its URL prefix, or vice versa) a compile error
+ * instead of a runtime comparison against the string "undefined".
+ */
+export type SurfacePins<Client> =
+  | (CommonPins<Client> & {
+      /** The exact page-URL prefix; each tool's `source` must be `prefix + its wire name`. */
+      toolSourcePrefix: `https://${string}`;
+      counts: { tools: number; methods: number };
+    })
+  | (CommonPins<Client> & {
+      toolSourcePrefix?: undefined;
+      counts: { tools?: undefined; methods: number };
+    });
 
 /**
  * Every object node in a JSON Schema that is not strict
@@ -98,8 +109,11 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
   });
 
   it('cites the matching reference page on every operation', () => {
+    // The union guarantees a prefix wherever tools exist; the fallback only
+    // keeps the template typed, and an impossible mismatch still fails loudly.
+    const toolPrefix = pins.toolSourcePrefix ?? 'https://';
     for (const [name, op] of Object.entries(tools)) {
-      expect(op.source).toBe(`${pins.toolSourcePrefix}${name}`);
+      expect(op.source).toBe(`${toolPrefix}${name}`);
     }
     for (const op of Object.values(methods)) {
       expect(op.source).toStartWith(pins.methodSourcePrefix);

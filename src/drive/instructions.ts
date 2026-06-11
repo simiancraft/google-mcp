@@ -3,7 +3,11 @@
  * src/lib/server.ts. A standalone module so tests can pin the content without
  * booting the server (index.ts's import side effect is `await server()`).
  */
-import { identityInstructions, vocabularyInstructions } from '../lib/server.js';
+import {
+  identityInstructions,
+  untrustedContentInstructions,
+  vocabularyInstructions,
+} from '../lib/server.js';
 
 export const instructions =
   identityInstructions('Google account') +
@@ -11,6 +15,7 @@ export const instructions =
     tools: 'title, parentId, pageSize',
     methods: 'fileId, addParents, driveId',
   }) +
+  untrustedContentInstructions() +
   'Heed the hints: delete_file and empty_trash bypass the trash and are ' +
   'unrecoverable; trash_file and untrash_file are the reversible pair, and ' +
   'Drive purges trashed files after about 30 days. search_files speaks its ' +

@@ -3,7 +3,11 @@
  * src/lib/server.ts. A standalone module so tests can pin the content without
  * booting the server (index.ts's import side effect is `await server()`).
  */
-import { identityInstructions, vocabularyInstructions } from '../lib/server.js';
+import {
+  identityInstructions,
+  untrustedContentInstructions,
+  vocabularyInstructions,
+} from '../lib/server.js';
 
 export const instructions =
   identityInstructions('Google account') +
@@ -11,6 +15,7 @@ export const instructions =
     tools: 'startTime, pageSize, notificationLevel',
     methods: 'timeMin, maxResults, sendUpdates',
   }) +
+  untrustedContentInstructions() +
   'Event start and end take exactly one of date (all-day) or dateTime ' +
   '(timed); timeZone is required for recurring events. Writes that touch ' +
   'attendees can email guests, controlled by notificationLevel on tools and ' +

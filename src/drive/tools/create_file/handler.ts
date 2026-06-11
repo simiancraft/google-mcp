@@ -15,13 +15,9 @@ export async function handler(
   drive: drive_v3.Drive,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
-  if (args.textContent !== undefined && args.base64Content !== undefined) {
-    throw new Error('textContent and base64Content cannot both be set.');
-  }
+  // The cross-field rules (textContent XOR base64Content; contentMimeType
+  // required with content) are schema refines, rejected before dispatch.
   const hasContent = args.textContent !== undefined || args.base64Content !== undefined;
-  if (hasContent && !args.contentMimeType) {
-    throw new Error('contentMimeType is required when providing content.');
-  }
 
   // Converting an upload means creating the file as the Google editor type
   // while the media carries the uploaded content type.

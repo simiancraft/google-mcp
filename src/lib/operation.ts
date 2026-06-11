@@ -90,7 +90,7 @@ export type AnyOperation<Client> = {
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
   annotations: OperationAnnotations;
-  source: string;
+  source: `https://${string}`;
 };
 
 /**

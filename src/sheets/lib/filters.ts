@@ -14,23 +14,33 @@ import { DimensionRange } from '../entities/DimensionRange.js';
  * `*_by_data_filter` operation and the developer metadata search.
  */
 
+/** Convert an entity metadata location into the REST request shape (forGoogle is shallow; each level strips its own undefined keys). */
+function toGoogleLocation(
+  location: DeveloperMetadataLocation,
+): sheets_v4.Schema$DeveloperMetadataLocation {
+  return forGoogle({
+    ...location,
+    dimensionRange: location.dimensionRange ? forGoogle(location.dimensionRange) : undefined,
+  });
+}
+
+/** Convert an entity metadata lookup into the REST request shape. */
+function toGoogleLookup(lookup: DeveloperMetadataLookup): sheets_v4.Schema$DeveloperMetadataLookup {
+  return forGoogle({
+    ...lookup,
+    metadataLocation: lookup.metadataLocation
+      ? toGoogleLocation(lookup.metadataLocation)
+      : undefined,
+  });
+}
+
 /** Convert an entity data filter into the REST request shape, stripping undefined at every level. */
 export function toGoogleDataFilter(filter: DataFilter): sheets_v4.Schema$DataFilter {
   return forGoogle({
     a1Range: filter.a1Range,
     gridRange: filter.gridRange ? forGoogle(filter.gridRange) : undefined,
     developerMetadataLookup: filter.developerMetadataLookup
-      ? forGoogle({
-          ...filter.developerMetadataLookup,
-          metadataLocation: filter.developerMetadataLookup.metadataLocation
-            ? forGoogle({
-                ...filter.developerMetadataLookup.metadataLocation,
-                dimensionRange: filter.developerMetadataLookup.metadataLocation.dimensionRange
-                  ? forGoogle(filter.developerMetadataLookup.metadataLocation.dimensionRange)
-                  : undefined,
-              })
-            : undefined,
-        })
+      ? toGoogleLookup(filter.developerMetadataLookup)
       : undefined,
   });
 }

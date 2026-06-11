@@ -1,11 +1,14 @@
 import { randomBytes } from 'node:crypto';
-import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { CodeChallengeMethod, type Credentials, OAuth2Client } from 'google-auth-library';
 import open from 'open';
 import { loadConfig, resolveAccount, SCOPES, tokenPath } from './config.js';
 
-const redirectUri = (port: number) => `http://localhost:${port}/oauth2callback`;
+// The loopback IP literal, not `localhost` (RFC 8252 section 8.3, and Google's
+// loopback guidance): name resolution is host-file-manipulable and can point
+// `localhost` at ::1 where nothing listens.
+const redirectUri = (port: number) => `http://127.0.0.1:${port}/oauth2callback`;
 
 type ClientSecret = { client_id: string; client_secret: string };
 
@@ -91,7 +94,12 @@ export async function runAuthFlow(
 
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
-      if (!req.url?.startsWith('/oauth2callback')) return;
+      if (!req.url?.startsWith('/oauth2callback')) {
+        // Browsers probe for favicons; answer rather than leave sockets hanging.
+        res.writeHead(404);
+        res.end();
+        return;
+      }
       const finish = (status: number, body: string, err?: unknown) => {
         res.writeHead(status);
         res.end(body);
@@ -121,10 +129,11 @@ export async function runAuthFlow(
         const { tokens } = await client.getToken({ code, codeVerifier });
         mkdirSync(config.tokensDir, { recursive: true, mode: 0o700 });
         const file = tokenPath(acct, config);
+        // Recreate rather than overwrite: writeFileSync applies mode only on
+        // create, and tightening afterwards would leave fresh token bytes
+        // briefly readable through a pre-existing looser mode.
+        rmSync(file, { force: true });
         writeFileSync(file, JSON.stringify(tokens), { mode: 0o600 });
-        // mode on writeFileSync only applies when creating the file; tighten an
-        // existing (possibly looser) token file explicitly.
-        chmodSync(file, 0o600);
         finish(200, `Authorized ${acct}. You can close this window.`);
       } catch (error) {
         finish(500, 'Authentication failed.', error);

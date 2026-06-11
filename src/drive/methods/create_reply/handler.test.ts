@@ -43,9 +43,9 @@ describe('create_reply', () => {
     expect(captured.params?.requestBody).toEqual({ action: 'resolve' });
   });
 
-  it('refuses a reply with neither content nor action', async () => {
-    expect(handler(fakeDrive({}, {}), { fileId: 'F1', commentId: 'C1' })).rejects.toThrow(
-      'content is required',
-    );
+  it('refuses a reply with neither content nor action at the schema', () => {
+    const result = schema.input.safeParse({ fileId: 'F1', commentId: 'C1' });
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain('content is required');
   });
 });

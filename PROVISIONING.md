@@ -206,7 +206,7 @@ GOOGLE_MCP_ACCOUNT=<account> node ./dist/gmail/index.js auth
 - The account label becomes the token filename. Use the same label in the MCP
   registration (Phase 6).
 - On WSL2 the browser may not auto-open; the URL is printed to stderr. Copy it
-  into your browser. The callback hits `http://localhost:3000/oauth2callback`.
+  into your browser. The callback hits `http://127.0.0.1:3000/oauth2callback`.
 - Verify the granted scope:
 
   ```sh

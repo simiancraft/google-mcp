@@ -3,11 +3,16 @@
  * src/lib/server.ts. A standalone module so tests can pin the content without
  * booting the server (index.ts's import side effect is `await server()`).
  */
-import { identityInstructions, vocabularyInstructions } from '../lib/server.js';
+import {
+  identityInstructions,
+  untrustedContentInstructions,
+  vocabularyInstructions,
+} from '../lib/server.js';
 
 export const instructions =
   identityInstructions('Gmail account') +
   vocabularyInstructions() +
+  untrustedContentInstructions() +
   'Heed the hints: sends are irreversible and reach external recipients; ' +
   'permanent deletes bypass the trash entirely (trash_* and untrash_* are ' +
   'the reversible pair, and Gmail purges trashed mail after about 30 days); ' +

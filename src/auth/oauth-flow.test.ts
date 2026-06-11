@@ -139,6 +139,25 @@ describe('runAuthFlow', () => {
     spy.mockRestore();
   });
 
+  it('answers non-callback paths with 404 and keeps the flow alive', async () => {
+    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
+      tokens: { access_token: 'a', refresh_token: 'r' },
+    } as never);
+    const { url, openBrowser } = captureAuthUrl();
+    const flow = runAuthFlow('acct', { port: 31740, openBrowser });
+    const authUrl = await url;
+    let favicon: Response | undefined;
+    for (let i = 0; i < 40 && !favicon; i++) {
+      favicon = await fetch('http://localhost:31740/favicon.ico').catch(() => undefined);
+      if (!favicon) await new Promise((r) => setTimeout(r, 25));
+    }
+    expect(favicon?.status).toBe(404);
+    const status = await hitCallback(31740, `?code=fake&state=${stateOf(authUrl)}`);
+    expect(status).toBe(200);
+    await flow;
+    spy.mockRestore();
+  });
+
   it('refuses to start when no PKCE challenge can be generated', async () => {
     const spy = spyOn(OAuth2Client.prototype, 'generateCodeVerifierAsync').mockResolvedValue({
       codeVerifier: 'v',

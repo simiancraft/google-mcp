@@ -8,9 +8,7 @@ export async function handler(
   drive: drive_v3.Drive,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
-  if (args.content === undefined && args.action === undefined) {
-    throw new Error('content is required when no action is specified.');
-  }
+  // content-or-action is a schema refine, rejected before dispatch.
   const { data } = await drive.replies.create({
     fileId: args.fileId,
     commentId: args.commentId,
