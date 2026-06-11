@@ -78,9 +78,10 @@ One thing first: a Google Cloud OAuth client (roughly ten minutes of console cli
 ```sh
 npm install -g google-mcp-suite
 
-google-mcp-doctor scopes                 # the exact APIs + scopes to enable in Google Cloud
-google-mcp-doctor auth you@example.com   # browser consent; writes the account token
-google-mcp-doctor                        # provisioned, authorized, reachable?
+google-mcp-doctor scopes                      # the exact APIs + scopes to enable in Google Cloud
+google-mcp-doctor auth personal@example.com   # browser consent; writes the account token
+google-mcp-doctor auth work@example.com       # once per account
+google-mcp-doctor                             # provisioned, authorized, reachable?
 ```
 
 Then point your MCP client at the servers, one instance per service per account:
@@ -119,6 +120,10 @@ Then point your MCP client at the servers, one instance per service per account:
   }
 }
 ```
+
+The `GOOGLE_MCP_ACCOUNT` value must be the same string `doctor auth` was given;
+a bare email is its own account label. For short aliases (`personal`, `work`)
+write the optional roster first, as [ADOPTING.md](./ADOPTING.md) step 3 does.
 
 Then ask your agent for something no single-account tool can do:
 
