@@ -30,7 +30,7 @@
 </p>
 
 <p align="center">
-  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>), <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>), <strong>Sheets</strong> (<a href="./src/sheets/CAPABILITIES.md">15 operations</a>), <strong>Docs</strong> (<a href="./src/docs/CAPABILITIES.md">5 operations</a>), and <strong>Drive</strong> (<a href="./src/drive/CAPABILITIES.md">35 operations</a>) ship today.</sub>
+  <sub><strong>Gmail</strong> (<a href="./src/gmail/CAPABILITIES.md">33 operations</a>), <strong>Calendar</strong> (<a href="./src/calendar/CAPABILITIES.md">25 operations</a>), <strong>Sheets</strong> (<a href="./src/sheets/CAPABILITIES.md">15 operations</a>), <strong>Docs</strong> (<a href="./src/docs/CAPABILITIES.md">9 operations</a>), and <strong>Drive</strong> (<a href="./src/drive/CAPABILITIES.md">35 operations</a>) ship today.</sub>
 </p>
 
 ## What it does
@@ -44,7 +44,7 @@ The design has two internal concepts and nothing else:
 
 That is the whole surface. Read one operation folder and you understand all of them.
 
-- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) (10 curated MCP tools plus 23 REST methods), Calendar with [25](./src/calendar/CAPABILITIES.md) (8 plus 17), Drive with [35](./src/drive/CAPABILITIES.md) (8 plus 27), Sheets with [15](./src/sheets/CAPABILITIES.md), and Docs with [5](./src/docs/CAPABILITIES.md) (Google publishes no MCP toolset for Sheets or Docs, so those are REST-sourced throughout); the split is explained in [MCP, and then some](#mcp-and-then-some).
+- **REST plus MCP in one surface.** Each server exposes the curated MCP toolset *and* the broader REST method set of its Google API, so an agent gets far more than a thin slice. Gmail ships with [33 operations](./src/gmail/CAPABILITIES.md) (10 curated MCP tools plus 23 REST methods), Calendar with [25](./src/calendar/CAPABILITIES.md) (8 plus 17), Drive with [35](./src/drive/CAPABILITIES.md) (8 plus 27), Sheets with [15](./src/sheets/CAPABILITIES.md), and Docs with [9](./src/docs/CAPABILITIES.md) (Google publishes no MCP toolset for Sheets or Docs, so those are REST-sourced throughout); the split is explained in [MCP, and then some](#mcp-and-then-some).
 - **The folder tree mirrors Google's docs.** A Google tools-list reference page becomes a `tools/` folder; a Google REST method reference page becomes a `methods/` folder. If you can find the operation in Google's docs, you can find it in this repo.
 
 | Google's reference page | This repo's folder |
@@ -65,7 +65,7 @@ This is an MCP server, and deliberately more than one. Google publishes an MCP t
 - **`tools/`** mirrors Google's **MCP toolset** reference, verbatim.
 - **`methods/`** covers the broader **REST** reference, the operations the MCP toolset omits.
 
-The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Sheets and Docs are the limit case: Google publishes no MCP toolset for either, so those servers are methods-only ([15](./src/sheets/CAPABILITIES.md) and [5](./src/docs/CAPABILITIES.md) operations sourced entirely from the REST reference). Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
+The split is Google's own (its MCP reference and its REST reference are separate trees); we keep it on disk on purpose and unify it operationally (one `Operation` type, one merged wire surface where everything is an MCP tool). The breadth of [the operation list](./src/gmail/CAPABILITIES.md) is the evidence that MCP alone is not enough for real work. Sheets and Docs are the limit case: Google publishes no MCP toolset for either, so those servers are methods-only ([15](./src/sheets/CAPABILITIES.md) and [9](./src/docs/CAPABILITIES.md) operations sourced entirely from the REST reference). Keeping the two sourced surfaces separate also makes each new operation a bounded, documentation-driven unit of work; the recipe is in [EXTENDING.md](./EXTENDING.md).
 
 ## Quickstart
 
@@ -178,7 +178,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./A
 | **Gmail** | ✅ Implemented | [33 operations](./src/gmail/CAPABILITIES.md): threads, messages, drafts, labels, filters, attachments |
 | **Calendar** | ✅ Implemented | [25 operations](./src/calendar/CAPABILITIES.md): events, calendars, free/busy, and meeting-time suggestions |
 | **Sheets** | ✅ Implemented | [15 operations](./src/sheets/CAPABILITIES.md): spreadsheets, values, batch and data-filter reads/writes, developer metadata |
-| **Docs** | ✅ Implemented | [5 operations](./src/docs/CAPABILITIES.md): document reads and creation, curated text editing |
+| **Docs** | ✅ Implemented | [9 operations](./src/docs/CAPABILITIES.md): document reads and creation, curated text editing and styling |
 | **Drive** | ✅ Implemented | [35 operations](./src/drive/CAPABILITIES.md): files, search, content, comments, revisions, shared drives |
 
 Gmail is the reference (canary) implementation; Calendar is its first replication; Sheets and Docs are methods-only (Google publishes no MCP toolset for them); Drive carries both wings; each new service mirrors the same shape.

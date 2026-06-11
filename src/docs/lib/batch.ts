@@ -2,7 +2,7 @@ import type { docs_v1 } from '@googleapis/docs';
 
 /**
  * Apply exactly one update request via `documents.batchUpdate`: the shared
- * wrapper behind the curated text-editing operations (the rest of the
+ * wrapper behind the curated editing and styling operations (the rest of the
  * 40-variant request union is issue #35). Replies map 1:1 with requests, so
  * exactly one request means exactly one reply; surfacing it here keeps the
  * `[0]` next to the invariant it depends on. Also returns the identity every
