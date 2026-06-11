@@ -66,7 +66,10 @@ either way the plan must contain exactly these parts:
   document, minus the hostile clusters. Name the wire vocabulary rule in the
   plan: tools keep the MCP pages' parameter names (`startTime`, `pageSize`,
   `notificationLevel`); methods keep REST's (`timeMin`, `maxResults`,
-  `sendUpdates`).
+  `sendUpdates`). Check each wire name against the service's other resources:
+  a name must not be misreadable as a different resource's operation
+  (Calendar's `add_calendar_entry` reads like creating an event;
+  `subscribe_calendar` would have dodged it).
 - **Deferrals as issues.** Every excluded cluster gets a GitHub issue opened
   at plan time (Calendar: #19 ACL, #20 watch channels, #21 import and
   incremental sync), and the plan cites them. "Deferred, tracked as issues,
@@ -184,12 +187,12 @@ most expensive knowledge the pass produces.
 
 ## Worked deltas for the likely next services
 
-(Sheets shipped from this playbook in June 2026: 15 methods-only operations,
+Sheets shipped from this playbook in June 2026: 15 methods-only operations,
 `batchUpdate` deferred as issue #27 and grid data as #28. The predicted
 A1-notation `lib/` helper turned out unnecessary; no shipped operation
 computes A1, ranges pass through verbatim. Do not build helpers ahead of an
 operation that needs them; knip flags them and the pattern says lift on the
-second use.)
+second use.
 
 - **Drive** (`@googleapis/drive`, v3): scope already in the union. The
   hostile clusters are media upload/download (resumable uploads do not fit

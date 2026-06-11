@@ -2,7 +2,7 @@
   "name": "google-mcp-suite",
   "version": "1.1.0",
   "type": "module",
-  "description": "Per-account MCP servers for Gmail, Google Calendar, and Google Sheets: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes the curated MCP toolset plus the broader REST surface.",
+  "description": "Per-account MCP servers for Gmail, Google Calendar, and Google Sheets: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes Google's curated MCP toolset (where one exists) plus the broader REST surface.",
   "keywords": [
     "mcp",
     "mcp-server",

@@ -110,7 +110,7 @@ Then point your MCP client at the servers, one instance per service per account:
 
 Then ask your agent for something no single-account tool can do:
 
-> Find 30 free minutes next week that works across my work and personal calendars, book it on the work calendar with a Meet link, email the invite summary to my personal address, and log the booking in my scheduling spreadsheet.
+> Find a free 30-minute window next week that works across my work and personal calendars, book it on the work calendar with a Meet link, email the invite summary to my personal address, and log the booking in my scheduling spreadsheet.
 
 ## Layout
 
@@ -141,7 +141,7 @@ One package, one version. `auth`, `lib`, `doctor`, and each service are folders 
 
 Authorization is a one-time, per-account browser consent flow.
 
-1. Create a Google Cloud project, enable the APIs you need (Gmail, Calendar, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
+1. Create a Google Cloud project, enable the APIs you need (Gmail, Calendar, Sheets, ...), and create an **OAuth client** (Desktop app). Download the client secret JSON.
 2. Place the client secret JSON at `~/.google-mcp/client_secret.json` (override knobs in [src/auth's README](./src/auth/README.md)).
 3. Authorize each account once; this opens a browser consent flow and stores that account's token.
 4. Run a service with `GOOGLE_MCP_ACCOUNT=<account>` to act as that account.
