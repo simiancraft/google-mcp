@@ -1,17 +1,7 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
-import type { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
-
-/** Narrow a REST sheet type onto the entity enum; unknown or unspecified values drop. */
-function sheetType(value: string | null | undefined): SheetProperties['sheetType'] {
-  return value === 'GRID' || value === 'OBJECT' || value === 'DATA_SOURCE' ? value : undefined;
-}
-
-/** Narrow a REST recalculation interval onto the entity enum; unknown values drop. */
-function autoRecalc(value: string | null | undefined): SpreadsheetProperties['autoRecalc'] {
-  return value === 'ON_CHANGE' || value === 'MINUTE' || value === 'HOUR' ? value : undefined;
-}
+import { narrow } from './enums.js';
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
 export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): SheetProperties {
@@ -19,7 +9,7 @@ export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): 
     sheetId: data.sheetId ?? 0,
     title: data.title ?? undefined,
     index: data.index ?? undefined,
-    sheetType: sheetType(data.sheetType),
+    sheetType: narrow(data.sheetType, ['GRID', 'OBJECT', 'DATA_SOURCE']),
     gridProperties: data.gridProperties
       ? {
           rowCount: data.gridProperties.rowCount ?? undefined,
@@ -46,7 +36,7 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
           title: data.properties.title ?? undefined,
           locale: data.properties.locale ?? undefined,
           timeZone: data.properties.timeZone ?? undefined,
-          autoRecalc: autoRecalc(data.properties.autoRecalc),
+          autoRecalc: narrow(data.properties.autoRecalc, ['ON_CHANGE', 'MINUTE', 'HOUR']),
         }
       : undefined,
     sheets: data.sheets

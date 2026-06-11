@@ -2,11 +2,7 @@ import type { sheets_v4 } from '@googleapis/sheets';
 import type { CellValue } from '../entities/CellValue.js';
 import type { UpdateValuesResponse } from '../entities/UpdateValuesResponse.js';
 import type { ValueRange } from '../entities/ValueRange.js';
-
-/** Narrow a REST major dimension onto the entity enum; unspecified values drop. */
-function majorDimension(value: string | null | undefined): ValueRange['majorDimension'] {
-  return value === 'ROWS' || value === 'COLUMNS' ? value : undefined;
-}
+import { narrow } from './enums.js';
 
 /**
  * Project a REST value range onto the ValueRange shape, cleaning nulls to
@@ -17,7 +13,7 @@ function majorDimension(value: string | null | undefined): ValueRange['majorDime
 export function projectValueRange(data: sheets_v4.Schema$ValueRange): ValueRange {
   return {
     range: data.range ?? undefined,
-    majorDimension: majorDimension(data.majorDimension),
+    majorDimension: narrow(data.majorDimension, ['ROWS', 'COLUMNS']),
     values: data.values ? (data.values as CellValue[][]) : undefined,
   };
 }
