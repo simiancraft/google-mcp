@@ -86,7 +86,11 @@ export function translateQuery(query: string): string {
     const token = tokens[i];
     if (!token) break; // the index is loop-bounded; this satisfies noUncheckedIndexedAccess
     if (token.kind === 'word') {
-      const collection = CONTAINMENT_TERMS[token.text];
+      // Own-property guards: a query word like __proto__ must miss, not
+      // resolve an inherited value (the server.ts dispatch precedent).
+      const collection = Object.hasOwn(CONTAINMENT_TERMS, token.text)
+        ? CONTAINMENT_TERMS[token.text]
+        : undefined;
       const operator = tokens[i + 1];
       const value = tokens[i + 2];
       if (
@@ -102,7 +106,9 @@ export function translateQuery(query: string): string {
         i += 2;
         continue;
       }
-      const renamed = RENAMED_TERMS[token.text];
+      const renamed = Object.hasOwn(RENAMED_TERMS, token.text)
+        ? RENAMED_TERMS[token.text]
+        : undefined;
       if (renamed) {
         out.push(renamed);
         continue;

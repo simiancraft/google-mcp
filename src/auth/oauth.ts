@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { CodeChallengeMethod, type Credentials, OAuth2Client } from 'google-auth-library';
 import open from 'open';
@@ -94,7 +94,8 @@ export async function runAuthFlow(
 
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
-      if (!req.url?.startsWith('/oauth2callback')) {
+      const requested = new URL(req.url ?? '/', redirectUri(port));
+      if (requested.pathname !== '/oauth2callback') {
         // Browsers probe for favicons; answer rather than leave sockets hanging.
         res.writeHead(404);
         res.end();
@@ -111,7 +112,7 @@ export async function runAuthFlow(
           resolve();
         }
       };
-      const params = new URL(req.url, redirectUri(port)).searchParams;
+      const params = requested.searchParams;
       if (params.get('state') !== state) {
         finish(403, 'State mismatch.', new Error('OAuth state mismatch; possible CSRF.'));
         return;
@@ -128,6 +129,9 @@ export async function runAuthFlow(
       try {
         const { tokens } = await client.getToken({ code, codeVerifier });
         mkdirSync(config.tokensDir, { recursive: true, mode: 0o700 });
+        // mkdir's mode applies only on create; tighten a pre-existing dir so
+        // token filenames (account labels) stay unreadable to other users.
+        chmodSync(config.tokensDir, 0o700);
         const file = tokenPath(acct, config);
         // Recreate rather than overwrite: writeFileSync applies mode only on
         // create, and tightening afterwards would leave fresh token bytes

@@ -2,7 +2,12 @@ import { expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { mergeOperations, SOURCE_META_KEY } from './operation.js';
-import { type CapabilityGroup, renderCapabilities, toolDefinitions } from './server.js';
+import {
+  type CapabilityGroup,
+  renderCapabilities,
+  toolDefinitions,
+  untrustedContentInstructions,
+} from './server.js';
 
 /**
  * The per-wing surface-pin data: everything a service must keep current when
@@ -101,6 +106,7 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
 
   it('instructions cite the real _meta key and only real operation names', () => {
     expect(pins.instructions).toContain(SOURCE_META_KEY);
+    expect(pins.instructions).toContain(untrustedContentInstructions().trim());
     const mentioned = pins.instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
     expect(mentioned.length).toBeGreaterThan(0);
     for (const name of mentioned) {

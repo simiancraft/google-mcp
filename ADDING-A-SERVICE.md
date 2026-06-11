@@ -135,8 +135,7 @@ one of them is the kind of drift reviewers catch later:
   (a literal `opacity="0.4"` on its root `<g>`), remove that attribute, move
   the icon next to the bright (shipped) icons in the README icon row, and
   update its `alt`/`title` from "(planned)" to the plain service name; if no
-  icon exists yet (every currently planned icon has shipped), create it
-  bright.
+  icon exists yet, create it bright.
 - `AGENTS.md`: the layout tree gains `<svc>/`.
 - `package.json`: the `bin` entry landed with the doctor flip; now the
   `description` names the new service and `keywords` gain its terms.

@@ -94,7 +94,7 @@ describe('projectEvent', () => {
 
   it('defaults a bare event: empty id, everything else absent', () => {
     const result = projectEvent({});
-    expect(result).toEqual({ id: '' } as Event);
+    expect(result).toEqual({ id: '' } satisfies Event);
     expect(result.conferenceUrl).toBeUndefined();
     expect(() => Event.parse(result)).not.toThrow();
   });
@@ -132,7 +132,7 @@ describe('projectEvent', () => {
       start: { date: '2026-06-10' },
       attendees: [{ email: '' }],
       overrideReminders: [{ minutes: 0 }],
-    } as Event);
+    } satisfies Event);
     expect(() => Event.parse(result)).not.toThrow();
   });
 

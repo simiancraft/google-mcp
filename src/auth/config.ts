@@ -54,8 +54,8 @@ function clean(value: string | undefined): string | undefined {
 
 /**
  * Parse and validate the environment into one typed `Config`; consumers read
- * the returned object, not `process.env` (see the module note for the one
- * exception).
+ * the returned object, not `process.env` (see the module note for the two
+ * sanctioned exceptions).
  */
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const e = EnvSchema.parse(env);

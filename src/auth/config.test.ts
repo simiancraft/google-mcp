@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe('loadConfig', () => {
   it('defaults the dir and derives paths under it', () => {
-    const c = loadConfig({} as NodeJS.ProcessEnv);
+    const c = loadConfig({});
     expect(c.dir).toMatch(/\.google-mcp$/);
     expect(c.tokensDir).toMatch(/\.google-mcp\/tokens$/);
     expect(c.clientSecretPath).toMatch(/\.google-mcp\/client_secret\.json$/);
@@ -22,14 +22,14 @@ describe('loadConfig', () => {
   });
 
   it('honors a dir override and threads it through derived paths', () => {
-    const c = loadConfig({ GOOGLE_MCP_DIR: '/srv/cfg' } as NodeJS.ProcessEnv);
+    const c = loadConfig({ GOOGLE_MCP_DIR: '/srv/cfg' });
     expect(c.dir).toBe('/srv/cfg');
     expect(c.tokensDir).toBe('/srv/cfg/tokens');
     expect(c.clientSecretPath).toBe('/srv/cfg/client_secret.json');
   });
 
   it('treats empty/whitespace values as unset', () => {
-    const c = loadConfig({ GOOGLE_MCP_DIR: '   ', GOOGLE_MCP_TOKEN: '' } as NodeJS.ProcessEnv);
+    const c = loadConfig({ GOOGLE_MCP_DIR: '   ', GOOGLE_MCP_TOKEN: '' });
     expect(c.dir).toMatch(/\.google-mcp$/);
     expect(c.tokenOverride).toBeUndefined();
   });
@@ -38,13 +38,13 @@ describe('loadConfig', () => {
     const c = loadConfig({
       GOOGLE_MCP_TOKEN: '/tmp/t.json',
       GOOGLE_MCP_ACCOUNT: 'simiancraft',
-    } as NodeJS.ProcessEnv);
+    });
     expect(c.tokenOverride).toBe('/tmp/t.json');
     expect(c.account).toBe('simiancraft');
   });
 
   it('ignores unrelated environment keys', () => {
-    const c = loadConfig({ PATH: '/usr/bin', HOME: '/home/x' } as NodeJS.ProcessEnv);
+    const c = loadConfig({ PATH: '/usr/bin', HOME: '/home/x' });
     expect(c.account).toBeUndefined();
     expect(c.tokenOverride).toBeUndefined();
   });

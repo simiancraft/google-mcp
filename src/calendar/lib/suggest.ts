@@ -119,17 +119,18 @@ export function suggestSlots(input: {
   const slots: TimeSlot[] = [];
   let cursor = Date.parse(input.windowStart);
 
-  // Cap the scan (the suite's cap-the-work policy): every branch advances the
-  // cursor, so 10,000 iterations covers roughly 27 years of day-by-day
-  // skipping; preferences that never admit a slot would otherwise walk an
-  // arbitrarily wide window on the single server thread.
+  // Cap the scan: every branch advances the cursor, so 10,000 iterations
+  // covers roughly 27 years of day-by-day skipping; preferences that never
+  // admit a slot would otherwise walk an arbitrarily wide window on the
+  // single server thread. Throwing (rather than returning partial slots)
+  // keeps the refusal posture: a partial answer here looks complete.
   let iterations = 0;
 
   while (slots.length < cap && cursor + durationMs <= windowEnd) {
     iterations += 1;
     if (iterations > MAX_SCAN_ITERATIONS) {
       throw new Error(
-        `suggest_time scanned ${MAX_SCAN_ITERATIONS} segments without filling the request; ` +
+        `suggest_time scanned ${MAX_SCAN_ITERATIONS} candidate start times without filling the request; ` +
           'narrow the window or relax the preferences.',
       );
     }

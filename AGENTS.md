@@ -46,7 +46,7 @@ emits a self-contained package.
 
 Single package, plain `tsc` to `dist/` (no bundler: relative imports resolve in
 the published package); runtime server executables value build stability over
-a preview compiler.
+preview compilers like `tsgo`.
 
 ## Common commands
 

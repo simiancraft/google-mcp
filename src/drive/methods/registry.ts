@@ -31,8 +31,9 @@ import { update_shared_drive } from './update_shared_drive/index.js';
 /**
  * REST-sourced operations (beyond the MCP toolset), sourced from
  * `developers.google.com/workspace/drive/api/reference/rest/v3`. Same wire
- * surface as tools; merged into the registry by the server. Irreversible ones
- * (permanent delete, empty trash) carry `destructive`.
+ * surface as tools; merged into the registry by the server. Removals
+ * (reversible trash included), deletes, and empty_trash carry `destructive`;
+ * see EXTENDING.md's annotation rubric.
  */
 export const methods = {
   // files

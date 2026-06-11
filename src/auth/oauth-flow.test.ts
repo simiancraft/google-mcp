@@ -53,7 +53,7 @@ function captureAuthUrl(): { url: Promise<string>; openBrowser: (u: string) => v
 async function hitCallback(port: number, query: string): Promise<number> {
   for (let i = 0; i < 40; i++) {
     try {
-      return (await fetch(`http://localhost:${port}/oauth2callback${query}`)).status;
+      return (await fetch(`http://127.0.0.1:${port}/oauth2callback${query}`)).status;
     } catch {
       await new Promise((r) => setTimeout(r, 25));
     }
@@ -139,6 +139,20 @@ describe('runAuthFlow', () => {
     spy.mockRestore();
   });
 
+  it('recreates a pre-existing loose token file at 0600', async () => {
+    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
+      tokens: { access_token: 'a', refresh_token: 'r' },
+    } as never);
+    writeFileSync(path.join(dir, 'token.json'), '{}', { mode: 0o644 });
+    const { url, openBrowser } = captureAuthUrl();
+    const flow = runAuthFlow('acct', { port: 31741, openBrowser });
+    const authUrl = await url;
+    await hitCallback(31741, `?code=fake&state=${stateOf(authUrl)}`);
+    await flow;
+    expect(statSync(path.join(dir, 'token.json')).mode & 0o777).toBe(0o600);
+    spy.mockRestore();
+  });
+
   it('answers non-callback paths with 404 and keeps the flow alive', async () => {
     const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
       tokens: { access_token: 'a', refresh_token: 'r' },
@@ -148,7 +162,7 @@ describe('runAuthFlow', () => {
     const authUrl = await url;
     let favicon: Response | undefined;
     for (let i = 0; i < 40 && !favicon; i++) {
-      favicon = await fetch('http://localhost:31740/favicon.ico').catch(() => undefined);
+      favicon = await fetch('http://127.0.0.1:31740/favicon.ico').catch(() => undefined);
       if (!favicon) await new Promise((r) => setTimeout(r, 25));
     }
     expect(favicon?.status).toBe(404);

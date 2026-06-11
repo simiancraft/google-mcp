@@ -8,7 +8,7 @@ import type { ValueRange } from '../entities/ValueRange.js';
 /**
  * Project a REST value range onto the ValueRange shape, cleaning nulls to
  * undefined. The grid arrives as JSON scalars (the generated types say
- * `any[][]`); the annotation states the documented CellValue union for
+ * `any[][]`); the assertion documents the intended CellValue union for
  * readers (any[][] assigns regardless), and the server's output validation is
  * what rejects anything else loudly.
  */

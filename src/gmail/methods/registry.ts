@@ -27,8 +27,9 @@ import { update_label } from './update_label/index.js';
 /**
  * REST-sourced operations (beyond the MCP toolset), sourced from
  * `developers.google.com/workspace/gmail/api/reference/rest`. Same wire surface
- * as tools; merged into the registry by the server. Irreversible ones (send,
- * permanent delete) carry `destructive`.
+ * as tools; merged into the registry by the server. Removals (reversible
+ * ones included), sends, and standing side effects carry `destructive`; see
+ * EXTENDING.md's annotation rubric.
  */
 export const methods = {
   // messages

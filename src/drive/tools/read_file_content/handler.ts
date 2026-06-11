@@ -49,5 +49,15 @@ export async function handler(
     { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
     { responseType: 'arraybuffer' },
   );
-  return { fileContent: mediaBuffer(res).toString('utf8') };
+  const bytes = mediaBuffer(res);
+  // Re-check what actually arrived: the metadata size is a separate earlier
+  // call, absent on some blobs, and content can change between the two.
+  if (bytes.byteLength > MAX_DOWNLOAD_BYTES) {
+    throw new Error(
+      `File content is ${bytes.byteLength} bytes; this server caps content reads at ` +
+        `${MAX_DOWNLOAD_BYTES} bytes (25 MiB). Larger transfers are deferred to ` +
+        'https://github.com/simiancraft/google-mcp-suite/issues/38.',
+    );
+  }
+  return { fileContent: bytes.toString('utf8') };
 }
