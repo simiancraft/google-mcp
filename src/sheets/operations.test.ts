@@ -22,9 +22,33 @@ describe('sheets operations', () => {
     }
   });
 
-  it('marks exactly the irreversible operations destructive', () => {
+  it('annotates every operation with the four MCP hints, explicitly', () => {
+    for (const op of Object.values(operations)) {
+      expect(typeof op.annotations?.readOnlyHint).toBe('boolean');
+      expect(typeof op.annotations?.destructiveHint).toBe('boolean');
+      expect(typeof op.annotations?.idempotentHint).toBe('boolean');
+      expect(typeof op.annotations?.openWorldHint).toBe('boolean');
+    }
+  });
+
+  it('marks exactly the read-only operations', () => {
+    const readOnly = Object.entries(operations)
+      .filter(([, op]) => op.annotations?.readOnlyHint)
+      .map(([name]) => name)
+      .sort();
+    expect(readOnly).toEqual([
+      'batch_get_values',
+      'batch_get_values_by_data_filter',
+      'get_developer_metadata',
+      'get_spreadsheet',
+      'get_values',
+      'search_developer_metadata',
+    ]);
+  });
+
+  it('marks exactly the clears destructive (removals; updates are not, per the rubric)', () => {
     const destructive = Object.entries(operations)
-      .filter(([, op]) => op.destructive)
+      .filter(([, op]) => op.annotations?.destructiveHint)
       .map(([name]) => name)
       .sort();
     expect(destructive).toEqual([
@@ -32,6 +56,11 @@ describe('sheets operations', () => {
       'batch_clear_values_by_data_filter',
       'clear_values',
     ]);
+  });
+
+  it('declares the whole surface closed-world', () => {
+    const openWorld = Object.values(operations).filter((op) => op.annotations?.openWorldHint);
+    expect(openWorld).toEqual([]);
   });
 
   it('CAPABILITIES.md is the current render of these registries', () => {

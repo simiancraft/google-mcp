@@ -6,6 +6,12 @@ import { schema } from './schema.js';
 export const batch_get_values_by_data_filter = sheetsOperation({
   description:
     'Read the ranges of values matched by data filters (A1 ranges, grid ranges, or developer-metadata lookups), with the filters that matched each range.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

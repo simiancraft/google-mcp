@@ -6,6 +6,12 @@ import { schema } from './schema.js';
 export const batch_update_values = sheetsOperation({
   description:
     'Write values into multiple ranges of a spreadsheet in one call; one ValueRange per target range.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });

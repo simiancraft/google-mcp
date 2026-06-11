@@ -6,6 +6,12 @@ import { schema } from './schema.js';
 export const search_developer_metadata = sheetsOperation({
   description:
     'Search developer metadata by lookup criteria or by spreadsheet location (A1 or grid range).',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema,
   handler,
 });
