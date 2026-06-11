@@ -94,7 +94,17 @@ export async function runAuthFlow(
 
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
-      const requested = new URL(req.url ?? '/', redirectUri(port));
+      // Absolute-form request targets (proxy-style "GET http://x HTTP/1.1")
+      // reach req.url verbatim and would throw in the URL constructor; answer
+      // 400 rather than crash the flow on an unhandled rejection.
+      let requested: URL;
+      try {
+        requested = new URL(req.url ?? '/', redirectUri(port));
+      } catch {
+        res.writeHead(400);
+        res.end();
+        return;
+      }
       if (requested.pathname !== '/oauth2callback') {
         // Browsers probe for favicons; answer rather than leave sockets hanging.
         res.writeHead(404);

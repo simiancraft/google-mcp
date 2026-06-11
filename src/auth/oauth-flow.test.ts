@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test';
 import { mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { connect } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { OAuth2Client } from 'google-auth-library';
@@ -150,6 +151,31 @@ describe('runAuthFlow', () => {
     await hitCallback(31741, `?code=fake&state=${stateOf(authUrl)}`);
     await flow;
     expect(statSync(path.join(dir, 'token.json')).mode & 0o777).toBe(0o600);
+    spy.mockRestore();
+  });
+
+  it('answers an absolute-form request target with 400 instead of crashing', async () => {
+    const spy = spyOn(OAuth2Client.prototype, 'getToken').mockResolvedValue({
+      tokens: { access_token: 'a', refresh_token: 'r' },
+    } as never);
+    const { url, openBrowser } = captureAuthUrl();
+    const flow = runAuthFlow('acct', { port: 31742, openBrowser });
+    const authUrl = await url;
+    // fetch cannot send a proxy-style request line; write one raw.
+    const statusLine = await new Promise<string>((resolve, reject) => {
+      const socket = connect(31742, '127.0.0.1', () => {
+        socket.write('GET http:// HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n');
+      });
+      socket.on('data', (chunk) => {
+        resolve(chunk.toString('utf8').split('\r\n')[0] ?? '');
+        socket.end();
+      });
+      socket.on('error', reject);
+    });
+    expect(statusLine).toContain('400');
+    const status = await hitCallback(31742, `?code=fake&state=${stateOf(authUrl)}`);
+    expect(status).toBe(200);
+    await flow;
     spy.mockRestore();
   });
 
