@@ -54,7 +54,10 @@ export async function handler(
           args.endTime === undefined ? undefined : buildEventDateTime({ dateTime: args.endTime }),
         attendees,
         reminders: args.overrideReminders
-          ? { useDefault: false, overrides: args.overrideReminders }
+          ? {
+              useDefault: false,
+              overrides: args.overrideReminders.map((reminder) => forGoogle(reminder)),
+            }
           : undefined,
         conferenceData,
         visibility: args.visibility,
