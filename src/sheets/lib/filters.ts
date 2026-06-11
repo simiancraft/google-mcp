@@ -1,9 +1,9 @@
 import type { sheets_v4 } from '@googleapis/sheets';
+import { narrow } from '../../lib/enums.js';
 import { forGoogle } from '../../lib/google.js';
 import type { DataFilter } from '../entities/DataFilter.js';
 import type { DeveloperMetadataLocation } from '../entities/DeveloperMetadataLocation.js';
 import type { DeveloperMetadataLookup } from '../entities/DeveloperMetadataLookup.js';
-import { narrow } from './enums.js';
 
 /**
  * Data filters cross the boundary in both directions: requests carry them in

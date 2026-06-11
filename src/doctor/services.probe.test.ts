@@ -31,6 +31,11 @@ mock.module('@googleapis/docs', () => ({
   }),
 }));
 
+let aboutUser: { emailAddress?: string } = {};
+mock.module('@googleapis/drive', () => ({
+  drive: () => ({ about: { get: async () => ({ data: { user: aboutUser } }) } }),
+}));
+
 let sampleSpreadsheet: { properties?: { title?: string } } = {};
 let spreadsheetIdAsked: string | undefined;
 mock.module('@googleapis/sheets', () => ({
@@ -106,6 +111,18 @@ describe('sheets probe', () => {
   it('falls back to a reachable marker when the title is absent', async () => {
     sampleSpreadsheet = {};
     expect(await runProbe('sheets', 'acct')).toBe('(reachable)');
+  });
+});
+
+describe('drive probe', () => {
+  it("returns the authenticated user's email address", async () => {
+    aboutUser = { emailAddress: 'info@example.com' };
+    expect(await runProbe('drive', 'acct')).toBe('info@example.com');
+  });
+
+  it('falls back to a reachable marker when no email is returned', async () => {
+    aboutUser = {};
+    expect(await runProbe('drive', 'acct')).toBe('(reachable)');
   });
 });
 

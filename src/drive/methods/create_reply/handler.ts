@@ -1,0 +1,21 @@
+import type { drive_v3 } from '@googleapis/drive';
+import type { z } from 'zod';
+import { forGoogle } from '../../../lib/google.js';
+import { projectReply, REPLY_FIELDS } from '../../lib/comment.js';
+import type { schema } from './schema.js';
+
+export async function handler(
+  drive: drive_v3.Drive,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  if (args.content === undefined && args.action === undefined) {
+    throw new Error('content is required when no action is specified.');
+  }
+  const { data } = await drive.replies.create({
+    fileId: args.fileId,
+    commentId: args.commentId,
+    requestBody: forGoogle({ content: args.content, action: args.action }),
+    fields: REPLY_FIELDS,
+  });
+  return projectReply(data);
+}

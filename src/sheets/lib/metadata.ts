@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
+import { narrow } from '../../lib/enums.js';
 import type { DeveloperMetadata } from '../entities/DeveloperMetadata.js';
-import { narrow } from './enums.js';
 import { projectDeveloperMetadataLocation } from './filters.js';
 
 /** Project REST developer metadata onto the DeveloperMetadata shape, cleaning nulls to undefined. */

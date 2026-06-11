@@ -1,0 +1,106 @@
+import { describe, expect, it } from 'bun:test';
+import type { Readable } from 'node:stream';
+import type { drive_v3 } from '@googleapis/drive';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
+
+type CreateParams = drive_v3.Params$Resource$Files$Create & {
+  media?: { mimeType?: string; body?: string | Readable };
+};
+
+type Captured = { params?: CreateParams };
+
+function fakeDrive(captured: Captured, data: drive_v3.Schema$File): drive_v3.Drive {
+  return {
+    files: {
+      create: async (params: CreateParams) => {
+        captured.params = params;
+        return { data };
+      },
+    },
+  } as unknown as drive_v3.Drive;
+}
+
+async function drain(body: string | Readable | undefined): Promise<string> {
+  if (typeof body === 'string' || body === undefined) {
+    return body ?? '';
+  }
+  const chunks: Buffer[] = [];
+  for await (const chunk of body) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+describe('create_file', () => {
+  it('uploads text content, converting text/plain to a Google Doc', async () => {
+    const captured: Captured = {};
+    const result = await handler(fakeDrive(captured, { id: 'F1', name: 'notes' }), {
+      title: 'notes',
+      contentMimeType: 'text/plain',
+      textContent: 'hello',
+      parentId: 'P1',
+    });
+    expect(captured.params?.requestBody).toEqual({
+      name: 'notes',
+      parents: ['P1'],
+      mimeType: 'application/vnd.google-apps.document',
+    });
+    expect(captured.params?.media).toEqual({ mimeType: 'text/plain', body: 'hello' });
+    expect(captured.params?.supportsAllDrives).toBe(true);
+    expect(result).toEqual({ id: 'F1', title: 'notes' });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('retains the content type when conversion is disabled', async () => {
+    const captured: Captured = {};
+    await handler(fakeDrive(captured, { id: 'F2' }), {
+      title: 'raw.txt',
+      contentMimeType: 'text/plain',
+      textContent: 'hello',
+      disableConversionToGoogleType: true,
+    });
+    expect(captured.params?.requestBody).toEqual({ name: 'raw.txt' });
+    expect(captured.params?.media).toEqual({ mimeType: 'text/plain', body: 'hello' });
+  });
+
+  it('decodes base64 content into the upload stream', async () => {
+    const captured: Captured = {};
+    await handler(fakeDrive(captured, { id: 'F3' }), {
+      title: 'photo.png',
+      contentMimeType: 'image/png',
+      base64Content: Buffer.from('PNG!').toString('base64'),
+    });
+    expect(captured.params?.media?.mimeType).toBe('image/png');
+    expect(await drain(captured.params?.media?.body)).toBe('PNG!');
+    expect(captured.params?.requestBody).toEqual({ name: 'photo.png' });
+  });
+
+  it('creates Google-native and metadata-only files without media', async () => {
+    const captured: Captured = {};
+    await handler(fakeDrive(captured, { id: 'F4' }), {
+      title: 'Untitled spreadsheet',
+      contentMimeType: 'application/vnd.google-apps.spreadsheet',
+    });
+    expect(captured.params?.requestBody).toEqual({
+      name: 'Untitled spreadsheet',
+      mimeType: 'application/vnd.google-apps.spreadsheet',
+    });
+    expect(captured.params?.media).toBeUndefined();
+  });
+
+  it('rejects ambiguous and underspecified content', async () => {
+    const captured: Captured = {};
+    expect(
+      handler(fakeDrive(captured, {}), {
+        title: 'x',
+        contentMimeType: 'text/plain',
+        textContent: 'a',
+        base64Content: 'YQ==',
+      }),
+    ).rejects.toThrow('cannot both be set');
+    expect(handler(fakeDrive(captured, {}), { title: 'x', textContent: 'a' })).rejects.toThrow(
+      'contentMimeType is required',
+    );
+  });
+});

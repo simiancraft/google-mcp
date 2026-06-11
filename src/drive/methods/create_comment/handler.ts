@@ -1,0 +1,17 @@
+import type { drive_v3 } from '@googleapis/drive';
+import type { z } from 'zod';
+import { forGoogle } from '../../../lib/google.js';
+import { COMMENT_FIELDS, projectComment } from '../../lib/comment.js';
+import type { schema } from './schema.js';
+
+export async function handler(
+  drive: drive_v3.Drive,
+  args: z.infer<typeof schema.input>,
+): Promise<z.infer<typeof schema.output>> {
+  const { data } = await drive.comments.create({
+    fileId: args.fileId,
+    requestBody: forGoogle({ content: args.content, anchor: args.anchor }),
+    fields: COMMENT_FIELDS,
+  });
+  return projectComment(data);
+}
