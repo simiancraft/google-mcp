@@ -1,5 +1,7 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { AnyOperation } from '../../lib/operation.js';
+import { copy_file } from './copy_file/index.js';
+import { create_file } from './create_file/index.js';
 import { download_file_content } from './download_file_content/index.js';
 import { get_file_metadata } from './get_file_metadata/index.js';
 import { get_file_permissions } from './get_file_permissions/index.js';
@@ -19,4 +21,6 @@ export const tools = {
   get_file_permissions,
   read_file_content,
   download_file_content,
+  create_file,
+  copy_file,
 } satisfies Record<string, AnyOperation<drive_v3.Drive>>;

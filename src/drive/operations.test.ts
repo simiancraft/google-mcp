@@ -10,10 +10,10 @@ import { tools } from './tools/registry.js';
 const operations = mergeOperations(tools, methods);
 
 describe('drive operations', () => {
-  it('exposes the full surface (6 tools, 0 methods)', () => {
-    expect(Object.keys(tools)).toHaveLength(6);
+  it('exposes the full surface (8 tools, 0 methods)', () => {
+    expect(Object.keys(tools)).toHaveLength(8);
     expect(Object.keys(methods)).toHaveLength(0);
-    expect(Object.keys(operations)).toHaveLength(6);
+    expect(Object.keys(operations)).toHaveLength(8);
   });
 
   it('every operation has a description, a schema, and a handler', () => {
@@ -82,7 +82,7 @@ describe('drive operations', () => {
       .filter(([, op]) => op.annotations?.openWorldHint)
       .map(([name]) => name)
       .sort();
-    expect(openWorld).toEqual([]);
+    expect(openWorld).toEqual(['copy_file', 'create_file']);
   });
 
   it('CAPABILITIES.md is the current render of these registries', () => {
