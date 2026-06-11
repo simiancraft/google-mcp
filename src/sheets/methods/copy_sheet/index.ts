@@ -10,7 +10,7 @@ import { schema } from './schema.js';
  */
 export const copy_sheet = sheetsOperation({
   description:
-    'Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the new sheet’s properties.',
+    'Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the properties of the new sheet.',
   schema,
   handler,
 });

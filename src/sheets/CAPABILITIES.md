@@ -20,4 +20,4 @@
 | `batch_clear_values_by_data_filter` ⚠️ | REST Method | Clear the values in every range matched by data filters, irreversibly; formatting and data validation are kept. |
 | `get_developer_metadata` | REST Method | Get one developer metadata entry by its spreadsheet-scoped id. |
 | `search_developer_metadata` | REST Method | Search developer metadata by lookup criteria or by spreadsheet location (A1 or grid range). |
-| `copy_sheet` | REST Method | Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the new sheet’s properties. |
+| `copy_sheet` | REST Method | Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the properties of the new sheet. |
