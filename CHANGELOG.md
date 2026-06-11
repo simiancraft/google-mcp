@@ -1,3 +1,13 @@
+# [1.3.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.2.0...v1.3.0) (2026-06-11)
+
+
+### Features
+
+* **calendar:** annotate every operation with the four MCP hints ([737eaef](https://github.com/simiancraft/google-mcp-suite/commit/737eaef76e17e6ac6594da21b29cb6452abe1272))
+* **gmail:** annotate every operation with the four MCP hints ([2813fd4](https://github.com/simiancraft/google-mcp-suite/commit/2813fd44c15825b6846ed87d9653031e03147377))
+* **lib:** carry MCP tool annotations on operations ([51d98bd](https://github.com/simiancraft/google-mcp-suite/commit/51d98bdf7d84ac3ae58eabc1505a498c64946f15))
+* **sheets:** annotate every operation with the four MCP hints ([b26d65e](https://github.com/simiancraft/google-mcp-suite/commit/b26d65e156fdfa29aeee2c04f4c2bb49771dcee9))
+
 # [1.2.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.1.0...v1.2.0) (2026-06-11)
 
 
