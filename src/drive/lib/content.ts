@@ -1,4 +1,5 @@
 import { MAX_DOWNLOAD_BYTES } from '../../lib/consts.js';
+import { ownLookup } from '../../lib/utils/lookup.js';
 
 /**
  * The content boundary for the two content tools (see the COVERAGE.md
@@ -26,9 +27,7 @@ export function isGoogleNative(mimeType: string): boolean {
 
 /** The text-representation export MIME for a native type, if it has one. */
 export function textExportMime(mimeType: string): string | undefined {
-  // Own-property guard for uniformity with the suite's other map lookups;
-  // unreachable by inherited keys in practice (isGoogleNative gates callers).
-  return Object.hasOwn(TEXT_EXPORTS, mimeType) ? TEXT_EXPORTS[mimeType] : undefined;
+  return ownLookup(TEXT_EXPORTS, mimeType);
 }
 
 /** Whether a blob type is text enough for `read_file_content` to return as UTF-8. */

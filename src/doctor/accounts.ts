@@ -17,18 +17,15 @@
  * email is its own label); the roster only powers `--all`, status, and prefill.
  * When absent, it is inferred from the token files already in `tokens/`.
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import path from 'node:path';
+import { z } from 'zod';
 import { loadConfig } from '../auth/config.js';
+import { readJsonFile } from '../lib/utils/json.js';
 
-export type Account = { label: string; email?: string };
+const AccountsFile = z.array(z.object({ label: z.string(), email: z.string().optional() }));
 
-function isAccount(value: unknown): value is Account {
-  if (typeof value !== 'object' || value === null || !('label' in value)) return false;
-  if (typeof value.label !== 'string') return false;
-  const email = 'email' in value ? value.email : undefined;
-  return email === undefined || typeof email === 'string';
-}
+export type Account = z.infer<typeof AccountsFile>[number];
 
 export function accountsFile(): string {
   return path.join(loadConfig().dir, 'accounts.json');
@@ -36,13 +33,12 @@ export function accountsFile(): string {
 
 export function loadAccounts(): Account[] {
   try {
-    const raw: unknown = JSON.parse(readFileSync(accountsFile(), 'utf8'));
-    if (Array.isArray(raw) && raw.every(isAccount)) {
-      return raw;
-    }
-    throw new Error('accounts.json must be an array of { label, email? }.');
+    return readJsonFile(accountsFile(), AccountsFile);
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === 'ENOENT') return inferFromTokens();
+    if (err instanceof z.ZodError) {
+      throw new Error('accounts.json must be an array of { label, email? }.');
+    }
     throw err;
   }
 }

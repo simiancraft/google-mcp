@@ -9,6 +9,7 @@ import {
 import { z } from 'zod';
 import pkg from '../../package.json' with { type: 'json' };
 import { type AnyOperation, SOURCE_META_KEY } from './operation.js';
+import { ownLookup } from './utils/lookup.js';
 
 export type ServerOptions<Client> = {
   /** MCP server name (the service, e.g. 'gmail'). */
@@ -78,14 +79,14 @@ export async function callOperation<Client>(
   name: string,
   rawArgs: unknown,
 ): Promise<CallToolResult> {
-  // Own-property guard: the registry is a plain object, so a bare `operations[name]`
-  // would resolve inherited keys (`__proto__`, `toString`, ...) to truthy non-operations
-  // and throw past the error envelope when an agent sends one as a tool name.
+  // ownLookup: a bare `operations[name]` would resolve inherited keys
+  // (`__proto__`, `toString`, ...) to truthy non-operations and throw past the
+  // error envelope when an agent sends one as a tool name.
   // Deliberate spec deviation: MCP files unknown tools and invalid arguments
   // under protocol error -32602, but this server answers every operation-level
   // failure as a uniform isError tool result so an agent can read the message
   // and self-correct instead of hitting a protocol-layer failure.
-  const op = Object.hasOwn(operations, name) ? operations[name] : undefined;
+  const op = ownLookup(operations, name);
   if (!op) {
     return errorResult(`Unknown tool: ${name}`);
   }
