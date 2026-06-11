@@ -2,7 +2,7 @@
   "name": "google-mcp-suite",
   "version": "1.4.1",
   "type": "module",
-  "description": "Per-account MCP servers for Gmail, Google Calendar, and Google Sheets: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes Google's curated MCP toolset (where one exists) plus the broader REST surface.",
+  "description": "Per-account MCP servers for Gmail, Google Calendar, Google Sheets, and Google Docs: identity is bound to the running instance, so an agent can never act on the wrong account; each server exposes Google's curated MCP toolset (where one exists) plus the broader REST surface.",
   "keywords": [
     "mcp",
     "mcp-server",
@@ -18,7 +18,10 @@
     "scheduling",
     "sheets",
     "google-sheets",
-    "spreadsheet"
+    "spreadsheet",
+    "docs",
+    "google-docs",
+    "document"
   ],
   "author": "the-simian <info@simiancraft.com>",
   "license": "MIT",
@@ -34,6 +37,7 @@
     "google-mcp-gmail": "./dist/gmail/index.js",
     "google-mcp-calendar": "./dist/calendar/index.js",
     "google-mcp-sheets": "./dist/sheets/index.js",
+    "google-mcp-docs": "./dist/docs/index.js",
     "google-mcp-doctor": "./dist/doctor/index.js"
   },
   "files": [
@@ -65,6 +69,7 @@
   },
   "dependencies": {
     "@googleapis/calendar": "^15.0.0",
+    "@googleapis/docs": "^9.3.0",
     "@googleapis/gmail": "^17.0.0",
     "@googleapis/sheets": "^13.0.2",
     "@modelcontextprotocol/sdk": "^1.29.0",

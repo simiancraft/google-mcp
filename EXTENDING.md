@@ -101,12 +101,13 @@ silently dropping an operation.
 
 Add a method exactly like a tool, but transcribe from the REST method page
 (`…/reference/rest/v<n>/<resource>/<method>`; Gmail is v1, Calendar v3,
-Sheets v4): that page URL becomes the definition's `source`, and the
+Sheets v4, Docs v1): that page URL becomes the definition's `source`, and the
 annotations follow the rubric below, since REST pages publish no Tool
 Annotations section.
 
-Where Google publishes no MCP toolset at all (Sheets; its MCP-supported
-products are Gmail, Drive, Calendar, Chat, and People), the service is
+Where Google publishes no MCP toolset at all (Sheets and Docs; the
+MCP-supported products are Gmail, Drive, Calendar, Chat, and People), the
+service is
 **methods-only**: no `tools/` folder, `index.ts` serves
 `mergeOperations(methods)`, and `capabilities.ts` renders a single
 `REST Method` section. The service's COVERAGE.md leads with why.
@@ -250,7 +251,7 @@ it on every operation.
 Unit tests never touch the network, so every operation is also verified once
 against a real account, tracked per service in an **operational-matrix issue**
 (a live + unit checkbox per operation; Gmail is #7, Calendar is #22, Sheets
-is #29).
+is #29, Docs is #41).
 
 Live passes are **pairwise**: pair every destructive operation with its
 antecedent, so the only data ever destroyed is test data the pass itself made,

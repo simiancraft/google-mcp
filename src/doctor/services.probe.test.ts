@@ -7,7 +7,7 @@ import path from 'node:path';
 // network call. The response holders are read at call time, so each test can
 // vary the response. Note: mock.module patches the module registry
 // process-wide for the test run, so a future test file that value-imports
-// @googleapis/{gmail,calendar,sheets} may receive these mocks depending on
+// @googleapis/{gmail,calendar,sheets,docs} may receive these mocks depending on
 // file order; keep value-level imports of those modules out of other tests.
 let profile: { emailAddress?: string } = {};
 mock.module('@googleapis/gmail', () => ({
@@ -17,6 +17,18 @@ mock.module('@googleapis/gmail', () => ({
 let primaryCalendar: { summary?: string; timeZone?: string } = {};
 mock.module('@googleapis/calendar', () => ({
   calendar: () => ({ calendars: { get: async () => ({ data: primaryCalendar }) } }),
+}));
+
+let docsProbeResult: { data?: unknown; error?: unknown } = {};
+mock.module('@googleapis/docs', () => ({
+  docs: () => ({
+    documents: {
+      get: async () => {
+        if (docsProbeResult.error) throw docsProbeResult.error;
+        return { data: docsProbeResult.data ?? {} };
+      },
+    },
+  }),
 }));
 
 let sampleSpreadsheet: { properties?: { title?: string } } = {};
@@ -94,6 +106,27 @@ describe('sheets probe', () => {
   it('falls back to a reachable marker when the title is absent', async () => {
     sampleSpreadsheet = {};
     expect(await runProbe('sheets', 'acct')).toBe('(reachable)');
+  });
+});
+
+describe('docs probe', () => {
+  it('treats a clean 404 on the sentinel as reachable', async () => {
+    docsProbeResult = { error: { status: 404 } };
+    expect(await runProbe('docs', 'acct')).toBe('(reachable)');
+    docsProbeResult = { error: { response: { status: 404 } } };
+    expect(await runProbe('docs', 'acct')).toBe('(reachable)');
+  });
+
+  it('reports reachable if the sentinel somehow resolves', async () => {
+    docsProbeResult = { data: { documentId: 'x' } };
+    expect(await runProbe('docs', 'acct')).toBe('(reachable)');
+  });
+
+  it('rethrows non-404 failures (auth, disabled API)', async () => {
+    docsProbeResult = { error: { status: 403, message: 'disabled' } };
+    await expect(runProbe('docs', 'acct')).rejects.toMatchObject({ status: 403 });
+    docsProbeResult = { error: 'string error' };
+    await expect(runProbe('docs', 'acct')).rejects.toBe('string error');
   });
 });
 
