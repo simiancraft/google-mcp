@@ -1,5 +1,6 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
+import { create_document } from './create_document/index.js';
 import { get_document } from './get_document/index.js';
 
 /**
@@ -13,4 +14,5 @@ import { get_document } from './get_document/index.js';
 export const methods = {
   // documents
   get_document,
+  create_document,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;

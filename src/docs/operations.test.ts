@@ -8,9 +8,9 @@ import { methods } from './methods/registry.js';
 const operations = mergeOperations(methods);
 
 describe('docs operations', () => {
-  it('exposes the full surface (1 method; methods-only, no MCP toolset)', () => {
-    expect(Object.keys(methods)).toHaveLength(1);
-    expect(Object.keys(operations)).toHaveLength(1);
+  it('exposes the full surface (2 methods; methods-only, no MCP toolset)', () => {
+    expect(Object.keys(methods)).toHaveLength(2);
+    expect(Object.keys(operations)).toHaveLength(2);
   });
 
   it('annotates every operation with the four MCP hints, explicitly', () => {
