@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Draft } from '../../entities/Draft.js';
 import { headerSafe } from '../../lib/headers.js';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/create_draft */
 export const schema = {
   input: z.object({
     to: z.array(headerSafe).min(1).describe('Primary recipients.'),

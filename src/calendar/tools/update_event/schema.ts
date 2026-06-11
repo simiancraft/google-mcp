@@ -3,7 +3,6 @@ import { Event } from '../../entities/Event.js';
 import { NotificationLevel } from '../../entities/NotificationLevel.js';
 import { Reminder } from '../../entities/Reminder.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/update_event */
 export const schema = {
   input: z.object({
     eventId: z.string().describe('The ID of the event to update.'),

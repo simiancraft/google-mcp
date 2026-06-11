@@ -3,6 +3,7 @@ import { gmail } from '@googleapis/gmail';
 import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
+import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
@@ -13,6 +14,10 @@ import { tools } from './tools/registry.js';
 // references scopes, which is exactly why it is easy to miss.
 await server({
   name: 'gmail',
+  title: 'Gmail (google-mcp-suite)',
+  description:
+    'Per-account Gmail MCP server: threads, messages, drafts, labels, filters, and attachments.',
+  instructions,
   operations: mergeOperations(tools, methods),
   client: async (account) => gmail({ version: 'v1', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,

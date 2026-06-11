@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { SheetProperties } from '../../entities/SheetProperties.js';
 
-/** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets/copyTo */
 export const schema = {
   input: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the sheet to copy.'),

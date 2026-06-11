@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
  * Lists message stubs, then fetches each with `metadata` format (headers +
  * snippet) for the projection. Use get_message for a full body.
  */
@@ -15,6 +14,7 @@ export const list_messages = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list',
   schema,
   handler,
 });

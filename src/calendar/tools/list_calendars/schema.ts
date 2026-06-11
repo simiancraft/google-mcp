@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Calendar } from '../../entities/Calendar.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/list_calendars */
 export const schema = {
   input: z.object({
     pageSize: z

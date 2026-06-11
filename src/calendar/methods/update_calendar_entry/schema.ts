@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { CalendarListEntry } from '../../entities/CalendarListEntry.js';
 import { Reminder } from '../../entities/Reminder.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/patch */
 export const schema = {
   input: z.object({
     calendarId: z

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/delete */
 export const schema = {
   input: z.object({
     labelId: z.string().describe('The id of the user label to delete.'),

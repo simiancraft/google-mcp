@@ -2,7 +2,7 @@ import { describe, expect, it, mock, spyOn } from 'bun:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { z } from 'zod';
-import { operation } from './operation.js';
+import { operation, SOURCE_META_KEY } from './operation.js';
 import { callOperation, renderCapabilities, server, toolDefinitions } from './server.js';
 
 type FakeClient = { upper: (s: string) => string };
@@ -15,6 +15,7 @@ const echo = operation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
   schema: { input: z.object({ text: z.string() }), output: z.object({ shouted: z.string() }) },
   handler: async (client: FakeClient, args) => ({ shouted: client.upper(args.text) }),
 });
@@ -27,6 +28,7 @@ const boom = operation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
   schema: { input: z.object({}), output: z.object({}) },
   handler: async (_client: FakeClient) => {
     throw new Error('kaboom');
@@ -41,6 +43,7 @@ const danger = operation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/delete',
   schema: { input: z.object({ id: z.string() }), output: z.object({ ok: z.boolean() }) },
   handler: async (_client: FakeClient) => ({ ok: true }),
 });
@@ -105,6 +108,18 @@ describe('toolDefinitions', () => {
     });
   });
 
+  it('emits the source citation under the namespaced _meta key', () => {
+    const defs = toolDefinitions({ echo, danger });
+    const dangerDef = defs.find((d) => d.name === 'danger');
+    const echoDef = defs.find((d) => d.name === 'echo');
+    expect(dangerDef?._meta).toEqual({
+      [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/delete',
+    });
+    expect(echoDef?._meta).toEqual({
+      [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/read',
+    });
+  });
+
   it('emits declared tool annotations verbatim', () => {
     const reader = operation({
       description: 'Reads things.',
@@ -114,6 +129,7 @@ describe('toolDefinitions', () => {
         idempotentHint: true,
         openWorldHint: false,
       },
+      source: 'https://developers.google.com/example/reference/rest/v1/things/read',
       schema: { input: z.object({}), output: z.object({}) },
       handler: async (_client: FakeClient) => ({}),
     });
@@ -135,8 +151,12 @@ describe('renderCapabilities', () => {
     ]);
     expect(md).toContain('# Test capabilities');
     expect(md).toContain('2 operations across MCP tools and REST methods.');
-    expect(md).toContain('| `echo` | MCP Tool | Uppercase a string. |');
-    expect(md).toContain('| `danger` ⚠️ | REST Method | Irreversible. |');
+    expect(md).toContain(
+      '| [`echo`](https://developers.google.com/example/reference/rest/v1/things/read) | MCP Tool | Uppercase a string. |',
+    );
+    expect(md).toContain(
+      '| [`danger`](https://developers.google.com/example/reference/rest/v1/things/delete) ⚠️ | REST Method | Irreversible. |',
+    );
   });
 
   it('describes a single-source surface without claiming the other source', () => {
@@ -163,9 +183,40 @@ describe('server', () => {
 
     const list = await mcp.listTools();
     expect(list.tools.map((t) => t.name)).toContain('echo');
+    // The _meta citation must survive the SDK's wire parsing, not just the
+    // pure toolDefinitions shape; an SDK that stripped it would fail here.
+    expect(list.tools[0]?._meta).toEqual({
+      [SOURCE_META_KEY]: 'https://developers.google.com/example/reference/rest/v1/things/read',
+    });
 
     const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
     expect(res.structuredContent).toEqual({ shouted: 'HI' });
+
+    await mcp.close();
+  });
+
+  it('serves identity metadata and instructions through the initialize result', async () => {
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      title: 'Test (google-mcp-suite)',
+      description: 'A test server.',
+      instructions: 'Bound to one account; see tools/list.',
+      operations: { echo },
+      client: async () => client,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    expect(mcp.getServerVersion()).toMatchObject({
+      name: 'test',
+      title: 'Test (google-mcp-suite)',
+      description: 'A test server.',
+      websiteUrl: 'https://github.com/simiancraft/google-mcp-suite#readme',
+    });
+    expect(mcp.getInstructions()).toBe('Bound to one account; see tools/list.');
 
     await mcp.close();
   });

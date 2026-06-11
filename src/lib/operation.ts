@@ -44,6 +44,14 @@ export type OperationAnnotations = {
 };
 
 /**
+ * The `_meta` key under which an operation's source citation crosses the wire,
+ * prefixed per the MCP spec's convention for custom metadata (reverse-DNS,
+ * matching the SDK's own `io.modelcontextprotocol/related-task`).
+ * @see https://modelcontextprotocol.io/specification/2025-06-18/basic#meta
+ */
+export const SOURCE_META_KEY = 'com.simiancraft.google-mcp/source';
+
+/**
  * A single operation: its documented I/O contract plus the work that fulfills it.
  * Every tool and method is an `Operation`; they differ only by which Google
  * reference the folder mirrors (MCP toolset vs REST), never by type.
@@ -58,6 +66,15 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
   handler: (client: Client, args: z.infer<In>) => Promise<z.infer<Out>>;
   /** The four MCP behavior hints, emitted verbatim in `tools/list`; see {@link OperationAnnotations}. */
   annotations: OperationAnnotations;
+  /**
+   * The Google reference page this operation transcribes: the MCP toolset page
+   * for tools, the REST method page for methods. The folder's single citation
+   * (schema.ts does not restate it). Emitted in `tools/list` under
+   * {@link SOURCE_META_KEY}, so an agent can fetch the authoritative
+   * documentation for any operation it is about to call; the generated
+   * CAPABILITIES.md links each operation to it.
+   */
+  source: `https://${string}`;
 };
 
 /**
@@ -72,6 +89,7 @@ export type AnyOperation<Client> = {
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
   annotations: OperationAnnotations;
+  source: string;
 };
 
 /**

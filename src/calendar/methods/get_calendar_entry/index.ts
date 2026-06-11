@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/get
- *
  * The user's view of a calendar on their calendar list. For the calendar's
  * own metadata, see get_calendar.
  */
@@ -17,6 +15,7 @@ export const get_calendar_entry = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/get',
   schema,
   handler,
 });

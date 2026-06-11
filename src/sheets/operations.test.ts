@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { mergeOperations } from '../lib/operation.js';
+import { mergeOperations, SOURCE_META_KEY } from '../lib/operation.js';
 import { renderCapabilities } from '../lib/server.js';
+import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 
 const operations = mergeOperations(methods);
@@ -19,6 +20,22 @@ describe('sheets operations', () => {
       expect(op.schema.input).toBeDefined();
       expect(op.schema.output).toBeDefined();
       expect(typeof op.handler).toBe('function');
+    }
+  });
+
+  it('instructions cite the real _meta key and only real operation names', () => {
+    expect(instructions).toContain(SOURCE_META_KEY);
+    const mentioned = instructions.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [];
+    expect(mentioned.length).toBeGreaterThan(0);
+    for (const name of mentioned) {
+      expect(operations).toHaveProperty(name);
+    }
+  });
+
+  it('cites the matching REST reference page on every operation', () => {
+    for (const op of Object.values(methods)) {
+      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\/.+\/reference\/rest\//);
+      expect(op.source).not.toContain('mcp/tools_list');
     }
   });
 

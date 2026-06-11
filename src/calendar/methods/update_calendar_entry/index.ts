@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/patch
- *
  * Edits the user's view of a calendar, not the calendar itself (see
  * update_calendar for that). Patch semantics: unset fields are left
  * unchanged. The handler sends colorRgbFormat=true whenever a hex color
@@ -19,6 +17,7 @@ export const update_calendar_entry = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/patch',
   schema,
   handler,
 });

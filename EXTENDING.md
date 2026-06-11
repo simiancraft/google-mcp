@@ -26,7 +26,7 @@ src/
       <tool_name>/  # snake_case, verbatim from Google
         schema.ts        # export const schema = { input, output } (zod; compose entities)
         handler.ts       # the work: a standalone handler(client, args)
-        index.ts         # export const <tool_name> = operation({ description, schema, handler })
+        index.ts         # export const <tool_name> = operation({ description, annotations, source, schema, handler })
         handler.test.ts  # mocked-client unit test
     methods/        # cover the REST reference (same construction as tools/)
       registry.ts
@@ -46,15 +46,22 @@ with `operation()`. Keep them split.
 2. **Make the folder** `tools/<tool_name>/` (snake_case, exactly the wire name).
 3. **`schema.ts`:** export `const schema = { input, output }`, mirroring the
    documented input/output as zod; reference entities for named objects; keep
-   inline primitives inline. Cite the source URL.
+   inline primitives inline. The folder's citation lives once, in `index.ts`'s
+   `source` field; do not restate the URL in schema.ts.
 4. **`handler.ts`:** `export async function handler(client, args) { … }`, typed
    `args: z.infer<typeof schema.input>` and returning `z.infer<typeof
    schema.output>`. The handler calls the REST method and **projects** the
    response into the output shape (rename/select fields; the docs' shape, not the
    raw entity). Reuse `lib/` projections.
-5. **`index.ts`:** `export const <tool_name> = operation({ description, schema,
-   handler })`. `operation()` is a typed identity function; it infers the client
-   from the handler's first parameter and the input/output from the schema.
+5. **`index.ts`:** `export const <tool_name> = operation({ description,
+   annotations, source, schema, handler })`. `operation()` is a typed identity
+   function; it infers the client from the handler's first parameter and the
+   input/output from the schema. `annotations` is the four-hint quad (see
+   Annotations below); `source` is the reference page URL the folder
+   transcribes, emitted on the wire under
+   `_meta['com.simiancraft.google-mcp/source']` and linked from the generated
+   CAPABILITIES.md, so an agent can fetch the authoritative documentation for
+   any operation.
 6. **`handler.test.ts`:** feed a stub client to `handler` (a hand-rolled fake
    that captures params; never the network), assert the exact Google params per
    input shape, assert the projection, and `schema.output.parse(result)`.
@@ -179,9 +186,15 @@ the tool/REST reference.
    `bin` entry `"google-mcp-<svc>": "./dist/<svc>/index.js"`.
 2. Add the service's scopes to the shared `SCOPES` union in `src/auth/config.ts`
    so each account is authorized once. Services do not declare scopes locally.
-3. `index.ts`: `server({ name, operations: mergeOperations(tools, methods),
+3. `index.ts`: `server({ name, title, description, instructions,
+   operations: mergeOperations(tools, methods),
    client: async (a) => <svc>({ version, auth: await authorizedClient(a) }),
-   runAuth: runAuthFlow })`
+   runAuth: runAuthFlow })`. `title`, `description`, and the package-homepage
+   `websiteUrl` default identify the server in client UIs (MCP
+   `Implementation`); `instructions` is served in the initialize result, which
+   clients inject into the agent's context at connect time. Write it as the
+   one paragraph an agent should read before calling tools: identity binding,
+   vocabulary, and the service's traps.
    (`import { server } from '../lib/server.js'`,
    `import { mergeOperations } from '../lib/operation.js'`,
    `import { authorizedClient, runAuthFlow } from '../auth/oauth.js'`,

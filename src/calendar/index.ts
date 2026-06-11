@@ -3,6 +3,7 @@ import { calendar } from '@googleapis/calendar';
 import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
+import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';
 
@@ -13,6 +14,10 @@ import { tools } from './tools/registry.js';
 // references scopes, which is exactly why it is easy to miss.
 await server({
   name: 'calendar',
+  title: 'Google Calendar (google-mcp-suite)',
+  description:
+    'Per-account Google Calendar MCP server: events, calendars, free/busy, and meeting-time suggestions.',
+  instructions,
   operations: mergeOperations(tools, methods),
   client: async (account) => calendar({ version: 'v3', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,

@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Message } from '../../entities/Message.js';
 import { headerSafe } from '../../lib/headers.js';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/send */
 export const schema = {
   input: z.object({
     to: z.array(headerSafe).min(1).describe('Primary recipients.'),

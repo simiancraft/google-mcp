@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/search_threads
- *
  * One `users.threads.list` call: returns thread ids and the snippet the list
  * response already carries, with no per-thread fetch. Use `get_thread(id)` to
  * hydrate a thread's full messages on demand.
@@ -17,6 +15,8 @@ export const search_threads = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/search_threads',
   schema,
   handler,
 });

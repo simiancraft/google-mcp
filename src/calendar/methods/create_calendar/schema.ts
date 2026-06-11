@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Calendar } from '../../entities/Calendar.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendars/insert */
 export const schema = {
   input: z.object({
     summary: z.string().describe('Title of the calendar.'),

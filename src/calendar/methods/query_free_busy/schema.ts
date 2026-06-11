@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { FreeBusyCalendar } from '../../entities/FreeBusy.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query */
 export const schema = {
   input: z.object({
     timeMin: z

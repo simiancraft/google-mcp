@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Draft } from '../../entities/Draft.js';
 import { headerSafe } from '../../lib/headers.js';
 
-/** Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/update */
 export const schema = {
   input: z.object({
     draftId: z.string().describe('The id of the draft to replace.'),

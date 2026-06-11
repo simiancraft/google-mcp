@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { CalendarListEntry } from '../../entities/CalendarListEntry.js';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/get */
 export const schema = {
   input: z.object({
     calendarId: z

@@ -6,18 +6,18 @@
 
 | Operation | Source | Description |
 | --- | --- | --- |
-| `get_spreadsheet` | REST Method | Get a spreadsheet by id: its properties (title, locale, time zone) and the properties of every sheet (tab). Cell data is read with the values operations. |
-| `create_spreadsheet` | REST Method | Create a spreadsheet with a title and optionally named sheets (tabs); returns the new spreadsheet and its id. |
-| `get_values` | REST Method | Read a range of values from a spreadsheet as a 2D array, addressed in A1 notation. |
-| `update_values` | REST Method | Write a 2D array of values into a range, overwriting what is there; valueInputOption controls whether values are stored raw or parsed as if typed. |
-| `append_values` | REST Method | Append rows of values after the logical table found at a range; the range is searched for a table, and the data lands after its last row. |
-| `clear_values` ⚠️ | REST Method | Clear the values in a range, irreversibly; formatting and data validation are kept. |
-| `batch_get_values` | REST Method | Read multiple ranges of values from a spreadsheet in one call; results come back in request order. |
-| `batch_update_values` | REST Method | Write values into multiple ranges of a spreadsheet in one call; one ValueRange per target range. |
-| `batch_clear_values` ⚠️ | REST Method | Clear the values in multiple ranges in one call, irreversibly; formatting and data validation are kept. |
-| `batch_get_values_by_data_filter` | REST Method | Read the ranges of values matched by data filters (A1 ranges, grid ranges, or developer-metadata lookups), with the filters that matched each range. |
-| `batch_update_values_by_data_filter` | REST Method | Write values into the ranges matched by data filters; when a filter matches multiple ranges, the values apply to all of them. |
-| `batch_clear_values_by_data_filter` ⚠️ | REST Method | Clear the values in every range matched by data filters, irreversibly; formatting and data validation are kept. |
-| `get_developer_metadata` | REST Method | Get one developer metadata entry by its spreadsheet-scoped id. |
-| `search_developer_metadata` | REST Method | Search developer metadata by lookup criteria or by spreadsheet location (A1 or grid range). |
-| `copy_sheet` | REST Method | Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the properties of the new sheet. |
+| [`get_spreadsheet`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/get) | REST Method | Get a spreadsheet by id: its properties (title, locale, time zone) and the properties of every sheet (tab). Cell data is read with the values operations. |
+| [`create_spreadsheet`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/create) | REST Method | Create a spreadsheet with a title and optionally named sheets (tabs); returns the new spreadsheet and its id. |
+| [`get_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/get) | REST Method | Read a range of values from a spreadsheet as a 2D array, addressed in A1 notation. |
+| [`update_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/update) | REST Method | Write a 2D array of values into a range, overwriting what is there; valueInputOption controls whether values are stored raw or parsed as if typed. |
+| [`append_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append) | REST Method | Append rows of values after the logical table found at a range; the range is searched for a table, and the data lands after its last row. |
+| [`clear_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/clear) ⚠️ | REST Method | Clear the values in a range, irreversibly; formatting and data validation are kept. |
+| [`batch_get_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchGet) | REST Method | Read multiple ranges of values from a spreadsheet in one call; results come back in request order. |
+| [`batch_update_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate) | REST Method | Write values into multiple ranges of a spreadsheet in one call; one ValueRange per target range. |
+| [`batch_clear_values`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchClear) ⚠️ | REST Method | Clear the values in multiple ranges in one call, irreversibly; formatting and data validation are kept. |
+| [`batch_get_values_by_data_filter`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchGetByDataFilter) | REST Method | Read the ranges of values matched by data filters (A1 ranges, grid ranges, or developer-metadata lookups), with the filters that matched each range. |
+| [`batch_update_values_by_data_filter`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdateByDataFilter) | REST Method | Write values into the ranges matched by data filters; when a filter matches multiple ranges, the values apply to all of them. |
+| [`batch_clear_values_by_data_filter`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchClearByDataFilter) ⚠️ | REST Method | Clear the values in every range matched by data filters, irreversibly; formatting and data validation are kept. |
+| [`get_developer_metadata`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.developerMetadata/get) | REST Method | Get one developer metadata entry by its spreadsheet-scoped id. |
+| [`search_developer_metadata`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.developerMetadata/search) | REST Method | Search developer metadata by lookup criteria or by spreadsheet location (A1 or grid range). |
+| [`copy_sheet`](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets/copyTo) | REST Method | Copy a single sheet (tab) from a spreadsheet to another spreadsheet (or the same one); returns the properties of the new sheet. |

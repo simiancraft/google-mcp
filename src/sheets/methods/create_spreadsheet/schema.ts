@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { Spreadsheet } from '../../entities/Spreadsheet.js';
 
 /**
- * Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/create
- *
  * The REST body is a full Spreadsheet resource; this input is the curated
  * subset that makes sense at creation time (the rest of the resource is
  * formatting and grid data, deferred with issues #27 and #28).

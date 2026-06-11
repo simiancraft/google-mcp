@@ -32,7 +32,6 @@ const RestAttendee = z.object({
     .describe('Number of additional guests. The default is 0.'),
 });
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/patch */
 export const schema = {
   input: z.object({
     eventId: z.string().describe('The ID of the event to patch.'),

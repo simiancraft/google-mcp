@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/delete */
 export const schema = {
   input: z.object({
     calendarId: z

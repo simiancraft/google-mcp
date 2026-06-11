@@ -3,6 +3,7 @@ import { sheets } from '@googleapis/sheets';
 import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
+import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 
 // Cloning this for a new service? Add that service's OAuth scopes to `SCOPES` in
@@ -16,6 +17,10 @@ import { methods } from './methods/registry.js';
 // is no tools/ folder and the REST-sourced methods are the whole surface.
 await server({
   name: 'sheets',
+  title: 'Google Sheets (google-mcp-suite)',
+  description:
+    'Per-account Google Sheets MCP server: spreadsheets, values, batch and data-filter reads and writes, and developer metadata.',
+  instructions,
   operations: mergeOperations(methods),
   client: async (account) => sheets({ version: 'v4', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,

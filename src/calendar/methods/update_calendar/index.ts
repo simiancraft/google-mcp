@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendars/patch
  * Patch semantics: unset fields are left unchanged.
  */
 export const update_calendar = calendarOperation({
@@ -15,6 +14,7 @@ export const update_calendar = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendars/patch',
   schema,
   handler,
 });

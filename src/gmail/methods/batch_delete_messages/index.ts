@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchDelete
- *
  * Irreversible: permanently deletes many messages at once (bypasses the trash;
  * cannot be undone). Requires the full https://mail.google.com/ scope.
  */
@@ -16,6 +14,8 @@ export const batch_delete_messages = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchDelete',
   schema,
   handler,
 });

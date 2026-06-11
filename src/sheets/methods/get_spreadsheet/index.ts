@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/get
- *
  * Metadata only by design: the projection carries identity, spreadsheet
  * properties, and per-sheet properties; grid data (per-cell formatting,
  * validation, notes) is not exposed (issue #28). Cell contents are read with
@@ -19,6 +17,7 @@ export const get_spreadsheet = sheetsOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/get',
   schema,
   handler,
 });

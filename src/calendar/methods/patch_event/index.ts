@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/patch
- *
  * The fidelity gap-filler for the update_event tool: exposes the REST fields
  * the MCP toolset omits (recurrence, status, transparency, the full attendee
  * shape, extendedProperties, and the guest permissions). Patch semantics:
@@ -20,6 +18,7 @@ export const patch_event = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/events/patch',
   schema,
   handler,
 });

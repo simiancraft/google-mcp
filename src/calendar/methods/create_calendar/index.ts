@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendars/insert
- *
  * Creates a secondary calendar owned by the user. The new calendar appears on
  * the user's calendar list; the returned id addresses it everywhere else.
  */
@@ -16,6 +14,7 @@ export const create_calendar = calendarOperation({
     idempotentHint: false,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendars/insert',
   schema,
   handler,
 });

@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { Setting } from '../../entities/Setting.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/settings/list
- *
  * The response's nextSyncToken is intentionally not surfaced; incremental
  * sync is deferred (issue #21).
  */

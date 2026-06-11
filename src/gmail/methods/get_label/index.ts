@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/get
  * `labels.get` (unlike `labels.list`) includes the color and thread counts.
  */
 export const get_label = gmailOperation({
@@ -14,6 +13,7 @@ export const get_label = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/get',
   schema,
   handler,
 });

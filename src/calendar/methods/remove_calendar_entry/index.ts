@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/delete
- *
  * Unsubscribes the user from a calendar. Annotated destructive as a removal
  * (matching Google's unlabel precedent), though the calendar
  * and its events are untouched, and re-adding the entry (add_calendar_entry)
@@ -19,6 +17,7 @@ export const remove_calendar_entry = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/delete',
   schema,
   handler,
 });

@@ -4,7 +4,6 @@ import { MajorDimension } from '../../entities/MajorDimension.js';
 import { ValueRange } from '../../entities/ValueRange.js';
 import { ValueRenderOption } from '../../entities/ValueRenderOption.js';
 
-/** Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/get */
 export const schema = {
   input: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to retrieve data from.'),
