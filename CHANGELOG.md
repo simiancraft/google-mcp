@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.7.0...v1.8.0) (2026-06-11)
+
+
+### Features
+
+* **pkg:** ship the adoption docs in the npm tarball ([2ac73f3](https://github.com/simiancraft/google-mcp-suite/commit/2ac73f37bc10b2cb3eb9498f24a821b8e5568b65))
+
 # [1.7.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.6.0...v1.7.0) (2026-06-11)
 
 
