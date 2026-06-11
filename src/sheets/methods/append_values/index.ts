@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append
- *
  * The range is where the API searches for an existing table, not where the
  * data lands: values are appended to the first row after that table.
  */
@@ -17,6 +15,8 @@ export const append_values = sheetsOperation({
     idempotentHint: false,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append',
   schema,
   handler,
 });

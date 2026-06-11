@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/delete
  * Deletes a user label and removes it from all messages and threads. No mail
  * is lost and the label is recreatable; annotated destructive as a removal.
  */
@@ -15,6 +14,7 @@ export const delete_label = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/delete',
   schema,
   handler,
 });

@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/settings/list
- *
  * The user's Calendar settings, for example timezone, weekStart, and
  * format24HourTime.
  */
@@ -16,6 +14,7 @@ export const list_settings = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/settings/list',
   schema,
   handler,
 });

@@ -6,36 +6,36 @@
 
 | Operation | Source | Description |
 | --- | --- | --- |
-| `search_threads` | MCP Tool | Search threads. Returns thread ids and snippets; use get_thread for messages. |
-| `get_thread` | MCP Tool | Get a thread and its messages by id. |
-| `list_drafts` | MCP Tool | List draft messages, with optional Gmail query filtering. |
-| `create_draft` | MCP Tool | Create a draft email. |
-| `list_labels` | MCP Tool | List the labels in the mailbox. |
-| `create_label` | MCP Tool | Create a new label. |
-| `label_message` | MCP Tool | Add labels to a message. |
-| `label_thread` | MCP Tool | Add labels to a thread. |
-| `unlabel_message` ⚠️ | MCP Tool | Remove labels from a message. |
-| `unlabel_thread` ⚠️ | MCP Tool | Remove labels from a thread. |
-| `get_message` | REST Method | Get a single message by id. |
-| `list_messages` | REST Method | List messages using Gmail query syntax. |
-| `send_message` ⚠️ | REST Method | Send an email immediately. |
-| `trash_message` ⚠️ | REST Method | Move a message to the trash. |
-| `untrash_message` | REST Method | Remove a message from the trash. |
-| `delete_message` ⚠️ | REST Method | Permanently delete a message (bypasses the trash). |
-| `download_attachment` | REST Method | Download a message attachment (base64url-encoded bytes). |
-| `batch_modify_messages` ⚠️ | REST Method | Add and/or remove labels across many messages at once. |
-| `batch_delete_messages` ⚠️ | REST Method | Permanently delete many messages at once (bypasses the trash). |
-| `get_draft` | REST Method | Get a draft by id. |
-| `update_draft` | REST Method | Replace the content of an existing draft. |
-| `delete_draft` ⚠️ | REST Method | Delete a draft. |
-| `send_draft` ⚠️ | REST Method | Send an existing draft. |
-| `get_label` | REST Method | Get a label by id (includes color and thread counts). |
-| `update_label` | REST Method | Update a label name and/or color. |
-| `delete_label` ⚠️ | REST Method | Delete a user label. |
-| `trash_thread` ⚠️ | REST Method | Move a thread to the trash. |
-| `untrash_thread` | REST Method | Remove a thread from the trash. |
-| `delete_thread` ⚠️ | REST Method | Permanently delete a thread and all its messages (bypasses the trash). |
-| `create_filter` ⚠️ | REST Method | Create a filter (criteria plus actions). |
-| `get_filter` | REST Method | Get a filter by id. |
-| `list_filters` | REST Method | List all filters for the account. |
-| `delete_filter` ⚠️ | REST Method | Delete a filter. |
+| [`search_threads`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/search_threads) | MCP Tool | Search threads. Returns thread ids and snippets; use get_thread for messages. |
+| [`get_thread`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/get_thread) | MCP Tool | Get a thread and its messages by id. |
+| [`list_drafts`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/list_drafts) | MCP Tool | List draft messages, with optional Gmail query filtering. |
+| [`create_draft`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/create_draft) | MCP Tool | Create a draft email. |
+| [`list_labels`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/list_labels) | MCP Tool | List the labels in the mailbox. |
+| [`create_label`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/create_label) | MCP Tool | Create a new label. |
+| [`label_message`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/label_message) | MCP Tool | Add labels to a message. |
+| [`label_thread`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/label_thread) | MCP Tool | Add labels to a thread. |
+| [`unlabel_message`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/unlabel_message) ⚠️ | MCP Tool | Remove labels from a message. |
+| [`unlabel_thread`](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/unlabel_thread) ⚠️ | MCP Tool | Remove labels from a thread. |
+| [`get_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/get) | REST Method | Get a single message by id. |
+| [`list_messages`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list) | REST Method | List messages using Gmail query syntax. |
+| [`send_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/send) ⚠️ | REST Method | Send an email immediately. |
+| [`trash_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/trash) ⚠️ | REST Method | Move a message to the trash. |
+| [`untrash_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/untrash) | REST Method | Remove a message from the trash. |
+| [`delete_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/delete) ⚠️ | REST Method | Permanently delete a message (bypasses the trash). |
+| [`download_attachment`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get) | REST Method | Download a message attachment (base64url-encoded bytes). |
+| [`batch_modify_messages`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchModify) ⚠️ | REST Method | Add and/or remove labels across many messages at once. |
+| [`batch_delete_messages`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchDelete) ⚠️ | REST Method | Permanently delete many messages at once (bypasses the trash). |
+| [`get_draft`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/get) | REST Method | Get a draft by id. |
+| [`update_draft`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/update) | REST Method | Replace the content of an existing draft. |
+| [`delete_draft`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/delete) ⚠️ | REST Method | Delete a draft. |
+| [`send_draft`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/send) ⚠️ | REST Method | Send an existing draft. |
+| [`get_label`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/get) | REST Method | Get a label by id (includes color and thread counts). |
+| [`update_label`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/patch) | REST Method | Update a label name and/or color. |
+| [`delete_label`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.labels/delete) ⚠️ | REST Method | Delete a user label. |
+| [`trash_thread`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/trash) ⚠️ | REST Method | Move a thread to the trash. |
+| [`untrash_thread`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/untrash) | REST Method | Remove a thread from the trash. |
+| [`delete_thread`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/delete) ⚠️ | REST Method | Permanently delete a thread and all its messages (bypasses the trash). |
+| [`create_filter`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/create) ⚠️ | REST Method | Create a filter (criteria plus actions). |
+| [`get_filter`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/get) | REST Method | Get a filter by id. |
+| [`list_filters`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/list) | REST Method | List all filters for the account. |
+| [`delete_filter`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/delete) ⚠️ | REST Method | Delete a filter. |

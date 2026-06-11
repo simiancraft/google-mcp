@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/suggest_time
- *
  * A composition, not a transcription: there is no REST suggest endpoint. The
  * handler queries freebusy over the window for every attendee calendar,
  * flattens the busy periods, and computes the free slots in lib/suggest.ts.
@@ -24,6 +22,8 @@ export const suggest_time = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/calendar/api/v3/reference/mcp/tools_list/suggest_time',
   schema,
   handler,
 });

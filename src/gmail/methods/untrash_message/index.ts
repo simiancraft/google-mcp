@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/untrash
  * Reversible: removes a message from the trash.
  */
 export const untrash_message = gmailOperation({
@@ -14,6 +13,8 @@ export const untrash_message = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/untrash',
   schema,
   handler,
 });

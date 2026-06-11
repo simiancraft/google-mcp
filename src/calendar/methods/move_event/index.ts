@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/events/move
- *
  * Changes which calendar an event lives on, making the destination calendar
  * its organizer. The API only moves events whose eventType is `default`;
  * other types (focusTime, outOfOffice, workingLocation, birthday, fromGmail)
@@ -18,6 +16,7 @@ export const move_event = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/events/move',
   schema,
   handler,
 });

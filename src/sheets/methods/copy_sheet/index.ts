@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets/copyTo
- *
  * Returns the properties of the newly created sheet; in the destination its
  * title arrives as "Copy of <source title>".
  */
@@ -17,6 +15,8 @@ export const copy_sheet = sheetsOperation({
     idempotentHint: false,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets/copyTo',
   schema,
   handler,
 });

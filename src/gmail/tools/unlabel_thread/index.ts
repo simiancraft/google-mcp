@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/unlabel_thread
  * Removes labels from every message in a thread via `users.threads.modify`
  * (removeLabelIds); confirms the removed labels.
  */
@@ -15,6 +14,8 @@ export const unlabel_thread = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/unlabel_thread',
   schema,
   handler,
 });

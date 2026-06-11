@@ -3,8 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/calendars/delete
- *
  * Irreversible: permanently removes a secondary calendar and every event on
  * it. The primary calendar cannot be deleted (the API rejects it); to wipe the
  * primary calendar's events, see clear_calendar. To merely unsubscribe from a
@@ -18,6 +16,7 @@ export const delete_calendar = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/calendars/delete',
   schema,
   handler,
 });

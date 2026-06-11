@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchModify
  * Adds and/or removes labels across many messages in one call. Reversible.
  */
 export const batch_modify_messages = gmailOperation({
@@ -14,6 +13,8 @@ export const batch_modify_messages = gmailOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source:
+    'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchModify',
   schema,
   handler,
 });

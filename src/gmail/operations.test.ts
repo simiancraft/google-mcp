@@ -24,6 +24,12 @@ describe('gmail operations', () => {
     }
   });
 
+  it('cites a Google reference page on every operation', () => {
+    for (const op of Object.values(operations)) {
+      expect(op.source).toMatch(/^https:\/\/developers\.google\.com\//);
+    }
+  });
+
   it('annotates every operation with the four MCP hints, explicitly', () => {
     for (const op of Object.values(operations)) {
       expect(typeof op.annotations?.readOnlyHint).toBe('boolean');

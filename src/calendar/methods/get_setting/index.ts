@@ -3,7 +3,6 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Source: https://developers.google.com/workspace/calendar/api/v3/reference/settings/get
  * One user setting by id; list_settings enumerates the available ids.
  */
 export const get_setting = calendarOperation({
@@ -14,6 +13,7 @@ export const get_setting = calendarOperation({
     idempotentHint: true,
     openWorldHint: false,
   },
+  source: 'https://developers.google.com/workspace/calendar/api/v3/reference/settings/get',
   schema,
   handler,
 });
