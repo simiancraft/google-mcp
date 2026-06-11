@@ -7,9 +7,13 @@ import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
 import { stripBreaks } from './headers.js';
 
-/** Lowercased header name -> value, from a message payload. */
+/**
+ * Lowercased header name -> value, from a message payload. Null-prototype: a
+ * sender controls header names, and `__proto__` must land as plain data, not a
+ * prototype write.
+ */
 function headerMap(payload?: gmail_v1.Schema$MessagePart): Record<string, string> {
-  const map: Record<string, string> = {};
+  const map: Record<string, string> = Object.create(null);
   for (const header of payload?.headers ?? []) {
     if (header.name && header.value) {
       map[header.name.toLowerCase()] = header.value;

@@ -1,6 +1,7 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/enums.js';
 import type { CellValue } from '../entities/CellValue.js';
+import { MajorDimension } from '../entities/MajorDimension.js';
 import type { UpdateValuesResponse } from '../entities/UpdateValuesResponse.js';
 import type { ValueRange } from '../entities/ValueRange.js';
 
@@ -13,7 +14,7 @@ import type { ValueRange } from '../entities/ValueRange.js';
 export function projectValueRange(data: sheets_v4.Schema$ValueRange): ValueRange {
   return {
     range: data.range ?? undefined,
-    majorDimension: narrow(data.majorDimension, ['ROWS', 'COLUMNS']),
+    majorDimension: narrow(data.majorDimension, MajorDimension.options),
     values: data.values ? (data.values as CellValue[][]) : undefined,
   };
 }

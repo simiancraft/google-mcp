@@ -1,7 +1,8 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/enums.js';
-import type { SheetProperties } from '../entities/SheetProperties.js';
+import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
+import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
 export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): SheetProperties {
@@ -9,7 +10,7 @@ export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): 
     sheetId: data.sheetId ?? 0,
     title: data.title ?? undefined,
     index: data.index ?? undefined,
-    sheetType: narrow(data.sheetType, ['GRID', 'OBJECT', 'DATA_SOURCE']),
+    sheetType: narrow(data.sheetType, SheetProperties.shape.sheetType.unwrap().options),
     gridProperties: data.gridProperties
       ? {
           rowCount: data.gridProperties.rowCount ?? undefined,
@@ -36,7 +37,10 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
           title: data.properties.title ?? undefined,
           locale: data.properties.locale ?? undefined,
           timeZone: data.properties.timeZone ?? undefined,
-          autoRecalc: narrow(data.properties.autoRecalc, ['ON_CHANGE', 'MINUTE', 'HOUR']),
+          autoRecalc: narrow(
+            data.properties.autoRecalc,
+            SpreadsheetProperties.shape.autoRecalc.unwrap().options,
+          ),
         }
       : undefined,
     sheets: data.sheets
