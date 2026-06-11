@@ -154,7 +154,9 @@ export async function callOperation<Client>(
 
   const parsed = op.schema.input.safeParse(rawArgs ?? {});
   if (!parsed.success) {
-    return errorResult(`Invalid arguments for ${name}: ${parsed.error.message}`);
+    // prettifyError renders "✖ <issue> → at <path>" lines; the raw ZodError
+    // message is a JSON dump of the issue array, which agents misread.
+    return errorResult(`Invalid arguments for ${name}:\n${z.prettifyError(parsed.error)}`);
   }
 
   try {
@@ -170,6 +172,9 @@ export async function callOperation<Client>(
       structuredContent: validated,
     };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return errorResult(`Invalid output from ${name}:\n${z.prettifyError(error)}`);
+    }
     return errorResult(error instanceof Error ? error.message : String(error));
   }
 }
