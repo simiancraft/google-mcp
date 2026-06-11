@@ -12,6 +12,7 @@
  * `assertScopeRegistryMatches` guards the two against silent drift.
  */
 import { calendar } from '@googleapis/calendar';
+import { docs } from '@googleapis/docs';
 import { gmail } from '@googleapis/gmail';
 import { sheets } from '@googleapis/sheets';
 import { authorizedClient } from '../auth/oauth.js';
@@ -41,6 +42,31 @@ async function calendarProbe(account: string): Promise<string> {
   const client = calendar({ version: 'v3', auth: await authorizedClient(account) });
   const res = await client.calendars.get({ calendarId: 'primary' });
   return res.data.summary ?? res.data.timeZone ?? '(reachable)';
+}
+
+// Docs has neither an id-free read (listing is Drive's) nor a stable public
+// sample document (Sheets' probe trick below does not transfer), so the probe
+// reads a sentinel id: a clean 404 proves the token authenticated and the API
+// is enabled (an auth failure is 401, a disabled API 403); anything else throws.
+const DOCS_PROBE_SENTINEL = 'google-mcp-doctor-probe-sentinel';
+
+function isNotFound(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const status =
+    (error as { status?: unknown }).status ??
+    (error as { response?: { status?: unknown } }).response?.status;
+  return status === 404;
+}
+
+async function docsProbe(account: string): Promise<string> {
+  const client = docs({ version: 'v1', auth: await authorizedClient(account) });
+  try {
+    await client.documents.get({ documentId: DOCS_PROBE_SENTINEL });
+    return '(reachable)';
+  } catch (error) {
+    if (isNotFound(error)) return '(reachable)';
+    throw error;
+  }
 }
 
 // The Sheets API has no id-free read (listing spreadsheets is Drive's job), so
@@ -73,7 +99,13 @@ export const SERVICES: ServiceInfo[] = [
     implemented: true,
     probe: sheetsProbe,
   },
-  { name: 'docs', api: 'docs.googleapis.com', scopes: [`${S}documents`], implemented: false },
+  {
+    name: 'docs',
+    api: 'docs.googleapis.com',
+    scopes: [`${S}documents`],
+    implemented: true,
+    probe: docsProbe,
+  },
   {
     name: 'calendar',
     api: 'calendar-json.googleapis.com',
