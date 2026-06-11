@@ -22,9 +22,7 @@ export type Operation<Client, In extends z.ZodObject, Out extends z.ZodObject> =
    * same rubric (see EXTENDING.md).
    * @see https://modelcontextprotocol.io/specification/2025-06-18/schema (ToolAnnotations)
    */
-  annotations?: ToolAnnotations;
-  /** @deprecated migration shim: pre-annotations destructive flag; replaced by `annotations.destructiveHint`. */
-  destructive?: boolean;
+  annotations: ToolAnnotations;
 };
 
 /**
@@ -38,9 +36,7 @@ export type AnyOperation<Client> = {
   description: string;
   schema: { input: z.ZodObject; output: z.ZodObject };
   handler: (client: Client, args: never) => Promise<unknown>;
-  annotations?: ToolAnnotations;
-  /** @deprecated migration shim; see `Operation.destructive`. */
-  destructive?: boolean;
+  annotations: ToolAnnotations;
 };
 
 /**

@@ -8,25 +8,38 @@ describe('operation', () => {
   it('returns its definition unchanged (identity at runtime)', () => {
     const def = {
       description: 'echo the input',
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
       schema: { input: z.object({ text: z.string() }), output: z.object({ text: z.string() }) },
       handler: async (_client: FakeClient, args: { text: string }) => args,
     };
     expect(operation(def)).toBe(def);
   });
 
-  it('passes destructive through', () => {
+  it('passes annotations through', () => {
     const danger = operation({
       description: 'permanent delete',
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
       schema: { input: z.object({ id: z.string() }), output: z.object({ id: z.string() }) },
       handler: async (_client: FakeClient, args) => args,
-      destructive: true,
     });
-    expect(danger.destructive).toBe(true);
+    expect(danger.annotations.destructiveHint).toBe(true);
+    expect(danger.annotations.readOnlyHint).toBe(false);
   });
 
   it('infers Client from the handler and I/O from the schema', async () => {
     const op = operation({
       description: 'double a count',
+      annotations: { readOnlyHint: true },
       schema: { input: z.object({ n: z.number() }), output: z.object({ n: z.number() }) },
       handler: async (client: FakeClient, args) => ({
         n: args.n * (client.tag === 'fake' ? 2 : 1),
@@ -57,6 +70,7 @@ describe('mergeOperations', () => {
   const make = (description: string) =>
     operation({
       description,
+      annotations: { readOnlyHint: true },
       schema: { input: z.object({}), output: z.object({}) },
       handler: async (_client: FakeClient) => ({}),
     });

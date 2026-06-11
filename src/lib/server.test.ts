@@ -9,12 +9,19 @@ type FakeClient = { upper: (s: string) => string };
 
 const echo = operation({
   description: 'Uppercase a string.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   schema: { input: z.object({ text: z.string() }), output: z.object({ shouted: z.string() }) },
   handler: async (client: FakeClient, args) => ({ shouted: client.upper(args.text) }),
 });
 
 const boom = operation({
   description: 'Always throws.',
+  annotations: { readOnlyHint: true },
   schema: { input: z.object({}), output: z.object({}) },
   handler: async (_client: FakeClient) => {
     throw new Error('kaboom');
@@ -23,7 +30,7 @@ const boom = operation({
 
 const danger = operation({
   description: 'Irreversible.',
-  destructive: true,
+  annotations: { destructiveHint: true },
   schema: { input: z.object({ id: z.string() }), output: z.object({ ok: z.boolean() }) },
   handler: async (_client: FakeClient) => ({ ok: true }),
 });
@@ -67,14 +74,19 @@ describe('callOperation', () => {
 });
 
 describe('toolDefinitions', () => {
-  it('emits input and output JSON Schema and a destructive hint only when set', () => {
+  it('emits input and output JSON Schema and the declared annotations', () => {
     const defs = toolDefinitions({ echo, danger });
     const echoDef = defs.find((d) => d.name === 'echo');
     const dangerDef = defs.find((d) => d.name === 'danger');
 
     expect(echoDef?.inputSchema).toBeDefined();
     expect(echoDef?.outputSchema).toBeDefined();
-    expect('annotations' in (echoDef ?? {})).toBe(false);
+    expect(echoDef?.annotations).toEqual({
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    });
     expect(dangerDef?.annotations).toEqual({ destructiveHint: true });
   });
 

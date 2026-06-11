@@ -10,7 +10,6 @@ import { schema } from './schema.js';
  */
 export const delete_thread = gmailOperation({
   description: 'Permanently delete a thread and all its messages (bypasses the trash).',
-  destructive: true,
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

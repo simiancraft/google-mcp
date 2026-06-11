@@ -11,7 +11,6 @@ import { schema } from './schema.js';
  */
 export const clear_calendar = calendarOperation({
   description: 'Permanently delete all events from the primary calendar.',
-  destructive: true,
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
