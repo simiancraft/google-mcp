@@ -1,5 +1,5 @@
 import type { drive_v3 } from '@googleapis/drive';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { Comment } from '../entities/Comment.js';
 import { Reply } from '../entities/Reply.js';
 import type { User } from '../entities/User.js';

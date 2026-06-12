@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { errorMessage } from '../lib/utils/error.js';
 /**
  * google-mcp-doctor: a micro-CLI for provisioning and auth health.
  *
@@ -55,6 +56,6 @@ try {
       process.exit(1);
   }
 } catch (err) {
-  console.error(err instanceof Error ? err.message : String(err));
+  console.error(errorMessage(err));
   process.exit(1);
 }

@@ -1,5 +1,5 @@
 import { describe } from 'bun:test';
-import { pinOperationSurface } from '../lib/surface-pins.js';
+import { pinOperationSurface } from '../lib/testing/surface-pins.js';
 import { instructions } from './instructions.js';
 import { methods } from './methods/registry.js';
 import { tools } from './tools/registry.js';

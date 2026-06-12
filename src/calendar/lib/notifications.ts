@@ -1,4 +1,4 @@
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
 import type { NotificationLevel } from '../entities/NotificationLevel.js';
 
 /** The REST `sendUpdates` value for each notification level. */

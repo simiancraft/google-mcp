@@ -68,6 +68,11 @@ describe('loadAccounts', () => {
     expect(() => loadAccounts()).toThrow(/array of/);
   });
 
+  it('rethrows non-shape errors (broken JSON) untranslated', () => {
+    writeFileSync(path.join(dir, 'accounts.json'), '{not json');
+    expect(() => loadAccounts()).toThrow(SyntaxError);
+  });
+
   it('infers labels from token files when no roster exists', () => {
     const tokens = path.join(dir, 'tokens');
     mkdirSync(tokens, { recursive: true });

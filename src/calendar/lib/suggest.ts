@@ -1,4 +1,4 @@
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
 
 /** A busy interval on some attendee's calendar, as ISO 8601 instants. */
 type BusyPeriod = { start: string; end: string };

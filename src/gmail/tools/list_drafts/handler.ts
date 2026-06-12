@@ -1,6 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/optionality.js';
 import { projectDraft } from '../../lib/message.js';
 import type { schema } from './schema.js';
 

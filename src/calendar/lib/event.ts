@@ -1,5 +1,5 @@
 import type { calendar_v3 } from '@googleapis/calendar';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { Attendee } from '../entities/Attendee.js';
 import type { Event } from '../entities/Event.js';
 import type { Principal } from '../entities/Principal.js';

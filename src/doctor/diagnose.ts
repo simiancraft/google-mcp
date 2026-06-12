@@ -5,6 +5,7 @@
  */
 import { existsSync } from 'node:fs';
 import { loadConfig, SCOPES } from '../auth/config.js';
+import { errorMessage } from '../lib/utils/error.js';
 import { type Account, loadAccounts } from './accounts.js';
 import { requiredApis, SERVICES, type ServiceInfo, scopeRegistryDrift } from './services.js';
 import { grantedScopes, humanizeRemaining, ICON, statusFor } from './status.js';
@@ -99,9 +100,7 @@ export async function diagnose(options: DiagnoseOptions = {}): Promise<void> {
         const who = await svc.probe(acct.label);
         console.log(`  ✓ ${svc.name}  ${acct.label} → ${who}`);
       } catch (err) {
-        console.log(
-          `  ✗ ${svc.name}  ${acct.label} → ${err instanceof Error ? err.message : String(err)}`,
-        );
+        console.log(`  ✗ ${svc.name}  ${acct.label} → ${errorMessage(err)}`);
       }
     }
   }

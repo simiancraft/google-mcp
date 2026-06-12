@@ -16,7 +16,10 @@ checklist, live verification, and the operational matrix), see
 ```
 src/
   auth/         # authorizedClient(account) + runAuthFlow(account); never reimplement auth
-  lib/          # operation() + server(): the two MCP primitives; never reimplement the server
+  lib/          # the protocol surface; never reimplement the server
+                #   root = the named ideas (operation, server, capabilities,
+                #   instructions, optionality, limits); utils/ = mechanisms;
+                #   testing/ = build-excluded test scaffolding
   <svc>/        # one folder per service (gmail, calendar, ...)
     index.ts        # server({ name, title, description, instructions, operations, client }); the bin entry
     operation.ts    # <svc>Operation: operation() bound to the service's client type
@@ -201,13 +204,25 @@ response wrapper may stay inline in its `schema.ts`.
 
 **Enum policy.** Inputs are closed `z.enum`s with the `*_UNSPECIFIED` variants
 never exposed. Outputs are closed `z.enum`s with unknown values **dropped** at
-projection (the field goes absent; `narrow()` in the shared `src/lib/enums.ts`
+projection (the field goes absent; `narrow()` in the shared `src/lib/utils/narrow.ts`
 is the helper, and the allowed list derives from the entity itself,
 `Entity.shape.<field>.unwrap().options`, so projection and schema cannot
 disagree): the schema stays truthful and a new upstream value degrades to a
 missing field, never a wrong one. Never coerce an unknown value to a
 valid-looking default. (Calendar's open-string output fields, e.g.
 `Event.status`, predate this rule and keep their shape for wire stability.)
+
+**Shared utilities.** Lib's kit, and the failure-mode contract that binds it:
+in-memory lookups miss soft (`utils/lookup.ts` `ownLookup` for plain-object
+maps with caller-influenced keys; `utils/narrow.ts` `narrow` for output
+enums), boundary I/O fails loud (`utils/json.ts` `readJsonFile` parses and
+validates on-disk JSON in one step; `limits.ts` `assertWithinDownloadCap`
+refuses oversize transfers), and `callOperation`'s envelope catches whatever
+throws (`utils/error.ts` `errorMessage` renders it). `optionality.ts` owns
+the optionality policy: `Optional<T>` is the suite's spelling of "may be
+absent," and `forGoogle` reconciles it with Google's generated types at every
+request boundary. Reach for these before hand-rolling; each exists because
+the hand-rolled version drifted or was forgotten at least once.
 
 **Identity fields fall back to sentinels.** Projections default a missing
 required identity to `''`/`0` (`id: data.id ?? ''`, `sheetId ?? 0`), uniform

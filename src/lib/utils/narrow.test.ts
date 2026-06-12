@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { narrow } from './enums.js';
+import { narrow } from './narrow.js';
 
 describe('narrow', () => {
   it('keeps allowed values', () => {

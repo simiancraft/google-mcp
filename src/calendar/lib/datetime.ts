@@ -1,6 +1,6 @@
 import type { calendar_v3 } from '@googleapis/calendar';
-import { forGoogle } from '../../lib/google.js';
-import type { Optional } from '../../lib/types.js';
+import type { Optional } from '../../lib/optionality.js';
+import { forGoogle } from '../../lib/optionality.js';
 import type { EventDateTime } from '../entities/EventDateTime.js';
 
 /**

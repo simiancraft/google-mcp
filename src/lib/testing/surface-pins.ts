@@ -1,13 +1,10 @@
 import { expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { mergeOperations, SOURCE_META_KEY } from './operation.js';
-import {
-  type CapabilityGroup,
-  renderCapabilities,
-  toolDefinitions,
-  untrustedContentInstructions,
-} from './server.js';
+import { type CapabilityGroup, renderCapabilities } from '../capabilities.js';
+import { untrustedContentInstructions } from '../instructions.js';
+import { mergeOperations, SOURCE_META_KEY } from '../operation.js';
+import { toolDefinitions } from '../server.js';
 
 /**
  * The per-wing surface-pin data: everything a service must keep current when
@@ -104,6 +101,10 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
     }
   });
 
+  // Constraint worth knowing before writing instruction prose: every
+  // snake_case token in the served instructions must name one of THIS wing's
+  // operations. Cross-wing references dodge it with REST dot notation
+  // ("removing a spreadsheet is Drive's files.delete"), the sheets precedent.
   it('instructions cite the _meta key, carry the content advisory, and name only real operations', () => {
     expect(pins.instructions).toContain(SOURCE_META_KEY);
     expect(pins.instructions).toContain(untrustedContentInstructions().trim());

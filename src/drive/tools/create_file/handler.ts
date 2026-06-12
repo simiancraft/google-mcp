@@ -1,7 +1,8 @@
 import { Readable } from 'node:stream';
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/optionality.js';
+import { ownLookup } from '../../../lib/utils/lookup.js';
 import { projectFile, TOOL_FILE_FIELDS } from '../../lib/file.js';
 import type { schema } from './schema.js';
 
@@ -21,15 +22,9 @@ export async function handler(
 
   // Converting an upload means creating the file as the Google editor type
   // while the media carries the uploaded content type.
-  // Own-property guard: contentMimeType is free text, and an inherited key
-  // (__proto__, toString) must miss rather than resolve (the query.ts and
-  // server.ts precedent).
   const converted =
-    hasContent &&
-    !args.disableConversionToGoogleType &&
-    args.contentMimeType &&
-    Object.hasOwn(CONVERSIONS, args.contentMimeType)
-      ? CONVERSIONS[args.contentMimeType]
+    hasContent && !args.disableConversionToGoogleType && args.contentMimeType
+      ? ownLookup(CONVERSIONS, args.contentMimeType)
       : undefined;
 
   const requestBody = forGoogle({

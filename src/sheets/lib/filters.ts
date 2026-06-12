@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
-import { narrow } from '../../lib/enums.js';
-import { forGoogle } from '../../lib/google.js';
+import { forGoogle } from '../../lib/optionality.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { DataFilter } from '../entities/DataFilter.js';
 import { DeveloperMetadataLocation } from '../entities/DeveloperMetadataLocation.js';
 import { DeveloperMetadataLookup } from '../entities/DeveloperMetadataLookup.js';

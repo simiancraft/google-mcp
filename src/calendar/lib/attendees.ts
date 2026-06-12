@@ -1,5 +1,5 @@
 import type { calendar_v3 } from '@googleapis/calendar';
-import type { Optional } from '../../lib/types.js';
+import { forGoogle, type Optional } from '../../lib/optionality.js';
 
 /**
  * Apply attendee email deltas to a REST attendee array: drop the removed
@@ -50,7 +50,7 @@ export function respondAsSelf(
       ? {
           ...attendee,
           responseStatus: response.responseStatus,
-          ...(response.comment === undefined ? {} : { comment: response.comment }),
+          ...forGoogle({ comment: response.comment }),
         }
       : attendee,
   );

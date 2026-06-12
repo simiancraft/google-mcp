@@ -1,6 +1,6 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
-import { forGoogle } from '../../../lib/google.js';
+import { forGoogle } from '../../../lib/optionality.js';
 import { applyUpdate } from '../../lib/batch.js';
 import type { schema } from './schema.js';
 

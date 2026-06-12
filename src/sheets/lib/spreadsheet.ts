@@ -1,5 +1,5 @@
 import type { sheets_v4 } from '@googleapis/sheets';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';

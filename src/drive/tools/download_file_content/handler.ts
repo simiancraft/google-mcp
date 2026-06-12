@@ -1,6 +1,7 @@
 import type { drive_v3 } from '@googleapis/drive';
 import type { z } from 'zod';
-import { assertWithinCap, isGoogleNative, mediaBuffer } from '../../lib/content.js';
+import { assertWithinDownloadCap } from '../../../lib/limits.js';
+import { isGoogleNative, MEDIA_DEFERRAL, mediaBuffer } from '../../lib/content.js';
 import type { schema } from './schema.js';
 
 export async function handler(
@@ -26,7 +27,11 @@ export async function handler(
     );
     bytes = mediaBuffer(res);
   } else {
-    assertWithinCap(Number(meta.size ?? 0), 'File', 'base64 downloads');
+    assertWithinDownloadCap(meta.size, {
+      subject: 'File',
+      action: 'base64 downloads',
+      deferral: MEDIA_DEFERRAL,
+    });
     const res = await drive.files.get(
       { fileId: args.fileId, alt: 'media', supportsAllDrives: true },
       { responseType: 'arraybuffer' },
@@ -34,7 +39,11 @@ export async function handler(
     bytes = mediaBuffer(res);
     // Re-check what actually arrived: the metadata size is a separate earlier
     // call, absent on some blobs, and content can change between the two.
-    assertWithinCap(bytes.byteLength, 'File content', 'base64 downloads');
+    assertWithinDownloadCap(bytes.byteLength, {
+      subject: 'File content',
+      action: 'base64 downloads',
+      deferral: MEDIA_DEFERRAL,
+    });
   }
 
   return {

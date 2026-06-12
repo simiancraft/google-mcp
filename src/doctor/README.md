@@ -10,10 +10,11 @@ Doctor is a **peer** of the services. The dependency direction is one-way and
 load-bearing:
 
 - **Doctor knows the services; the services never import doctor.**
-- Doctor imports the auth layer (`src/auth`) and stable public surfaces
-  (`@googleapis/*`) only, never a service's internals (`src/gmail/*`). Each
-  service's live probe is built from `@googleapis/<svc>` + `authorizedClient`, so
-  doctor stays decoupled from service churn.
+- Doctor imports the auth layer (`src/auth`), lib's shared utilities
+  (`src/lib/utils`), and stable public surfaces (`@googleapis/*`) only, never
+  a service's internals (`src/gmail/*`). Each service's live probe is built
+  from `@googleapis/<svc>` + `authorizedClient`, so doctor stays decoupled
+  from service churn.
 
 Doctor's knowledge of the services lives in `src/doctor/services.ts` (name, Cloud
 API id, scopes, and an optional live probe). The canonical scope list stays

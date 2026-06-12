@@ -7,7 +7,7 @@ import {
   identityInstructions,
   untrustedContentInstructions,
   vocabularyInstructions,
-} from '../lib/server.js';
+} from '../lib/instructions.js';
 
 export const instructions =
   identityInstructions('Google account') +

@@ -1,5 +1,5 @@
 import type { sheets_v4 } from '@googleapis/sheets';
-import { narrow } from '../../lib/enums.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import { DeveloperMetadata } from '../entities/DeveloperMetadata.js';
 import { projectDeveloperMetadataLocation } from './filters.js';
 
