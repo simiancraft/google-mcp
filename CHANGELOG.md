@@ -1,3 +1,23 @@
+## [1.10.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.9.1...v1.10.0) (2026-06-12)
+
+### Features
+
+* **lib:** add ownLookup and readJsonFile utils ([c2472d8](https://github.com/simiancraft/google-mcp-suite/commit/c2472d8850da93e70b8b85eb81a13e4b0fce8418))
+
+### Refactoring
+
+* adopt the shared spellings at three stragglers ([8c1776c](https://github.com/simiancraft/google-mcp-suite/commit/8c1776cc7faa7f0384130564ed9e60254d061c22))
+* **auth:** route the on-disk JSON boundary through readJsonFile ([9b10783](https://github.com/simiancraft/google-mcp-suite/commit/9b1078325a49bf6f532615eae64420e1975b3db7))
+* **lib:** group the protocol surface by idea ([75369af](https://github.com/simiancraft/google-mcp-suite/commit/75369af281e6db8e28461f9b826506871b1122fe))
+* **lib:** merge the optionality policy into one root module ([822824b](https://github.com/simiancraft/google-mcp-suite/commit/822824b39aed47a777c3cd9bb70b6d146a720827))
+* **lib:** rename consts.ts back to limits.ts and lift the cap refusal ([e5eb2d4](https://github.com/simiancraft/google-mcp-suite/commit/e5eb2d4e46ffa0aee3527d936befd61c4285c184))
+
+### Documentation
+
+* **doctor:** the dependency statement includes lib's shared utilities ([eb018dd](https://github.com/simiancraft/google-mcp-suite/commit/eb018dd8a6cf78274240b657dc9da0029233d975))
+* position npm metadata around Google Workspace MCP phrasing ([643aa47](https://github.com/simiancraft/google-mcp-suite/commit/643aa47ee6066b6e93dd94acabb2b354ffb9e559))
+* write the lib conventions where contributors will find them ([f520784](https://github.com/simiancraft/google-mcp-suite/commit/f5207846fc3dd5f65c4a828bad4b7d20a8dd38a5))
+
 ## [1.9.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.9.0...v1.9.1) (2026-06-11)
 
 ### Documentation
