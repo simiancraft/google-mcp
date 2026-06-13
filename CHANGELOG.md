@@ -1,3 +1,9 @@
+## [1.10.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.0...v1.10.1) (2026-06-13)
+
+### Documentation
+
+* **notice:** drop bare SPDX identifiers from attribution prose ([87c8e72](https://github.com/simiancraft/google-mcp-suite/commit/87c8e7253b6a0acf4c3e96a3616bf7315df9418f))
+
 ## [1.10.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.9.1...v1.10.0) (2026-06-12)
 
 ### Features
