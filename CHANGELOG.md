@@ -1,3 +1,9 @@
+## [1.10.2](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.1...v1.10.2) (2026-06-26)
+
+### Documentation
+
+* **ci:** correct stale actions/checkout version comments ([2f0114e](https://github.com/simiancraft/google-mcp-suite/commit/2f0114e73033e1b30b404fb8c58c1f11a47b84b2))
+
 ## [1.10.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.0...v1.10.1) (2026-06-13)
 
 ### Documentation
