@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { docs } from '@googleapis/docs';
-import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
+import { authorizedClient, isInvalidGrant, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
 import { instructions } from './instructions.js';
@@ -24,4 +24,5 @@ await server({
   operations: mergeOperations(methods),
   client: async (account) => docs({ version: 'v1', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,
+  staleCredentials: isInvalidGrant,
 });

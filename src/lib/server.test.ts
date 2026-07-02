@@ -2,6 +2,7 @@ import { describe, expect, it, mock, spyOn } from 'bun:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { z } from 'zod';
+import { isInvalidGrant } from '../auth/oauth.js';
 import { operation, SOURCE_META_KEY } from './operation.js';
 import { callOperation, server, toolDefinitions } from './server.js';
 
@@ -59,6 +60,47 @@ const liar = operation({
   source: 'https://developers.google.com/example/reference/rest/v1/things/read',
   schema: { input: z.object({}), output: z.object({ shouted: z.string() }) },
   handler: async (_client: FakeClient) => ({ shouted: 42 }) as never,
+});
+
+const send = operation({
+  description: 'Irreversible and not idempotent; a retry would double the side effect.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/send',
+  schema: { input: z.object({}), output: z.object({ sent: z.boolean() }) },
+  handler: async (client: FakeClient) => ({ sent: client.upper('x') === 'X' }),
+});
+
+const purge = operation({
+  description: 'Destructive but idempotent; a retry converges to the same state.',
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: true,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/delete',
+  schema: { input: z.object({}), output: z.object({ gone: z.boolean() }) },
+  handler: async (client: FakeClient) => ({ gone: client.upper('x') === 'X' }),
+});
+
+const impostor = operation({
+  description: 'Throws a plain error whose message merely says invalid_grant.',
+  annotations: {
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
+  source: 'https://developers.google.com/example/reference/rest/v1/things/read',
+  schema: { input: z.object({}), output: z.object({}) },
+  handler: async (_client: FakeClient) => {
+    throw new Error('invalid_grant');
+  },
 });
 
 const operations = { echo, boom, liar };
@@ -255,5 +297,182 @@ describe('server', () => {
       exitSpy.mockRestore();
       errSpy.mockRestore();
     }
+  });
+});
+
+describe('stale-credential healing', () => {
+  const staleError = () =>
+    Object.assign(new Error('invalid_grant'), { response: { data: { error: 'invalid_grant' } } });
+  const stale: FakeClient = {
+    upper: () => {
+      throw staleError();
+    },
+  };
+
+  it('rebuilds from disk and retries a read-only call once on certified stale credentials', async () => {
+    const builds = [stale, client];
+    const factory = mock(async () => builds.shift() ?? client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { echo },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
+    expect(res.isError).toBeFalsy();
+    expect(res.structuredContent).toEqual({ shouted: 'HI' });
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('returns the envelope after a single retry when the rebuilt client is still stale', async () => {
+    const factory = mock(async () => stale);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { echo },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('invalid_grant');
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('rebuilds but never re-executes a non-idempotent destructive operation', async () => {
+    const upper = mock((s: string) => s.toUpperCase());
+    const healed: FakeClient = { upper };
+    const builds = [stale, healed];
+    const factory = mock(async () => builds.shift() ?? healed);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { send },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'send', arguments: {} });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('retry send');
+    expect(factory).toHaveBeenCalledTimes(2);
+    expect(upper).toHaveBeenCalledTimes(0);
+
+    await mcp.close();
+  });
+
+  it('retries a destructive operation when its annotations declare it idempotent', async () => {
+    const builds = [stale, client];
+    const factory = mock(async () => builds.shift() ?? client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { purge },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'purge', arguments: {} });
+    expect(res.isError).toBeFalsy();
+    expect(res.structuredContent).toEqual({ gone: true });
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('returns the rebuild error inside the envelope when the token cannot be reloaded', async () => {
+    let first = true;
+    const factory = mock(async () => {
+      if (first) {
+        first = false;
+        return stale;
+      }
+      throw new Error('no token on disk for personal');
+    });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { echo },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('no token on disk');
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('does not rebuild for errors the predicate does not certify', async () => {
+    const factory = mock(async () => client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { boom },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'boom', arguments: {} });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('kaboom');
+    expect(factory).toHaveBeenCalledTimes(1);
+
+    await mcp.close();
+  });
+
+  it('does not rebuild when an error merely mentions invalid_grant in its message', async () => {
+    const factory = mock(async () => client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { impostor },
+      client: factory,
+      staleCredentials: isInvalidGrant,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'impostor', arguments: {} });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('invalid_grant');
+    expect(factory).toHaveBeenCalledTimes(1);
+
+    await mcp.close();
   });
 });

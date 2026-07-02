@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { gmail } from '@googleapis/gmail';
-import { authorizedClient, runAuthFlow } from '../auth/oauth.js';
+import { authorizedClient, isInvalidGrant, runAuthFlow } from '../auth/oauth.js';
 import { mergeOperations } from '../lib/operation.js';
 import { server } from '../lib/server.js';
 import { instructions } from './instructions.js';
@@ -21,4 +21,5 @@ await server({
   operations: mergeOperations(tools, methods),
   client: async (account) => gmail({ version: 'v1', auth: await authorizedClient(account) }),
   runAuth: runAuthFlow,
+  staleCredentials: isInvalidGrant,
 });
