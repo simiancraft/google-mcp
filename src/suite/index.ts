@@ -14,7 +14,8 @@ if (name === undefined) {
 
 const entry = resolve(name);
 if (entry === undefined) {
-  console.error(`Unknown service: ${name}\n\n${usage}`);
+  // JSON.stringify escapes control bytes, so hostile argv cannot reach a rendering terminal.
+  console.error(`Unknown service: ${JSON.stringify(name)}\n\n${usage}`);
   process.exit(1);
 }
 
