@@ -51,6 +51,18 @@ function errorResult(message: string): CallToolResult {
 }
 
 /**
+ * True when a result is the error envelope for a dead refresh token:
+ * `invalid_grant` is the OAuth2 error code google-auth-library surfaces when
+ * the stored refresh token has expired or been revoked.
+ */
+function isInvalidGrant(result: CallToolResult): boolean {
+  return (
+    result.isError === true &&
+    result.content.some((c) => c.type === 'text' && c.text.includes('invalid_grant'))
+  );
+}
+
+/**
  * Build the MCP `tools/list` payload from the operations: each one's input and
  * output JSON Schema, the four-hint annotations quad declared on its
  * definition, and the source reference page under `_meta[SOURCE_META_KEY]`.
@@ -138,7 +150,7 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
     process.exit(0);
   }
 
-  const authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
+  let authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
   const mcp = new Server(
     {
       name,
@@ -154,9 +166,23 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
     tools: toolDefinitions(operations),
   }));
 
-  mcp.setRequestHandler(CallToolRequestSchema, (request) =>
-    callOperation(operations, authed, request.params.name, request.params.arguments),
-  );
+  mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name: opName, arguments: args } = request.params;
+    const result = await callOperation(operations, authed, opName, args);
+    if (!isInvalidGrant(result)) return result;
+    // This long-lived process never re-reads the token file, so after a
+    // `google-mcp-doctor auth` re-auth the old in-memory credentials keep
+    // failing with invalid_grant until restart. invalid_grant is raised while
+    // refreshing the access token — before the operation runs — so a one-shot
+    // rebuild-from-disk and retry is safe and lets a re-auth heal running
+    // servers.
+    try {
+      authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
+    } catch (error) {
+      return errorResult(errorMessage(error));
+    }
+    return callOperation(operations, authed, opName, args);
+  });
 
   await mcp.connect(options.transport ?? new StdioServerTransport());
 }

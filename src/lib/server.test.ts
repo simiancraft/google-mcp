@@ -195,6 +195,80 @@ describe('server', () => {
     await mcp.close();
   });
 
+  it('rebuilds the client and retries once when a call fails with invalid_grant', async () => {
+    const stale: FakeClient = {
+      upper: () => {
+        throw new Error('invalid_grant');
+      },
+    };
+    const builds = [stale, client];
+    const factory = mock(async () => builds.shift() ?? client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { echo },
+      client: factory,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
+    expect(res.isError).toBeFalsy();
+    expect(res.structuredContent).toEqual({ shouted: 'HI' });
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('retries only once when the rebuilt client still fails with invalid_grant', async () => {
+    const stale: FakeClient = {
+      upper: () => {
+        throw new Error('invalid_grant');
+      },
+    };
+    const factory = mock(async () => stale);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { echo },
+      client: factory,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'echo', arguments: { text: 'hi' } });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('invalid_grant');
+    expect(factory).toHaveBeenCalledTimes(2);
+
+    await mcp.close();
+  });
+
+  it('does not rebuild the client for errors other than invalid_grant', async () => {
+    const factory = mock(async () => client);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server({
+      name: 'test',
+      operations: { boom },
+      client: factory,
+      transport: serverTransport,
+    });
+
+    const mcp = new Client({ name: 'test-client', version: '0' });
+    await mcp.connect(clientTransport);
+
+    const res = await mcp.callTool({ name: 'boom', arguments: {} });
+    expect(res.isError).toBe(true);
+    expect((res.content as [{ text: string }])[0].text).toContain('kaboom');
+    expect(factory).toHaveBeenCalledTimes(1);
+
+    await mcp.close();
+  });
+
   it('serves identity metadata and instructions through the initialize result', async () => {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     await server({
