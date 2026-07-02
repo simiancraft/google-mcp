@@ -78,8 +78,10 @@ register it in that folder's `registry.ts`, and add any new `entities/`. A new
 **service** is a new folder `src/<service>/`: add its scopes to the shared
 `SCOPES` union in `src/auth/config.ts` (services do not declare scopes locally),
 call `server({ name, title, description, instructions, operations, client })`
-in its `index.ts` (instructions are served in the MCP initialize result), and
-add a `bin` entry in `package.json`.
+in its `index.ts` (instructions are served in the MCP initialize result), add
+a `bin` entry in `package.json`, and register the service in
+`src/suite/dispatch.ts` so the front-door bin can start it (a drift test ties
+the dispatch list to the published bins).
 
 ## Things that will trip you up
 
