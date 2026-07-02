@@ -1,3 +1,9 @@
+## [1.11.2](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.1...v1.11.2) (2026-07-02)
+
+### Bug Fixes
+
+* **lib:** heal stale instance credentials on invalid_grant ([70b19dc](https://github.com/simiancraft/google-mcp-suite/commit/70b19dc69e775077b9ae880ae23964f01fdc2b10))
+
 ## [1.11.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.0...v1.11.1) (2026-07-02)
 
 ### Bug Fixes
