@@ -1,3 +1,9 @@
+## [1.11.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.0...v1.11.1) (2026-07-02)
+
+### Bug Fixes
+
+* **doctor:** route unknown-command usage to stderr ([#64](https://github.com/simiancraft/google-mcp-suite/issues/64)) ([38a50a9](https://github.com/simiancraft/google-mcp-suite/commit/38a50a9cf80b2ce8b0d3ecd46d80a4b1ba6e70ca))
+
 ## [1.11.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.2...v1.11.0) (2026-07-02)
 
 ### Features
