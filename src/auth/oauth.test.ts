@@ -2,7 +2,7 @@ import { afterAll, beforeAll, expect, it } from 'bun:test';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { authorizedClient } from './oauth.js';
+import { authorizedClient, isInvalidGrant } from './oauth.js';
 
 let dir: string;
 
@@ -45,4 +45,25 @@ it('throws on an invalid client secret file', async () => {
   await expect(authorizedClient('test')).rejects.toThrow(SyntaxError);
   process.env['GOOGLE_MCP_CLIENT_SECRET'] = saved;
   rmSync(badDir, { recursive: true, force: true });
+});
+
+it('isInvalidGrant certifies the token-endpoint invalid_grant shape', () => {
+  const err = Object.assign(new Error('invalid_grant'), {
+    response: { data: { error: 'invalid_grant' } },
+  });
+  expect(isInvalidGrant(err)).toBe(true);
+});
+
+it('isInvalidGrant rejects other token-endpoint errors', () => {
+  const err = Object.assign(new Error('invalid_client'), {
+    response: { data: { error: 'invalid_client' } },
+  });
+  expect(isInvalidGrant(err)).toBe(false);
+});
+
+it('isInvalidGrant never matches on message text alone', () => {
+  expect(isInvalidGrant(new Error('invalid_grant'))).toBe(false);
+  expect(isInvalidGrant('invalid_grant')).toBe(false);
+  expect(isInvalidGrant({ message: 'Error: invalid_grant' })).toBe(false);
+  expect(isInvalidGrant(null)).toBe(false);
 });

@@ -78,6 +78,28 @@ export async function authorizedClient(account?: string): Promise<OAuth2Client> 
 }
 
 /**
+ * The shape gaxios gives an error when Google's token endpoint rejects a
+ * refresh: `response.data.error` carries the OAuth 2.0 error code (RFC 6749
+ * section 5.2). Typed on the response body, never on message text, so an
+ * operation error that merely mentions "invalid_grant" cannot match.
+ */
+const TokenEndpointError = z.object({
+  response: z.object({ data: z.object({ error: z.string() }) }),
+});
+
+/**
+ * True when an error is Google's token endpoint refusing the stored refresh
+ * token (`invalid_grant`: expired or revoked). No retry with the same client
+ * can succeed, but a rebuild from disk heals the instance after a re-auth.
+ * A false negative degrades to the plain error envelope; the shape check
+ * makes a false positive structurally impossible.
+ */
+export function isInvalidGrant(error: unknown): boolean {
+  const parsed = TokenEndpointError.safeParse(error);
+  return parsed.success && parsed.data.response.data.error === 'invalid_grant';
+}
+
+/**
  * Run the browser consent flow for `account` and persist its token. The token
  * file is written 0600 inside a 0700 tokens dir; the consent requests offline
  * access and forces the screen so a refresh token is always returned. The flow

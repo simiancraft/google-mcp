@@ -42,6 +42,15 @@ export type ServerOptions<Client> = {
   client: (account: string | undefined) => Promise<Client>;
   /** Optional consent flow, invoked by the `auth` subcommand. */
   runAuth?: (account: string | undefined) => Promise<void>;
+  /**
+   * Certify an error as stale stored credentials (e.g. OAuth `invalid_grant`).
+   * A certified failure rebuilds the client from disk, so a re-auth heals a
+   * running instance, and retries once only when the operation's annotations
+   * make a second attempt safe (read-only or idempotent); otherwise the error
+   * envelope tells the agent to retry. Typed like `runAuth`: the auth layer
+   * supplies the predicate, this generic layer never inspects error shapes.
+   */
+  staleCredentials?: (error: unknown) => boolean;
   /** Transport to connect; defaults to stdio. Injectable for tests. */
   transport?: Transport;
 };
@@ -72,13 +81,17 @@ export function toolDefinitions<Client>(operations: Record<string, AnyOperation<
  * Run one operation by name: resolve it, validate input against its schema, run
  * the handler, validate the output, and return both a structured result and a text
  * rendering (for clients that do not yet read `structuredContent`). All failure
- * paths return an `isError` result rather than throwing. Exported for tests.
+ * paths return an `isError` result rather than throwing, with one exception:
+ * a handler error that `rethrows` certifies escapes untouched, so the
+ * credential-healing layer in `server()` can see it typed rather than
+ * flattened into envelope text. Exported for tests.
  */
 export async function callOperation<Client>(
   operations: Record<string, AnyOperation<Client>>,
   client: Client,
   name: string,
   rawArgs: unknown,
+  rethrows?: (error: unknown) => boolean,
 ): Promise<CallToolResult> {
   // ownLookup: a bare `operations[name]` would resolve inherited keys
   // (`__proto__`, `toString`, ...) to truthy non-operations and throw past the
@@ -112,6 +125,9 @@ export async function callOperation<Client>(
       structuredContent: validated,
     };
   } catch (error) {
+    if (rethrows?.(error)) {
+      throw error;
+    }
     if (error instanceof z.ZodError) {
       return errorResult(`Invalid output from ${name}:\n${z.prettifyError(error)}`);
     }
@@ -123,10 +139,10 @@ export async function callOperation<Client>(
  * Turn a service's operations into a running stdio MCP server. Identical for every
  * service; only the bound `Client` type and the operations differ. Owns the
  * cross-cutting concerns: the `auth` subcommand, account binding, the `tools/list`
- * payload, dispatch, validation, and error wrapping.
+ * payload, dispatch, validation, error wrapping, and stale-credential healing.
  */
 export async function server<Client>(options: ServerOptions<Client>): Promise<void> {
-  const { name, version = pkg.version, operations, client, runAuth } = options;
+  const { name, version = pkg.version, operations, client, runAuth, staleCredentials } = options;
   const { title, description, websiteUrl = pkg.homepage, instructions } = options;
 
   if (process.argv[2] === 'auth') {
@@ -138,7 +154,7 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
     process.exit(0);
   }
 
-  const authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
+  let authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
   const mcp = new Server(
     {
       name,
@@ -154,9 +170,33 @@ export async function server<Client>(options: ServerOptions<Client>): Promise<vo
     tools: toolDefinitions(operations),
   }));
 
-  mcp.setRequestHandler(CallToolRequestSchema, (request) =>
-    callOperation(operations, authed, request.params.name, request.params.arguments),
-  );
+  mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name: opName, arguments: args } = request.params;
+    try {
+      return await callOperation(operations, authed, opName, args, staleCredentials);
+    } catch (error) {
+      // Only a staleCredentials-certified error reaches here: the stored
+      // refresh token died, and this long-lived process never re-reads its
+      // token file, so a `google-mcp-doctor auth` re-auth cannot heal it
+      // without a rebuild. invalid_grant is raised while refreshing the
+      // access token, normally before the operation executes, but a
+      // multi-call handler can die mid-flight, so the retry is gated on the
+      // operation's own annotations: read-only or idempotent retries here;
+      // anything else hands the retry decision back to the agent.
+      try {
+        authed = await client(process.env['GOOGLE_MCP_ACCOUNT']);
+      } catch (rebuildError) {
+        return errorResult(errorMessage(rebuildError));
+      }
+      const hints = ownLookup(operations, opName)?.annotations;
+      if (hints?.readOnlyHint !== true && hints?.idempotentHint !== true) {
+        return errorResult(
+          `${errorMessage(error)} (stale credentials, now reloaded from disk; retry ${opName})`,
+        );
+      }
+      return callOperation(operations, authed, opName, args);
+    }
+  });
 
   await mcp.connect(options.transport ?? new StdioServerTransport());
 }
