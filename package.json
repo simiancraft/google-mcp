@@ -41,6 +41,7 @@
     "url": "https://github.com/simiancraft/google-mcp-suite/issues"
   },
   "bin": {
+    "google-mcp-suite": "./dist/suite/index.js",
     "google-mcp-gmail": "./dist/gmail/index.js",
     "google-mcp-calendar": "./dist/calendar/index.js",
     "google-mcp-sheets": "./dist/sheets/index.js",

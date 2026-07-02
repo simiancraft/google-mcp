@@ -1,0 +1,30 @@
+/**
+ * The suite's front door: one bin named after the package, so `npx google-mcp-suite
+ * <service>` works. Registry-fed MCP clients construct exactly `npx <package>` from a
+ * server.json entry, and npx can only run a bin whose name matches the package, so the
+ * package name must be runnable; the service argument is what lets one registry entry
+ * cover every server in the suite. The suite knows the services; no service imports it.
+ */
+export const services = ['gmail', 'calendar', 'drive', 'docs', 'sheets'] as const;
+
+// A Map, not an object literal: lookup must miss on inherited keys ('constructor').
+const entries = new Map<string, string>([
+  ...services.map((service) => [service, `../${service}/index.js`] as const),
+  ['doctor', '../doctor/index.js'],
+]);
+
+/** The module specifier to import for a dispatchable name, or undefined. */
+export function resolve(name: string): string | undefined {
+  return entries.get(name);
+}
+
+export const usage = `google-mcp-suite: per-account Google MCP servers, one process per service
+
+Usage:
+  google-mcp-suite <service>    start a server on stdio (${services.join(', ')})
+  google-mcp-suite doctor [...] provisioning + auth health (same as google-mcp-doctor)
+  google-mcp-suite help
+
+The account is chosen by the GOOGLE_MCP_ACCOUNT environment variable; run one
+instance per service per account. Each server also ships as its own bin
+(${services.map((service) => `google-mcp-${service}`).join(', ')}).`;
