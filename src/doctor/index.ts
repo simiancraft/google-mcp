@@ -10,8 +10,8 @@ import { runAuth } from './auth.js';
 import { diagnose, renderScopes } from './diagnose.js';
 import { renderStatus } from './status.js';
 
-function printHelp(): void {
-  console.log(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
+function printHelp(write: (msg: string) => void = console.log): void {
+  write(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
 
 Usage:
   google-mcp-doctor [check]          full diagnostic: provisioning, accounts, services
@@ -52,7 +52,7 @@ try {
       break;
     default:
       console.error(`Unknown command: ${cmd}\n`);
-      printHelp();
+      printHelp(console.error);
       process.exit(1);
   }
 } catch (err) {
