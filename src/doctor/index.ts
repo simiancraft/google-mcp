@@ -10,8 +10,7 @@ import { runAuth } from './auth.js';
 import { diagnose, renderScopes } from './diagnose.js';
 import { renderStatus } from './status.js';
 
-function printHelp(): void {
-  console.log(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
+const usage = `google-mcp-doctor: provisioning & auth health for google-mcp-suite
 
 Usage:
   google-mcp-doctor [check]          full diagnostic: provisioning, accounts, services
@@ -24,8 +23,7 @@ Usage:
   google-mcp-doctor help
 
 Flags:
-  --no-probe   skip the live service health checks (offline/fast)`);
-}
+  --no-probe   skip the live service health checks (offline/fast)`;
 
 const [cmd = 'check', ...rest] = process.argv.slice(2);
 
@@ -48,11 +46,10 @@ try {
     case 'help':
     case '--help':
     case '-h':
-      printHelp();
+      console.log(usage);
       break;
     default:
-      console.error(`Unknown command: ${cmd}\n`);
-      printHelp();
+      console.error(`Unknown command: ${cmd}\n\n${usage}`);
       process.exit(1);
   }
 } catch (err) {
