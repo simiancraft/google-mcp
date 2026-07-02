@@ -1,3 +1,18 @@
+## [1.11.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.2...v1.11.0) (2026-07-02)
+
+### Features
+
+* **suite:** add google-mcp-suite dispatcher bin ([4a3c5c5](https://github.com/simiancraft/google-mcp-suite/commit/4a3c5c543b78d27899e165fdfbca5fe7d99434b0))
+
+### Bug Fixes
+
+* **suite:** JSON-escape the echoed unknown-service name ([67f04bf](https://github.com/simiancraft/google-mcp-suite/commit/67f04bf6250b57ad54908c4242fba65014be5027))
+
+### Documentation
+
+* describe the suite front-door bin in README and AGENTS.md ([6201b9e](https://github.com/simiancraft/google-mcp-suite/commit/6201b9e06636e0109788a61beee39fd569285847))
+* register the dispatcher in the new-service playbooks ([c35c3ea](https://github.com/simiancraft/google-mcp-suite/commit/c35c3eac75f9d3066f686bbcc45c7d8ad2abb34e))
+
 ## [1.10.2](https://github.com/simiancraft/google-mcp-suite/compare/v1.10.1...v1.10.2) (2026-06-26)
 
 ### Documentation
