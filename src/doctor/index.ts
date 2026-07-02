@@ -10,8 +10,10 @@ import { runAuth } from './auth.js';
 import { diagnose, renderScopes } from './diagnose.js';
 import { renderStatus } from './status.js';
 
-function printHelp(): void {
-  console.log(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
+// Default to stdout, but let the error path send usage to stderr so a failed
+// invocation keeps stdout clean (matches the suite dispatcher in ../suite/index.ts).
+function printHelp(write: (message: string) => void = console.log): void {
+  write(`google-mcp-doctor: provisioning & auth health for google-mcp-suite
 
 Usage:
   google-mcp-doctor [check]          full diagnostic: provisioning, accounts, services
@@ -52,7 +54,7 @@ try {
       break;
     default:
       console.error(`Unknown command: ${cmd}\n`);
-      printHelp();
+      printHelp(console.error);
       process.exit(1);
   }
 } catch (err) {
