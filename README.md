@@ -58,7 +58,7 @@ That is the whole surface. Read one operation folder and you understand all of t
 - **Siloed by design.** Each service runs as its own independent server in its own lane; the orchestrating agent is the single thing that coordinates them.
 - **Strict by construction.** Input and output schemas are validated on every call, vocabulary is sourced from Google's own docs, types are strict (NodeNext ESM, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`), and coverage is pinned at 100% in `bunfig.toml`.
 
-One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail`, `google-mcp-calendar`, `google-mcp-sheets`, `google-mcp-docs`, and `google-mcp-drive` today) plus the `google-mcp-doctor` setup CLI.
+One package, one version: everything compiles into `google-mcp-suite`, which ships a bin per service (`google-mcp-gmail`, `google-mcp-calendar`, `google-mcp-sheets`, `google-mcp-docs`, and `google-mcp-drive` today) plus the `google-mcp-doctor` setup CLI. A `google-mcp-suite` front-door bin dispatches to any of them (`npx google-mcp-suite gmail`), which is also what lets MCP registries launch the suite from its package name alone.
 
 ## MCP, and then some
 
@@ -135,6 +135,7 @@ Then ask your agent for something no single-account tool can do:
 src/
   auth/      # shared OAuth: one client secret, per-account tokens
   lib/       # the two MCP primitives: operation() + server()
+  suite/     # google-mcp-suite: the front-door bin; dispatches to a service or doctor
   doctor/    # google-mcp-doctor: provisioning + auth-health CLI
   gmail/     # the Gmail server (reference/canary); new services mirror its shape
   calendar/  # the Calendar server; same shape

@@ -25,6 +25,7 @@ google-mcp-suite/
     ├── sheets/      # the Sheets server; methods-only (Google publishes no Sheets MCP toolset, so no tools/)
     ├── docs/        # the Docs server; methods-only (curated batchUpdate subset is the editing surface)
     ├── drive/       # the Drive server; MCP toolset (8 tools) + REST methods
+    ├── suite/       # the front-door bin (google-mcp-suite <service>); dispatches to a service or doctor, imports none of their internals
     └── doctor/      # provisioning + auth-health CLI (bin: google-mcp-doctor); see src/doctor/README.md
 ```
 
