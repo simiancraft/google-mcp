@@ -13,7 +13,11 @@ const entries = new Map<string, string>([
   ['doctor', '../doctor/index.js'],
 ]);
 
-/** The module specifier to import for a dispatchable name, or undefined. */
+/**
+ * The module specifier to import for a dispatchable name, or undefined. Specifiers
+ * resolve against the importing module, so they are only correct from inside this
+ * directory (index.ts is a sibling); the drift test pins each one to its bin's target.
+ */
 export function resolve(name: string): string | undefined {
   return entries.get(name);
 }
