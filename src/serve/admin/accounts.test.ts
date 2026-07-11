@@ -56,6 +56,20 @@ it('summarizes each authorized account from its token file', () => {
   expect(alias).toMatchObject({ scopes: 0, expiry: null, hasRefresh: false });
 });
 
+it('authorizedAccounts lists the labels of every stored token', () => {
+  writeToken('you@example.com', { refresh_token: 'r' });
+  writeToken('work', { refresh_token: 'r' });
+  expect(authorizedAccounts()).toEqual(['work', 'you@example.com']); // sorted
+});
+
+it('lists an unparseable token file without throwing', () => {
+  const tokens = path.join(dir, 'tokens');
+  mkdirSync(tokens, { recursive: true });
+  writeFileSync(path.join(tokens, 'broken.json'), '{not json');
+  const accounts = listAccounts();
+  expect(accounts).toEqual([{ account: 'broken', scopes: 0, expiry: null, hasRefresh: false }]);
+});
+
 it('accountAuthorized reflects a stored token and rejects unsafe labels', () => {
   writeToken('you@example.com', { refresh_token: 'r' });
   expect(accountAuthorized('you@example.com')).toBe(true);
@@ -78,4 +92,12 @@ it('saveClientSecret rejects a malformed client secret', () => {
   expect(() => saveClientSecret({ installed: { client_id: 'id' } })).toThrow(
     /Invalid client secret/,
   );
+});
+
+it('loadClientKeys returns undefined for an unparseable or shapeless secret file', () => {
+  const p = path.join(dir, 'client_secret.json');
+  writeFileSync(p, '{not json'); // JSON.parse throws -> caught -> undefined
+  expect(loadClientKeys()).toBeUndefined();
+  writeFileSync(p, JSON.stringify({ installed: { client_id: 'id' } })); // valid JSON, missing secret
+  expect(loadClientKeys()).toBeUndefined();
 });

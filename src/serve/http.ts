@@ -16,7 +16,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { isInitializeRequest, type JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { accountAuthorized, authorizedAccounts, mountAdmin, validAccount } from './admin/index.js';
 
@@ -24,15 +25,13 @@ import { accountAuthorized, authorizedAccounts, mountAdmin, validAccount } from 
 
 export const PORT = Number(process.env['PORT'] ?? 3000);
 export const HOST = process.env['HOST'] ?? '0.0.0.0';
-const AUTH_TOKEN = process.env['AUTH_TOKEN']?.trim() || undefined;
-const BODY_LIMIT = process.env['BODY_LIMIT'] ?? '50mb';
 
 // The compiled bins live next to this module (dist/serve/http.js -> dist/<service>/index.js).
 const SERVE_DIR = dirname(fileURLToPath(import.meta.url));
 
 /** Map of URL path segment -> the service whose stdio bin is spawned for it. */
 export const SERVICES = ['gmail', 'calendar', 'sheets', 'docs', 'drive'] as const;
-type Service = (typeof SERVICES)[number];
+export type Service = (typeof SERVICES)[number];
 
 function isService(name: string): name is Service {
   return (SERVICES as readonly string[]).includes(name);
@@ -44,7 +43,7 @@ function param(value: string | string[] | undefined): string {
 }
 
 /** The compiled entry point of a service's stdio server. */
-function serviceEntry(service: Service): string {
+export function serviceEntry(service: Service): string {
   return resolve(SERVE_DIR, '..', service, 'index.js');
 }
 
@@ -54,13 +53,20 @@ interface Session {
   account: string;
   service: string;
   http: StreamableHTTPServerTransport;
-  child: StdioClientTransport;
+  child: Transport;
 }
+
+/**
+ * Makes the child transport for `<account>/<service>`. The default spawns the
+ * `google-mcp-<service>` stdio bin; tests inject an in-process transport to
+ * exercise the bridge without a child process.
+ */
+export type ChildFactory = (account: string, service: Service) => Transport;
 
 const sessions = new Map<string, Session>();
 
 /** Build the environment for a child server, binding it to `account`. */
-function childEnv(account: string): Record<string, string> {
+export function childEnv(account: string): Record<string, string> {
   const env: Record<string, string> = {};
   for (const [k, v] of Object.entries(process.env)) {
     if (v !== undefined) env[k] = v;
@@ -71,15 +77,56 @@ function childEnv(account: string): Record<string, string> {
   return env;
 }
 
-/** Spawn a child stdio server bound to `account` and wire it to a fresh Streamable HTTP transport. */
-async function createSession(account: string, service: Service): Promise<Session> {
-  const label = `${account}/${service}`;
-  const child = new StdioClientTransport({
+/** The default child transport: the `google-mcp-<service>` stdio bin bound to `account`. */
+export function spawnChild(account: string, service: Service): Transport {
+  return new StdioClientTransport({
     command: process.execPath,
     args: [serviceEntry(service)],
     env: childEnv(account),
     stderr: 'inherit', // surface auth / google-mcp diagnostics in our logs
   });
+}
+
+/** Close a transport, swallowing any error (used on best-effort teardown). */
+export function closeQuietly(transport: { close(): Promise<void> }): void {
+  void transport.close().catch(() => {});
+}
+
+/**
+ * The transport surface the bridge touches. Declared structurally (callbacks
+ * optional-and-undefined) so both the concrete `StreamableHTTPServerTransport`
+ * and a plain `Transport` child satisfy it under `exactOptionalPropertyTypes`.
+ */
+type Bridgeable = {
+  send(message: JSONRPCMessage): Promise<void>;
+  onmessage?: ((message: JSONRPCMessage) => void) | undefined;
+  onerror?: ((error: Error) => void) | undefined;
+};
+
+/**
+ * Install a transparent JSON-RPC bridge between the HTTP transport and the child
+ * stdio transport: each side forwards messages to the other and logs send or
+ * transport errors under `label`. A failed forward is logged, never thrown.
+ */
+export function bridgeTransports(http: Bridgeable, child: Bridgeable, label: string): void {
+  http.onmessage = (msg) => {
+    child.send(msg).catch((err) => console.error(`[${label}] -> child send failed`, err));
+  };
+  child.onmessage = (msg) => {
+    http.send(msg).catch((err) => console.error(`[${label}] -> http send failed`, err));
+  };
+  http.onerror = (err) => console.error(`[${label}] http transport error`, err);
+  child.onerror = (err) => console.error(`[${label}] child transport error`, err);
+}
+
+/** Spawn a child stdio server bound to `account` and wire it to a fresh Streamable HTTP transport. */
+async function createSession(
+  account: string,
+  service: Service,
+  makeChild: ChildFactory,
+): Promise<Session> {
+  const label = `${account}/${service}`;
+  const child = makeChild(account, service);
 
   const http = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => randomUUID(),
@@ -91,28 +138,20 @@ async function createSession(account: string, service: Service): Promise<Session
 
   const session: Session = { account, service, http, child };
 
-  // Transparent JSON-RPC bridge in both directions.
-  http.onmessage = (msg) => {
-    child.send(msg).catch((err) => console.error(`[${label}] -> child send failed`, err));
-  };
-  child.onmessage = (msg) => {
-    http.send(msg).catch((err) => console.error(`[${label}] -> http send failed`, err));
-  };
+  bridgeTransports(http, child, label);
 
   let closed = false;
   const cleanup = () => {
     if (closed) return;
     closed = true;
     if (http.sessionId) sessions.delete(http.sessionId);
-    void child.close().catch(() => {});
-    void http.close().catch(() => {});
+    closeQuietly(child);
+    closeQuietly(http);
     console.log(`[${label}] session closed: ${http.sessionId ?? '(uninitialized)'}`);
   };
 
   http.onclose = cleanup;
   child.onclose = cleanup;
-  http.onerror = (err) => console.error(`[${label}] http transport error`, err);
-  child.onerror = (err) => console.error(`[${label}] child transport error`, err);
 
   await child.start();
   await http.start();
@@ -122,23 +161,12 @@ async function createSession(account: string, service: Service): Promise<Session
 /** Tear down every open session (used on shutdown). */
 export function closeAllSessions(): void {
   for (const session of sessions.values()) {
-    void session.child.close().catch(() => {});
-    void session.http.close().catch(() => {});
+    closeQuietly(session.child);
+    closeQuietly(session.http);
   }
 }
 
 // --- HTTP app ----------------------------------------------------------------
-
-function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (!AUTH_TOKEN) return next();
-  const header = req.headers.authorization ?? '';
-  const token = header.startsWith('Bearer ') ? header.slice(7).trim() : undefined;
-  if (token !== AUTH_TOKEN) {
-    res.status(401).json({ error: 'unauthorized' });
-    return;
-  }
-  next();
-}
 
 function jsonRpcError(res: Response, status: number, message: string) {
   res.status(status).json({ jsonrpc: '2.0', error: { code: -32000, message }, id: null });
@@ -172,9 +200,24 @@ async function handleSessionRequest(req: Request, res: Response) {
 }
 
 /** Build the Express app: the /admin credential UI plus the `/<account>/<service>` MCP endpoints. */
-export function buildApp() {
+export function buildApp(opts: { childFactory?: ChildFactory } = {}) {
+  const authToken = process.env['AUTH_TOKEN']?.trim() || undefined;
+  const bodyLimit = process.env['BODY_LIMIT'] ?? '50mb';
+  const makeChild = opts.childFactory ?? spawnChild;
+
+  function requireAuth(req: Request, res: Response, next: NextFunction) {
+    if (!authToken) return next();
+    const header = req.headers.authorization ?? '';
+    const token = header.startsWith('Bearer ') ? header.slice(7).trim() : undefined;
+    if (token !== authToken) {
+      res.status(401).json({ error: 'unauthorized' });
+      return;
+    }
+    next();
+  }
+
   const app = express();
-  app.use(express.json({ limit: BODY_LIMIT }));
+  app.use(express.json({ limit: bodyLimit }));
 
   // Credential-management web UI at /admin (client secret + per-account OAuth).
   mountAdmin(app);
@@ -210,7 +253,7 @@ export function buildApp() {
         if (req.headers['mcp-session-id'] || !isInitializeRequest(req.body)) {
           return jsonRpcError(res, 400, 'no valid session for the given Mcp-Session-Id');
         }
-        session = await createSession(account, service);
+        session = await createSession(account, service, makeChild);
       }
       await session.http.handleRequest(req, res, req.body);
     } catch (err) {
