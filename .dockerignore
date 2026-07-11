@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+.git
+.github
+.env
+*.log
+client_secret.json
+.google-mcp

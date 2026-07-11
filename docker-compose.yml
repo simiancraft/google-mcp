@@ -1,0 +1,27 @@
+services:
+  google-mcp-suite:
+    # Pull the published image, or `docker compose build` to build locally.
+    image: ghcr.io/simiancraft/google-mcp-suite:latest
+    build: .
+    container_name: google-mcp-suite
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      # The account is part of each request URL (/<account>/<service>), so there
+      # is no account env var — authorize accounts in the /admin UI instead.
+      # Optional bearer token required on every /<account>/<service> request.
+      AUTH_TOKEN: ${AUTH_TOKEN:-}
+      # Credential admin UI (/admin): a password is required, or it returns 503.
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Loopback base for the OAuth redirect; change the port if you remap it,
+      # e.g. http://localhost:8080 when published as "8080:3000".
+      OAUTH_REDIRECT_BASE: ${OAUTH_REDIRECT_BASE:-http://localhost:${PORT:-3000}}
+    volumes:
+      # Persists ~/.google-mcp (client_secret.json + per-account OAuth tokens).
+      - google-mcp-config:/home/node/.google-mcp
+
+volumes:
+  google-mcp-config:
