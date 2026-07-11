@@ -11,6 +11,7 @@ export const services = ['gmail', 'calendar', 'drive', 'docs', 'sheets'] as cons
 const entries = new Map<string, string>([
   ...services.map((service) => [service, `../${service}/index.js`] as const),
   ['doctor', '../doctor/index.js'],
+  ['serve', '../serve/index.js'],
 ]);
 
 /**
@@ -26,9 +27,14 @@ export const usage = `google-mcp-suite: per-account Google MCP servers, one proc
 
 Usage:
   google-mcp-suite <service>    start a server on stdio (${services.join(', ')})
+  google-mcp-suite serve        serve every service over HTTP (+ optional /admin setup UI)
   google-mcp-suite doctor [...] provisioning + auth health (same as google-mcp-doctor)
   google-mcp-suite help
 
 The account is chosen by the GOOGLE_MCP_ACCOUNT environment variable; run one
 instance per service per account. Each server also ships as its own bin
-(${services.map((service) => `google-mcp-${service}`).join(', ')}).`;
+(${services.map((service) => `google-mcp-${service}`).join(', ')}).
+
+Prefer HTTP? \`google-mcp-suite serve\` (or the google-mcp-serve bin) exposes every
+service at http://<host>:<port>/<account>/<service> and, with ADMIN_PASSWORD set,
+a /admin web UI for the one-time OAuth setup — so one host can serve many clients.`;

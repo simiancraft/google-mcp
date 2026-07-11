@@ -129,6 +129,58 @@ Then ask your agent for something no single-account tool can do:
 
 > Find a free 30-minute window next week that works across my work and personal calendars, book it on the work calendar with a Meet link, email the invite summary to my personal address, and log the booking in my scheduling spreadsheet.
 
+## Serving over HTTP
+
+stdio is the default: one process per service per account, spawned by the MCP
+client. When you would rather run the suite **once on a host** and point many
+clients (or a remote client) at it, `google-mcp-serve` (also `google-mcp-suite
+serve`) exposes every service over **Streamable HTTP** instead:
+
+```sh
+ADMIN_PASSWORD=choose-one AUTH_TOKEN=$(openssl rand -hex 16) google-mcp-serve
+# → http://0.0.0.0:3000, with a /admin setup UI and bearer-guarded endpoints
+```
+
+Each service is addressed as `/<account>/<service>`, so one deployment serves
+every authorized account. Identity stays bound one-account-per-process: each HTTP
+session spawns its own stdio child bound to `<account>` via `GOOGLE_MCP_ACCOUNT`,
+so multiplexing accounts through one server never mixes their credentials.
+
+```json
+{
+  "mcpServers": {
+    "gmail-personal": {
+      "type": "http",
+      "url": "http://your-host:3000/personal@example.com/gmail",
+      "headers": { "Authorization": "Bearer YOUR_AUTH_TOKEN" }
+    }
+  }
+}
+```
+
+**Easy setup — the `/admin` web UI.** With `ADMIN_PASSWORD` set, `serve` hosts a
+small credential UI at `/admin` that uploads your `client_secret.json` and runs
+the per-account OAuth flow in the browser, writing the same `~/.google-mcp/`
+files `google-mcp-doctor auth` would. Open it, upload the client secret, enter an
+account label, and approve — no shell needed. (Without `ADMIN_PASSWORD` every
+`/admin` route returns 503; the MCP endpoints still work for already-authorized
+accounts.)
+
+| Variable             | Default                   | Purpose                                                                 |
+|----------------------|---------------------------|-------------------------------------------------------------------------|
+| `PORT`               | `3000`                    | Listen port.                                                            |
+| `HOST`               | `0.0.0.0`                 | Bind address.                                                           |
+| `AUTH_TOKEN`         | —                         | If set, every `/<account>/<service>` request needs `Authorization: Bearer <token>`. |
+| `ADMIN_PASSWORD`     | —                         | HTTP Basic password for `/admin`. Unset ⇒ the UI is disabled (503).     |
+| `ADMIN_USER`         | `admin`                   | HTTP Basic username for `/admin`.                                       |
+| `OAUTH_REDIRECT_BASE`| `http://localhost:<PORT>` | Loopback base for the `/admin` OAuth redirect; match your published port. |
+| `BODY_LIMIT`         | `50mb`                    | Max JSON body (Drive uploads ride inside JSON-RPC).                     |
+
+`GET /healthz` and `GET /` report health and the authorized-account list. Set
+`AUTH_TOKEN` (and terminate TLS at a reverse proxy) whenever the port is
+reachable beyond `localhost` — the bearer check is the only gate in front of full
+read/write access to the account.
+
 ## Layout
 
 ```
