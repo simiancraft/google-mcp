@@ -73,6 +73,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "capabilities": "for f in src/*/capabilities.ts; do bun run \"$f\" || exit 1; done",
+    "serve": "bun run build && bun dist/serve/index.js",
+    "dev:serve": "bun run build && bun --watch dist/serve/index.js",
     "doctor": "bun run src/doctor/index.ts",
     "tokens": "bun run src/doctor/index.ts status",
     "reauth": "bun run src/doctor/index.ts auth",
