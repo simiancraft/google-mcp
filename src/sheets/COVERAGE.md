@@ -11,7 +11,7 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 27 operations)
+## Methods: REST reference (`methods/`, 30 operations)
 
 | Resource | Implemented |
 |----------|-------------|
@@ -19,12 +19,13 @@ the REST-sourced `methods/` registry is the whole wire surface.
 | spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
 | spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
+| spreadsheets (charts) | `add_chart`, `update_chart_spec`, `delete_embedded_object` ⚠️ |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` |
 
 The batchUpdate-backed operations (the sheet management, dimension,
-named-range, and formatting rows)
+named-range, formatting, and chart rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
 to that request type's anchor on the batchUpdate reference page. The update
@@ -32,7 +33,11 @@ pair derives its REST field mask from the properties actually provided, so an
 untouched property is never reset by a too-wide mask, and an empty update is
 refused rather than sent. `delete_dimension` is the one removal that is not
 idempotent: its range is index-addressed, so repeating the call deletes
-whatever shifted into the range.
+whatever shifted into the range. The chart operations carry a curated
+`ChartSpec` (the basic family and pie); the specialty chart types (bubble,
+candlestick, org, histogram, waterfall, treemap, scorecard) and styling
+fields are not carried, and `update_chart_spec` replaces the whole spec, as
+the REST request does.
 
 ⚠️ = destructive (`destructiveHint`): the clears are removals, per the
 annotation rubric in EXTENDING.md. Updates and appends are not destructive,
@@ -81,7 +86,5 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` chart subset** (`add_chart`, `update_chart_spec`,
-  `delete_embedded_object`): issue #27.
 - **Grid data reads** (`includeGridData`, `getByDataFilter`, `CellData`
   projection): issue #28.
