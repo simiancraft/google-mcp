@@ -11,19 +11,20 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 25 operations)
+## Methods: REST reference (`methods/`, 27 operations)
 
 | Resource | Implemented |
 |----------|-------------|
 | spreadsheets | `get_spreadsheet`, `create_spreadsheet`, `update_spreadsheet_properties` |
 | spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
 | spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
+| spreadsheets (formatting) | `repeat_cell`, `update_borders` |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` |
 
-The batchUpdate-backed operations (the sheet management, dimension, and
-named-range rows)
+The batchUpdate-backed operations (the sheet management, dimension,
+named-range, and formatting rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
 to that request type's anchor on the batchUpdate reference page. The update
@@ -80,7 +81,7 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` formatting and chart subset** (`repeat_cell`,
-  `update_borders`, chart requests): issue #27.
+- **Curated `batchUpdate` chart subset** (`add_chart`, `update_chart_spec`,
+  `delete_embedded_object`): issue #27.
 - **Grid data reads** (`includeGridData`, `getByDataFilter`, `CellData`
   projection): issue #28.

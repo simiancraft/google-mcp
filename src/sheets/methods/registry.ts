@@ -21,7 +21,9 @@ import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
 import { get_values } from './get_values/index.js';
 import { insert_dimension } from './insert_dimension/index.js';
+import { repeat_cell } from './repeat_cell/index.js';
 import { search_developer_metadata } from './search_developer_metadata/index.js';
+import { update_borders } from './update_borders/index.js';
 import { update_sheet_properties } from './update_sheet_properties/index.js';
 import { update_spreadsheet_properties } from './update_spreadsheet_properties/index.js';
 import { update_values } from './update_values/index.js';
@@ -66,4 +68,7 @@ export const methods = {
   // named ranges
   add_named_range,
   delete_named_range,
+  // formatting
+  repeat_cell,
+  update_borders,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;

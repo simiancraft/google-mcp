@@ -1,6 +1,9 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { forGoogle } from '../../lib/optionality.js';
+import type { Border } from '../entities/Border.js';
+import type { CellFormat } from '../entities/CellFormat.js';
 import type { ColorStyle } from '../entities/ColorStyle.js';
+import type { TextFormat } from '../entities/TextFormat.js';
 
 /**
  * Apply one batchUpdate request to a spreadsheet and return its reply.
@@ -55,5 +58,42 @@ export function toColorStyle(colorStyle: ColorStyle): sheets_v4.Schema$ColorStyl
   return forGoogle({
     rgbColor: colorStyle.rgbColor ? forGoogle(colorStyle.rgbColor) : undefined,
     themeColor: colorStyle.themeColor,
+  });
+}
+
+/** Carry a TextFormat across the Google boundary, same policy as toColorStyle. */
+export function toTextFormat(textFormat: TextFormat): sheets_v4.Schema$TextFormat {
+  return forGoogle({
+    foregroundColorStyle: textFormat.foregroundColorStyle
+      ? toColorStyle(textFormat.foregroundColorStyle)
+      : undefined,
+    fontFamily: textFormat.fontFamily,
+    fontSize: textFormat.fontSize,
+    bold: textFormat.bold,
+    italic: textFormat.italic,
+    strikethrough: textFormat.strikethrough,
+    underline: textFormat.underline,
+  });
+}
+
+/** Carry a CellFormat across the Google boundary, same policy as toColorStyle. */
+export function toCellFormat(format: CellFormat): sheets_v4.Schema$CellFormat {
+  return forGoogle({
+    numberFormat: format.numberFormat ? forGoogle(format.numberFormat) : undefined,
+    backgroundColorStyle: format.backgroundColorStyle
+      ? toColorStyle(format.backgroundColorStyle)
+      : undefined,
+    textFormat: format.textFormat ? toTextFormat(format.textFormat) : undefined,
+    horizontalAlignment: format.horizontalAlignment,
+    verticalAlignment: format.verticalAlignment,
+    wrapStrategy: format.wrapStrategy,
+  });
+}
+
+/** Carry a Border across the Google boundary, same policy as toColorStyle. */
+export function toBorder(border: Border): sheets_v4.Schema$Border {
+  return forGoogle({
+    style: border.style,
+    colorStyle: border.colorStyle ? toColorStyle(border.colorStyle) : undefined,
   });
 }
