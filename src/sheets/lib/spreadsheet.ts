@@ -1,5 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/utils/narrow.js';
+import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
@@ -20,6 +21,23 @@ export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): 
         }
       : undefined,
     hidden: data.hidden ?? undefined,
+  };
+}
+
+/** Project a REST named range onto the NamedRange shape, cleaning nulls to undefined. */
+export function projectNamedRange(data: sheets_v4.Schema$NamedRange): NamedRange {
+  return {
+    namedRangeId: data.namedRangeId ?? undefined,
+    name: data.name ?? undefined,
+    range: data.range
+      ? {
+          sheetId: data.range.sheetId ?? undefined,
+          startRowIndex: data.range.startRowIndex ?? undefined,
+          endRowIndex: data.range.endRowIndex ?? undefined,
+          startColumnIndex: data.range.startColumnIndex ?? undefined,
+          endColumnIndex: data.range.endColumnIndex ?? undefined,
+        }
+      : undefined,
   };
 }
 
@@ -48,5 +66,6 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
           sheet.properties ? [projectSheetProperties(sheet.properties)] : [],
         )
       : undefined,
+    namedRanges: data.namedRanges ? data.namedRanges.map(projectNamedRange) : undefined,
   };
 }

@@ -1,5 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { AnyOperation } from '../../lib/operation.js';
+import { add_named_range } from './add_named_range/index.js';
 import { add_sheet } from './add_sheet/index.js';
 import { append_values } from './append_values/index.js';
 import { auto_resize_dimensions } from './auto_resize_dimensions/index.js';
@@ -13,6 +14,7 @@ import { clear_values } from './clear_values/index.js';
 import { copy_sheet } from './copy_sheet/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
 import { delete_dimension } from './delete_dimension/index.js';
+import { delete_named_range } from './delete_named_range/index.js';
 import { delete_sheet } from './delete_sheet/index.js';
 import { duplicate_sheet } from './duplicate_sheet/index.js';
 import { get_developer_metadata } from './get_developer_metadata/index.js';
@@ -61,4 +63,7 @@ export const methods = {
   insert_dimension,
   delete_dimension,
   auto_resize_dimensions,
+  // named ranges
+  add_named_range,
+  delete_named_range,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;
