@@ -11,14 +11,23 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 15 of 17)
+## Methods: REST reference (`methods/`, 20 operations)
 
 | Resource | Implemented |
 |----------|-------------|
-| spreadsheets | `get_spreadsheet`, `create_spreadsheet` |
+| spreadsheets | `get_spreadsheet`, `create_spreadsheet`, `update_spreadsheet_properties` |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
-| spreadsheets.sheets | `copy_sheet` |
+| spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` |
+
+The batchUpdate-backed operations (`add_sheet`, `delete_sheet`,
+`duplicate_sheet`, `update_sheet_properties`, `update_spreadsheet_properties`)
+are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
+#27): each is one purpose-named operation wrapping exactly one request, cited
+to that request type's anchor on the batchUpdate reference page. The update
+pair derives its REST field mask from the properties actually provided, so an
+untouched property is never reset by a too-wide mask, and an empty update is
+refused rather than sent.
 
 ⚠️ = destructive (`destructiveHint`): the clears are removals, per the
 annotation rubric in EXTENDING.md. Updates and appends are not destructive,
@@ -49,11 +58,13 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
 
 ## Intentionally not exposed
 
-- **`spreadsheets.batchUpdate`**: one endpoint whose body is a union of 69
-  request types (sheet management, formatting, charts, filters, ...).
-  Transcribing the union does not fit the documentation-driven pattern; a
-  curated subset (add/delete/duplicate sheet, property updates, dimensions) is
-  issue #27.
+- **`spreadsheets.batchUpdate` as a raw passthrough**: one endpoint whose
+  body is a union of 69 request types (sheet management, formatting, charts,
+  filters, ...). Transcribing the union does not fit the
+  documentation-driven pattern; instead a curated subset ships as the
+  purpose-named operations above (issue #27), and the long tail (filters,
+  protected ranges, banding, merges, conditional formats, data validation)
+  stays unexposed.
 - **`spreadsheets.getByDataFilter`** and the `includeGridData` /
   `excludeTablesInBandedRanges` parameters of `spreadsheets.get`: these exist
   to scope **grid data**, which the Spreadsheet projection excludes; without

@@ -1,5 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { AnyOperation } from '../../lib/operation.js';
+import { add_sheet } from './add_sheet/index.js';
 import { append_values } from './append_values/index.js';
 import { batch_clear_values } from './batch_clear_values/index.js';
 import { batch_clear_values_by_data_filter } from './batch_clear_values_by_data_filter/index.js';
@@ -10,10 +11,14 @@ import { batch_update_values_by_data_filter } from './batch_update_values_by_dat
 import { clear_values } from './clear_values/index.js';
 import { copy_sheet } from './copy_sheet/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
+import { delete_sheet } from './delete_sheet/index.js';
+import { duplicate_sheet } from './duplicate_sheet/index.js';
 import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
 import { get_values } from './get_values/index.js';
 import { search_developer_metadata } from './search_developer_metadata/index.js';
+import { update_sheet_properties } from './update_sheet_properties/index.js';
+import { update_spreadsheet_properties } from './update_spreadsheet_properties/index.js';
 import { update_values } from './update_values/index.js';
 
 /**
@@ -27,6 +32,7 @@ export const methods = {
   // spreadsheets
   get_spreadsheet,
   create_spreadsheet,
+  update_spreadsheet_properties,
   // values
   get_values,
   update_values,
@@ -44,4 +50,8 @@ export const methods = {
   search_developer_metadata,
   // sheets
   copy_sheet,
+  add_sheet,
+  delete_sheet,
+  duplicate_sheet,
+  update_sheet_properties,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;
