@@ -11,23 +11,25 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 20 operations)
+## Methods: REST reference (`methods/`, 23 operations)
 
 | Resource | Implemented |
 |----------|-------------|
 | spreadsheets | `get_spreadsheet`, `create_spreadsheet`, `update_spreadsheet_properties` |
+| spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` |
 
-The batchUpdate-backed operations (`add_sheet`, `delete_sheet`,
-`duplicate_sheet`, `update_sheet_properties`, `update_spreadsheet_properties`)
+The batchUpdate-backed operations (the sheet management and dimension rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
 to that request type's anchor on the batchUpdate reference page. The update
 pair derives its REST field mask from the properties actually provided, so an
 untouched property is never reset by a too-wide mask, and an empty update is
-refused rather than sent.
+refused rather than sent. `delete_dimension` is the one removal that is not
+idempotent: its range is index-addressed, so repeating the call deletes
+whatever shifted into the range.
 
 ⚠️ = destructive (`destructiveHint`): the clears are removals, per the
 annotation rubric in EXTENDING.md. Updates and appends are not destructive,

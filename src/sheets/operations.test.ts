@@ -10,7 +10,7 @@ describe('sheets operations', () => {
     instructions,
     groups: [{ kind: 'REST Method', operations: methods }],
     methodSourcePrefix: 'https://developers.google.com/workspace/sheets/api/reference/rest/v4/',
-    counts: { methods: 20 },
+    counts: { methods: 23 },
     readOnly: [
       'batch_get_values',
       'batch_get_values_by_data_filter',
@@ -23,6 +23,7 @@ describe('sheets operations', () => {
       'batch_clear_values',
       'batch_clear_values_by_data_filter',
       'clear_values',
+      'delete_dimension',
       'delete_sheet',
     ],
     openWorld: [],
