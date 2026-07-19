@@ -1,3 +1,23 @@
+## [1.13.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.12.0...v1.13.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add cell content writes: update_cells, merge_cells, unmerge_cells ([54fd148](https://github.com/simiancraft/google-mcp-suite/commit/54fd148ecec7127f9d56609a885cce9bf02c6dea))
+* **sheets:** add conditional format rules, data validation, and protected ranges ([f98eba7](https://github.com/simiancraft/google-mcp-suite/commit/f98eba7ab8c04166aec264902597671a3b391b82))
+
+### Bug Fixes
+
+* **sheets:** close the review loop on the reactive layer readout and docs ([b29886b](https://github.com/simiancraft/google-mcp-suite/commit/b29886bf898ccdd822ee48412623df4a1a777c35))
+* **sheets:** correct the cell-content contracts after review ([ad02dd4](https://github.com/simiancraft/google-mcp-suite/commit/ad02dd490c18f4c072403038dd00aa11b1ad6942))
+* **sheets:** expand the update_cells format mask per subkey ([0969278](https://github.com/simiancraft/google-mcp-suite/commit/0969278c42db18029cad99187254cddb056cb641))
+* **sheets:** finish the reactive-layer convergence pass ([9cadfcf](https://github.com/simiancraft/google-mcp-suite/commit/9cadfcfab813789c8bd669e20824450cdcb56d93))
+* **sheets:** harden the reactive layer after review ([25c3e79](https://github.com/simiancraft/google-mcp-suite/commit/25c3e7930dc14693d1053872893c950612d5ffc1))
+
+### Documentation
+
+* **sheets:** drop the run-spanning cell-link claim from TextFormatRun ([1e47bfa](https://github.com/simiancraft/google-mcp-suite/commit/1e47bfab8db93cb19c7cf0de68629a80adef9fcd))
+* **sheets:** settle the cell-content terminology and link semantics ([68d8417](https://github.com/simiancraft/google-mcp-suite/commit/68d8417d8239f02a2b63dbd85956ab883b7dc077))
+
 ## [1.12.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.2...v1.12.0) (2026-07-19)
 
 ### Features
