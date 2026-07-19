@@ -9,7 +9,10 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   await applyRequest(sheets, args.spreadsheetId, {
-    setDataValidation: { range: forGoogle(args.range) },
+    setDataValidation: forGoogle({
+      range: forGoogle(args.range),
+      filteredRowsIncluded: args.filteredRowsIncluded,
+    }),
   });
   return { spreadsheetId: args.spreadsheetId };
 }

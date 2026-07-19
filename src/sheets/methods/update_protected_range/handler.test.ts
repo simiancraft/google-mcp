@@ -80,6 +80,26 @@ describe('update_protected_range', () => {
     expect(result.updatedFields).toBe('range,warningOnly,unprotectedRanges');
   });
 
+  it('switches the protection to a named range backing', async () => {
+    const captured: Captured = {};
+    const result = await handler(fakeSheets(captured), {
+      spreadsheetId: 'SS',
+      protectedRangeId: 41,
+      namedRangeId: 'nr1',
+    });
+    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
+      updateProtectedRange: {
+        protectedRange: { protectedRangeId: 41, namedRangeId: 'nr1' },
+        fields: 'namedRangeId',
+      },
+    });
+    expect(result).toEqual({
+      spreadsheetId: 'SS',
+      protectedRangeId: 41,
+      updatedFields: 'namedRangeId',
+    });
+  });
+
   it('refuses switching to both a range and a named range at once', async () => {
     const captured: Captured = {};
     await expect(

@@ -14,6 +14,8 @@ export async function handler(
       newIndex: args.newIndex,
     },
   });
+  // proto3 omits zero-valued scalars, so a reply involving index 0 arrives
+  // with that field absent; the input indexes are the correct fallback.
   return {
     spreadsheetId: args.spreadsheetId,
     oldIndex: reply.updateConditionalFormatRule?.oldIndex ?? args.index,

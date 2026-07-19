@@ -20,10 +20,10 @@ export const ConditionalFormatRule = z.strictObject({
       'The ranges that are formatted if the condition is true; all the ranges must be on the same grid.',
     ),
   booleanRule: BooleanRule.optional().describe(
-    'The formatting is either on or off according to the rule.',
+    'The formatting is either on or off according to the rule; provide this or gradientRule, not both.',
   ),
   gradientRule: GradientRule.optional().describe(
-    'The formatting varies based on the gradients in the rule.',
+    'The formatting varies based on the gradients in the rule; provide this or booleanRule, not both.',
   ),
 });
 

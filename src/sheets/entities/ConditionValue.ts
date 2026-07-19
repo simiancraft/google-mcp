@@ -12,13 +12,13 @@ export const ConditionValue = z.strictObject({
     .enum(['PAST_YEAR', 'PAST_MONTH', 'PAST_WEEK', 'YESTERDAY', 'TODAY', 'TOMORROW'])
     .optional()
     .describe(
-      'A date relative to the current date. Valid only with DATE_BEFORE, DATE_AFTER, DATE_ON_OR_BEFORE, or DATE_ON_OR_AFTER, and only in conditional formatting and filters, not in data validation.',
+      'A date relative to the current date; provide this or userEnteredValue, not both. Valid only with DATE_BEFORE, DATE_AFTER, DATE_ON_OR_BEFORE, or DATE_ON_OR_AFTER, and only in conditional formatting and filters, not in data validation.',
     ),
   userEnteredValue: z
     .string()
     .optional()
     .describe(
-      'A value the condition is based on, parsed as if the user typed it into a cell; formulas are supported and must begin with an = or a +.',
+      'A value the condition is based on; provide this or relativeDate, not both. Parsed as if the user typed it into a cell, so a value beginning with = or + becomes a live formula that executes in the sheet; do not pass untrusted text that starts with either. ONE_OF_LIST values do not support formulas.',
     ),
 });
 

@@ -3,8 +3,9 @@ import { narrow } from '../../lib/utils/narrow.js';
 import { ColorStyle } from '../entities/ColorStyle.js';
 import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
-import type { Spreadsheet } from '../entities/Spreadsheet.js';
+import type { ConditionalFormatRuleReadout, Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
+import { projectProtectedRange } from './rules.js';
 
 /** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */
 function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
@@ -57,10 +58,110 @@ export function projectNamedRange(data: sheets_v4.Schema$NamedRange): NamedRange
   };
 }
 
+/** Project a REST grid range, cleaning nulls to undefined. */
+function projectGridRange(data: sheets_v4.Schema$GridRange) {
+  return {
+    sheetId: data.sheetId ?? undefined,
+    startRowIndex: data.startRowIndex ?? undefined,
+    endRowIndex: data.endRowIndex ?? undefined,
+    startColumnIndex: data.startColumnIndex ?? undefined,
+    endColumnIndex: data.endColumnIndex ?? undefined,
+  };
+}
+
+/** Project a REST color style onto the open readout shape (no theme narrowing; the readout must be total). */
+function projectColorStyleReadout(data: sheets_v4.Schema$ColorStyle) {
+  return {
+    rgbColor: data.rgbColor
+      ? {
+          red: data.rgbColor.red ?? undefined,
+          green: data.rgbColor.green ?? undefined,
+          blue: data.rgbColor.blue ?? undefined,
+        }
+      : undefined,
+    themeColor: data.themeColor ?? undefined,
+  };
+}
+
+/** Project an interpolation point, falling back to the deprecated `color` field for old sheets. */
+function projectInterpolationPoint(data: sheets_v4.Schema$InterpolationPoint) {
+  return {
+    colorStyle: data.colorStyle
+      ? projectColorStyleReadout(data.colorStyle)
+      : data.color
+        ? projectColorStyleReadout({ rgbColor: data.color })
+        : undefined,
+    type: data.type ?? undefined,
+    value: data.value ?? undefined,
+  };
+}
+
 /**
- * Project a REST spreadsheet onto the metadata-only Spreadsheet shape: each
- * `Sheet` flattens to its properties, grid data is never carried, and nulls
- * clean to undefined.
+ * Project a REST conditional format rule onto the open readout shape. Total
+ * by design: rules are addressed by array index, so every rule projects
+ * (type fields stay open strings rather than narrowed enums) and none is
+ * ever dropped, or every rule after it would silently renumber.
+ */
+export function projectConditionalFormatRule(
+  data: sheets_v4.Schema$ConditionalFormatRule,
+): ConditionalFormatRuleReadout {
+  return {
+    ranges: data.ranges ? data.ranges.map(projectGridRange) : undefined,
+    booleanRule: data.booleanRule
+      ? {
+          condition: data.booleanRule.condition
+            ? {
+                type: data.booleanRule.condition.type ?? undefined,
+                values: data.booleanRule.condition.values
+                  ? data.booleanRule.condition.values.map((value) => ({
+                      userEnteredValue: value.userEnteredValue ?? undefined,
+                      relativeDate: value.relativeDate ?? undefined,
+                    }))
+                  : undefined,
+              }
+            : undefined,
+          format: data.booleanRule.format
+            ? {
+                backgroundColorStyle: data.booleanRule.format.backgroundColorStyle
+                  ? projectColorStyleReadout(data.booleanRule.format.backgroundColorStyle)
+                  : undefined,
+                textFormat: data.booleanRule.format.textFormat
+                  ? {
+                      foregroundColorStyle: data.booleanRule.format.textFormat.foregroundColorStyle
+                        ? projectColorStyleReadout(
+                            data.booleanRule.format.textFormat.foregroundColorStyle,
+                          )
+                        : undefined,
+                      bold: data.booleanRule.format.textFormat.bold ?? undefined,
+                      italic: data.booleanRule.format.textFormat.italic ?? undefined,
+                      strikethrough: data.booleanRule.format.textFormat.strikethrough ?? undefined,
+                    }
+                  : undefined,
+              }
+            : undefined,
+        }
+      : undefined,
+    gradientRule: data.gradientRule
+      ? {
+          minpoint: data.gradientRule.minpoint
+            ? projectInterpolationPoint(data.gradientRule.minpoint)
+            : undefined,
+          midpoint: data.gradientRule.midpoint
+            ? projectInterpolationPoint(data.gradientRule.midpoint)
+            : undefined,
+          maxpoint: data.gradientRule.maxpoint
+            ? projectInterpolationPoint(data.gradientRule.maxpoint)
+            : undefined,
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Project a REST spreadsheet onto the Spreadsheet shape: each `Sheet`
+ * flattens to its properties plus its sheet-level reactive collections
+ * (protected ranges, conditional format rules), grid data is never carried,
+ * and nulls clean to undefined.
  */
 export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsheet {
   return {
@@ -79,7 +180,19 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
       : undefined,
     sheets: data.sheets
       ? data.sheets.flatMap((sheet) =>
-          sheet.properties ? [projectSheetProperties(sheet.properties)] : [],
+          sheet.properties
+            ? [
+                {
+                  ...projectSheetProperties(sheet.properties),
+                  protectedRanges: sheet.protectedRanges
+                    ? sheet.protectedRanges.map(projectProtectedRange)
+                    : undefined,
+                  conditionalFormats: sheet.conditionalFormats
+                    ? sheet.conditionalFormats.map(projectConditionalFormatRule)
+                    : undefined,
+                },
+              ]
+            : [],
         )
       : undefined,
     namedRanges: data.namedRanges ? data.namedRanges.map(projectNamedRange) : undefined,

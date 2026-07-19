@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'bun:test';
-import { projectNamedRange, projectSheetProperties, projectSpreadsheet } from './spreadsheet.js';
+import {
+  projectConditionalFormatRule,
+  projectNamedRange,
+  projectSheetProperties,
+  projectSpreadsheet,
+} from './spreadsheet.js';
 
 describe('projectSheetProperties', () => {
   it('projects the curated fields and cleans nulls', () => {
@@ -87,6 +92,113 @@ describe('projectSpreadsheet', () => {
       spreadsheetId: 'S1',
       namedRanges: [{ namedRangeId: 'nr1', name: 'REVENUE', range: { sheetId: 2 } }],
     });
+  });
+
+  it("carries each sheet's protected ranges and conditional format rules", () => {
+    expect(
+      projectSpreadsheet({
+        spreadsheetId: 'S1',
+        sheets: [
+          {
+            properties: { sheetId: 0, title: 'A' },
+            protectedRanges: [
+              {
+                protectedRangeId: 7,
+                range: { sheetId: 0, startRowIndex: 0, endRowIndex: 3 },
+                warningOnly: true,
+              },
+            ],
+            conditionalFormats: [
+              {
+                ranges: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }],
+                booleanRule: {
+                  condition: {
+                    type: 'NUMBER_GREATER',
+                    values: [{ userEnteredValue: '100', relativeDate: null }],
+                  },
+                  format: {
+                    backgroundColorStyle: { rgbColor: { red: 1 } },
+                    textFormat: { bold: true, foregroundColorStyle: { themeColor: 'TEXT' } },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    ).toEqual({
+      spreadsheetId: 'S1',
+      sheets: [
+        {
+          sheetId: 0,
+          title: 'A',
+          protectedRanges: [
+            {
+              protectedRangeId: 7,
+              range: { sheetId: 0, startRowIndex: 0, endRowIndex: 3 },
+              warningOnly: true,
+            },
+          ],
+          conditionalFormats: [
+            {
+              ranges: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }],
+              booleanRule: {
+                condition: {
+                  type: 'NUMBER_GREATER',
+                  values: [{ userEnteredValue: '100' }],
+                },
+                format: {
+                  backgroundColorStyle: { rgbColor: { red: 1 } },
+                  textFormat: { bold: true, foregroundColorStyle: { themeColor: 'TEXT' } },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
+
+describe('projectConditionalFormatRule', () => {
+  it('keeps an unrecognized condition type instead of dropping the rule', () => {
+    expect(
+      projectConditionalFormatRule({
+        ranges: [{ sheetId: 0 }],
+        booleanRule: { condition: { type: 'SOME_FUTURE_TYPE' } },
+      }),
+    ).toEqual({
+      ranges: [{ sheetId: 0 }],
+      booleanRule: { condition: { type: 'SOME_FUTURE_TYPE' } },
+    });
+  });
+
+  it('projects a gradient rule, reading the deprecated color field for old sheets', () => {
+    expect(
+      projectConditionalFormatRule({
+        ranges: [{ sheetId: 3, startRowIndex: 1, endRowIndex: 121 }],
+        gradientRule: {
+          minpoint: { color: { red: 1 }, type: 'MIN' },
+          midpoint: {
+            colorStyle: { rgbColor: { red: 1, green: 1 } },
+            type: 'PERCENT',
+            value: '50',
+          },
+          maxpoint: { colorStyle: { themeColor: 'ACCENT1' }, type: 'MAX' },
+        },
+      }),
+    ).toEqual({
+      ranges: [{ sheetId: 3, startRowIndex: 1, endRowIndex: 121 }],
+      gradientRule: {
+        minpoint: { colorStyle: { rgbColor: { red: 1 } }, type: 'MIN' },
+        midpoint: { colorStyle: { rgbColor: { red: 1, green: 1 } }, type: 'PERCENT', value: '50' },
+        maxpoint: { colorStyle: { themeColor: 'ACCENT1' }, type: 'MAX' },
+      },
+    });
+  });
+
+  it('survives a bare rule', () => {
+    expect(projectConditionalFormatRule({})).toEqual({});
   });
 });
 

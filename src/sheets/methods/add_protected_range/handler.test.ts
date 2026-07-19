@@ -75,12 +75,15 @@ describe('add_protected_range', () => {
 
   it('protects a whole sheet with unprotected input ranges', async () => {
     const captured: Captured = {};
-    await handler(fakeSheets(captured), {
-      spreadsheetId: 'SS',
-      range: { sheetId: 0 },
-      warningOnly: true,
-      unprotectedRanges: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }],
-    });
+    await handler(
+      fakeSheets(captured, { addProtectedRange: { protectedRange: { protectedRangeId: 8 } } }),
+      {
+        spreadsheetId: 'SS',
+        range: { sheetId: 0 },
+        warningOnly: true,
+        unprotectedRanges: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }],
+      },
+    );
     expect(captured.params?.requestBody?.requests?.[0]).toEqual({
       addProtectedRange: {
         protectedRange: {
@@ -90,6 +93,38 @@ describe('add_protected_range', () => {
         },
       },
     });
+  });
+
+  it('protects a named range and passes a caller-assigned id through', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, {
+        addProtectedRange: { protectedRange: { protectedRangeId: 99, namedRangeId: 'nr1' } },
+      }),
+      { spreadsheetId: 'SS', protectedRangeId: 99, namedRangeId: 'nr1' },
+    );
+    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
+      addProtectedRange: {
+        protectedRange: { protectedRangeId: 99, namedRangeId: 'nr1' },
+      },
+    });
+    expect(result).toEqual({
+      protectedRangeId: 99,
+      range: undefined,
+      namedRangeId: 'nr1',
+      description: undefined,
+      warningOnly: undefined,
+      requestingUserCanEdit: undefined,
+      unprotectedRanges: undefined,
+      editors: undefined,
+    });
+  });
+
+  it('fails loud when the reply carries no protected range', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured), { spreadsheetId: 'SS', range: { sheetId: 0 } }),
+    ).rejects.toThrow('Google returned no protected range');
   });
 
   it('refuses both range and namedRangeId, and neither', async () => {

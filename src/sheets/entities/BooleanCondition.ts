@@ -44,13 +44,13 @@ export const BooleanCondition = z.strictObject({
       'BOOLEAN',
     ])
     .describe(
-      'The type of condition. Support varies by context: TEXT_IS_EMAIL, TEXT_IS_URL, DATE_IS_VALID, ONE_OF_RANGE, ONE_OF_LIST, and BOOLEAN apply only to data validation; TEXT_STARTS_WITH, TEXT_ENDS_WITH, BLANK, and NOT_BLANK apply only to conditional formatting and filters.',
+      'The type of condition. Support varies by context: TEXT_IS_EMAIL, TEXT_IS_URL, DATE_ON_OR_BEFORE, DATE_ON_OR_AFTER, DATE_BETWEEN, DATE_NOT_BETWEEN, DATE_IS_VALID, ONE_OF_RANGE, ONE_OF_LIST, and BOOLEAN apply only to data validation; TEXT_STARTS_WITH, TEXT_ENDS_WITH, BLANK, and NOT_BLANK apply only to conditional formatting and filters.',
     ),
   values: z
     .array(ConditionValue)
     .optional()
     .describe(
-      'The values of the condition; how many are required depends on the type (comparisons take one, the BETWEEN family exactly two, ONE_OF_LIST any number, the no-argument checks none).',
+      'The values of the condition; how many are required depends on the type (comparisons take one, the BETWEEN family exactly two, ONE_OF_LIST any number, the no-argument checks none, and BOOLEAN zero, one, or two).',
     ),
 });
 

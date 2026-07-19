@@ -15,6 +15,7 @@ export async function handler(
   const reply = await applyRequest(sheets, args.spreadsheetId, {
     addProtectedRange: {
       protectedRange: forGoogle({
+        protectedRangeId: args.protectedRangeId,
         range: args.range ? forGoogle(args.range) : undefined,
         namedRangeId: args.namedRangeId,
         description: args.description,
@@ -26,5 +27,11 @@ export async function handler(
       }),
     },
   });
-  return projectProtectedRange(reply.addProtectedRange?.protectedRange ?? {});
+  const added = reply.addProtectedRange?.protectedRange;
+  if (!added) {
+    throw new Error(
+      'Google returned no protected range for the add; the protection may not have been applied.',
+    );
+  }
+  return projectProtectedRange(added);
 }

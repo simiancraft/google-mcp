@@ -6,6 +6,13 @@ import { ProtectedRange } from '../../entities/ProtectedRange.js';
 export const schema = {
   input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to protect a range in.'),
+    protectedRangeId: z
+      .number()
+      .int()
+      .optional()
+      .describe(
+        'An ID to assign the protected range; must not already be used. Omitted, Google generates one.',
+      ),
     range: GridRange.optional().describe(
       'The range to protect; fully unbounded (just a sheetId) protects the whole sheet. Provide exactly one of range or namedRangeId.',
     ),

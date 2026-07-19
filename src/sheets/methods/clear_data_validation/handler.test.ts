@@ -38,4 +38,16 @@ describe('clear_data_validation', () => {
     expect(result).toEqual({ spreadsheetId: 'SS' });
     expect(() => schema.output.parse(result)).not.toThrow();
   });
+
+  it('carries filteredRowsIncluded when provided', async () => {
+    const captured: Captured = {};
+    await handler(fakeSheets(captured), {
+      spreadsheetId: 'SS',
+      range: { sheetId: 0 },
+      filteredRowsIncluded: true,
+    });
+    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
+      setDataValidation: { range: { sheetId: 0 }, filteredRowsIncluded: true },
+    });
+  });
 });

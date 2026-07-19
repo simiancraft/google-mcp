@@ -80,13 +80,13 @@ describe('set_data_validation', () => {
     await handler(fakeSheets(captured), {
       spreadsheetId: 'SS',
       range: { sheetId: 0 },
-      rule: { condition: { type: 'NOT_BLANK' } },
+      rule: { condition: { type: 'TEXT_IS_EMAIL' } },
       filteredRowsIncluded: true,
     });
     expect(captured.params?.requestBody?.requests?.[0]).toEqual({
       setDataValidation: {
         range: { sheetId: 0 },
-        rule: { condition: { type: 'NOT_BLANK' } },
+        rule: { condition: { type: 'TEXT_IS_EMAIL' } },
         filteredRowsIncluded: true,
       },
     });

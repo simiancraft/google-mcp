@@ -7,12 +7,14 @@ export const schema = {
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the protected range.'),
     protectedRangeId: z.number().int().describe('The ID of the protected range to update.'),
     range: GridRange.optional().describe(
-      'The new range to protect; fully unbounded (just a sheetId) protects the whole sheet.',
+      'The new range to protect; fully unbounded (just a sheetId) protects the whole sheet. A protected range is backed by a range or a named range, never both, so do not combine this with namedRangeId.',
     ),
     namedRangeId: z
       .string()
       .optional()
-      .describe('The new named range to back the protection with.'),
+      .describe(
+        'The new named range to back the protection with; do not combine with range, a protected range is backed by one or the other.',
+      ),
     description: z.string().optional().describe('The new description of this protected range.'),
     warningOnly: z
       .boolean()

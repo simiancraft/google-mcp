@@ -5,8 +5,9 @@ import { schema } from './schema.js';
 /**
  * Not idempotent: rules are addressed by index, so repeating the call
  * deletes whatever rule has since shifted into that index, like
- * `delete_dimension`. Rule reads are part of grid data (issue #28), so the
- * index to delete is the one `add_conditional_format_rule` reported.
+ * `delete_dimension`. Each sheet's rules are listed in order by
+ * `get_spreadsheet` under `conditionalFormats`; the array position there is
+ * the index to delete.
  */
 export const delete_conditional_format_rule = sheetsOperation({
   description:

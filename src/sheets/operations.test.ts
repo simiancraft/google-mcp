@@ -20,6 +20,7 @@ describe('sheets operations', () => {
       'search_developer_metadata',
     ],
     destructive: [
+      'add_protected_range',
       'batch_clear_values',
       'batch_clear_values_by_data_filter',
       'clear_data_validation',

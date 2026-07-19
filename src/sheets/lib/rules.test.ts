@@ -89,6 +89,7 @@ describe('toDataValidationRule', () => {
           type: 'ONE_OF_LIST',
           values: [{ userEnteredValue: 'never' }, { userEnteredValue: '5.50@18' }],
         },
+        inputMessage: 'Pick a payoff plan.',
         strict: true,
         showCustomUi: true,
       }),
@@ -97,6 +98,7 @@ describe('toDataValidationRule', () => {
         type: 'ONE_OF_LIST',
         values: [{ userEnteredValue: 'never' }, { userEnteredValue: '5.50@18' }],
       },
+      inputMessage: 'Pick a payoff plan.',
       strict: true,
       showCustomUi: true,
     });
@@ -106,6 +108,20 @@ describe('toDataValidationRule', () => {
 describe('toEditors', () => {
   it('drops absent fields', () => {
     expect(toEditors({ users: ['a@example.com'] })).toEqual({ users: ['a@example.com'] });
+  });
+
+  it('carries groups and domain access', () => {
+    expect(
+      toEditors({
+        users: ['a@example.com'],
+        groups: ['finance@example.com'],
+        domainUsersCanEdit: true,
+      }),
+    ).toEqual({
+      users: ['a@example.com'],
+      groups: ['finance@example.com'],
+      domainUsersCanEdit: true,
+    });
   });
 });
 

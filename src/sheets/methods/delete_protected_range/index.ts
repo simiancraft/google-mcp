@@ -4,11 +4,12 @@ import { schema } from './schema.js';
 
 /**
  * Removes the protection, not the data: the cells and their values are
- * untouched, they just become editable again.
+ * untouched. Whether they become editable depends on what else applies
+ * (document permissions, overlapping protected ranges).
  */
 export const delete_protected_range = sheetsOperation({
   description:
-    'Delete a protected range by ID, making its cells editable again; the cell values are untouched.',
+    'Delete a protected range by ID, removing that protection from its cells; the cell values are untouched, and any overlapping protection or document permission still applies.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

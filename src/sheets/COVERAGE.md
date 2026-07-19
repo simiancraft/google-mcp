@@ -26,7 +26,7 @@ tracked in issue #76.
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
 | spreadsheets (conditional format rules) | `add_conditional_format_rule`, `update_conditional_format_rule`, `move_conditional_format_rule`, `delete_conditional_format_rule` ⚠️ |
 | spreadsheets (data validation) | `set_data_validation`, `clear_data_validation` ⚠️ |
-| spreadsheets (protected ranges) | `add_protected_range`, `update_protected_range`, `delete_protected_range` ⚠️ |
+| spreadsheets (protected ranges) | `add_protected_range` ⚠️, `update_protected_range`, `delete_protected_range` ⚠️ |
 | spreadsheets (charts) | `add_chart`, `update_chart_spec`, `delete_embedded_object` ⚠️ |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
@@ -61,9 +61,12 @@ fields are not carried, and `update_chart_spec` replaces the whole spec, as
 the REST request does.
 
 ⚠️ = destructive (`destructiveHint`): the clears are removals, per the
-annotation rubric in EXTENDING.md, and `update_sheet_properties` is the one
+annotation rubric in EXTENDING.md; `update_sheet_properties` is the one
 destructive update: shrinking gridProperties' rowCount or columnCount
-truncates the grid and discards the cells beyond the new bounds. Updates and appends are not destructive,
+truncates the grid and discards the cells beyond the new bounds; and
+`add_protected_range` is a destructive add under the rubric's
+standing-side-effect cluster (the `create_filter` precedent): the protection
+keeps restricting every collaborator not granted access. Updates and appends are not destructive,
 matching Google's own classification of `update_event` (overwriting values is
 an update, not a removal); `valueInputOption` is required on every write
 because REST rejects writes without it.
@@ -76,11 +79,17 @@ follow the suite's method naming (verb + resource noun):
 
 ## The Spreadsheet projection
 
-`get_spreadsheet` and `create_spreadsheet` return a **metadata-only**
-projection: `spreadsheetId`, `spreadsheetUrl`, properties (title, locale,
+`get_spreadsheet` and `create_spreadsheet` return a lean projection:
+`spreadsheetId`, `spreadsheetUrl`, properties (title, locale,
 timeZone, autoRecalc), and each sheet flattened to its properties (sheetId,
-title, index, sheetType, gridProperties' four counts, hidden, tab color),
-plus the spreadsheet's named ranges. Grid data
+title, index, sheetType, gridProperties' four counts, hidden, tab color)
+plus its sheet-level reactive collections: `protectedRanges` (each carrying
+the ID the update and delete operations take) and `conditionalFormats` (in
+rule order; the array position is the index the rule operations take). The
+rule readout keeps its type fields as **open strings** rather than narrowed
+enums: rules are addressed by index, so the readout must be total, and
+dropping a rule over an unrecognized upstream value would silently renumber
+every rule after it; the write path stays the closed enum. Grid data
 (per-cell formatting, validation, notes), themes, and the default
 cell format are not carried; cell contents flow through the values operations
 as plain `CellValue` (`string | number | boolean | null`) 2D arrays. The API
@@ -97,14 +106,18 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
   purpose-named operations above (issue #27), and the remaining tail
-  (filters, banding, merges, and the other data and layout requests) is
-  tracked in issue #77.
+  (merges and updateCells with its notes, links, and pivot tables; sorting,
+  filters, and the other data operations; dimension properties, groups, and
+  banding; slicers and the extended chart types) is tracked in issue #77.
 - **Data-source condition variants**: `BooleanCondition`'s enum omits
-  `TEXT_NOT_EQ`, `DATE_NOT_EQ`, and `FILTER_EXPRESSION`, which apply only to
-  filters on data source (Connected Sheets) objects, a surface this server
-  does not expose. `ProtectedRange`'s `tableId` backing is likewise not
-  carried (tables are not part of this surface), and `protectedRangeId` /
-  `requestingUserCanEdit` are output-only because REST marks them read-only.
+  `TEXT_NOT_EQ` and `DATE_NOT_EQ`, which apply only to filters on data
+  source (Connected Sheets) objects, a surface this server does not expose,
+  and `FILTER_EXPRESSION`, whose reference entry documents only its arity;
+  it is held back until the filter operations land (issue #77).
+  `ProtectedRange`'s `tableId` backing is likewise not carried (tables are
+  not part of this surface), and `requestingUserCanEdit` is output-only
+  because REST marks it read-only (`protectedRangeId` is writable on add,
+  and `add_protected_range` accepts it).
 - **`spreadsheets.getByDataFilter`** and the `includeGridData` /
   `excludeTablesInBandedRanges` parameters of `spreadsheets.get`: these exist
   to scope **grid data**, which the Spreadsheet projection excludes; without

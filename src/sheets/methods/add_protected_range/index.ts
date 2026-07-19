@@ -3,19 +3,20 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * The ID for `update_protected_range` and `delete_protected_range` comes
- * back in the reply; existing protections are not listed by
- * `get_spreadsheet` (its projection is metadata-only; protected ranges ride
- * the sheet payload, tracked with grid data in issue #28), so keep the
- * returned ID. The REST entity's tableId backing is not carried (tables are
- * not part of this surface).
+ * Destructive under the rubric's standing-side-effect cluster (the
+ * `create_filter` precedent): the protection keeps restricting every
+ * collaborator not granted access, so it is not merely additive. Existing
+ * protected ranges are listed per sheet by `get_spreadsheet`, each with the
+ * ID that `update_protected_range` and `delete_protected_range` take. The
+ * REST entity's tableId backing is not carried (tables are not part of this
+ * surface).
  */
 export const add_protected_range = sheetsOperation({
   description:
-    'Protect a range, a named range, or a whole sheet so only the listed editors can change it, or (with warningOnly) so every edit prompts a confirmation warning; returns the protected range with its assigned ID.',
+    'Protect a range, a named range, or a whole sheet so only the granted editors (listed users and groups, or the whole domain with domainUsersCanEdit) can change it, or (with warningOnly) so every edit prompts a confirmation warning; returns the protected range with its assigned ID.',
   annotations: {
     readOnlyHint: false,
-    destructiveHint: false,
+    destructiveHint: true,
     idempotentHint: false,
     openWorldHint: false,
   },
