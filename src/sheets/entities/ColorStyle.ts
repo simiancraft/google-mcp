@@ -3,8 +3,9 @@ import { Color } from './Color.js';
 
 /**
  * A color value: either a concrete RGB color or a reference to one of the
- * spreadsheet theme's colors. Provide exactly one of the two fields; if both
- * are set, the RGB color wins.
+ * spreadsheet theme's colors. Provide exactly one of the two fields; the API
+ * rejects a color with both set (live-verified: "oneof field 'kind' is
+ * already set").
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#ColorStyle
  */

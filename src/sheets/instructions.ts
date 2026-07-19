@@ -22,6 +22,7 @@ export const instructions =
   'it. The spreadsheet projection is metadata-only, and the Sheets API has ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
   'edits (tabs, rows and columns, named ranges, formats, borders, charts) ' +
-  'are purpose-named operations wrapping one batchUpdate request each; ' +
-  'their update masks derive from the fields provided, so untouched ' +
-  'properties are never reset.';
+  'are purpose-named operations wrapping one batchUpdate request each. The ' +
+  'property and format updates derive their masks from the fields provided, ' +
+  'so untouched properties are never reset; update_chart_spec is the ' +
+  'exception, replacing the whole spec, so send the complete chart.';

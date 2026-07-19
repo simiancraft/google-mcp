@@ -4,6 +4,18 @@ import type { ChartData } from '../entities/ChartData.js';
 import type { ChartSpec } from '../entities/ChartSpec.js';
 import type { EmbeddedObjectPosition } from '../entities/EmbeddedObjectPosition.js';
 
+/**
+ * Reject a ChartSpec that does not carry exactly one chart type. The entity
+ * types basicChart and pieChart as independent optionals (a zod union would
+ * complicate the recursive strict-input pin), so the exactly-one rule is
+ * enforced here, once, for every chart operation.
+ */
+export function assertOneChartType(spec: ChartSpec): void {
+  if ((spec.basicChart === undefined) === (spec.pieChart === undefined)) {
+    throw new Error('Provide exactly one of spec.basicChart or spec.pieChart.');
+  }
+}
+
 /** Carry a ChartData across the Google boundary; see optionality.ts. */
 function toChartData(data: ChartData): sheets_v4.Schema$ChartData {
   return { sourceRange: { sources: data.sourceRange.sources.map((range) => forGoogle(range)) } };

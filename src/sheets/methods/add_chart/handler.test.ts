@@ -92,14 +92,15 @@ describe('add_chart', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
-  it('survives a bare reply', async () => {
+  it('refuses to fabricate a chart ID from a bare reply', async () => {
     const captured: Captured = {};
-    const result = await handler(fakeSheets(captured, {}), {
-      spreadsheetId: 'SS',
-      spec: columnSpec,
-      position: { newSheet: true },
-    });
-    expect(result).toEqual({ chartId: 0 });
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { newSheet: true },
+      }),
+    ).rejects.toThrow('no chart ID');
   });
 
   it('refuses a spec with no chart or both charts', async () => {
@@ -121,11 +122,28 @@ describe('add_chart', () => {
     expect(captured.params).toBeUndefined();
   });
 
-  it('refuses an empty position', async () => {
+  it('refuses a position that is empty, doubled, or newSheet: false', async () => {
     const captured: Captured = {};
     await expect(
       handler(fakeSheets(captured, {}), { spreadsheetId: 'SS', spec: columnSpec, position: {} }),
-    ).rejects.toThrow('Provide a position');
+    ).rejects.toThrow('exactly one of position.overlayPosition or position.newSheet');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: {
+          newSheet: true,
+          overlayPosition: { anchorCell: { sheetId: 0, rowIndex: 0, columnIndex: 0 } },
+        },
+      }),
+    ).rejects.toThrow('exactly one of position.overlayPosition or position.newSheet');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { newSheet: false },
+      }),
+    ).rejects.toThrow('exactly one of position.overlayPosition or position.newSheet');
     expect(captured.params).toBeUndefined();
   });
 });

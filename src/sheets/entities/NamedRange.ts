@@ -3,7 +3,7 @@ import { GridRange } from './GridRange.js';
 
 /**
  * A named range: a name that formulas and reads can use in place of a grid
- * range, so `=REFI_MODE` works where `=INPUTS!B38` would. Renaming or moving
+ * range, so `=REVENUE` works where `=Sheet1!B2` would. Renaming or moving
  * the range updates every formula that references it.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#NamedRange

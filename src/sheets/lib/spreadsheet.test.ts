@@ -35,6 +35,21 @@ describe('projectSheetProperties', () => {
       sheetType: 'DATA_SOURCE',
     });
   });
+
+  it('carries the tab color and drops unknown theme colors', () => {
+    expect(
+      projectSheetProperties({
+        sheetId: 3,
+        tabColorStyle: { rgbColor: { red: 0.2, green: null, blue: 0.8 } },
+      }),
+    ).toEqual({ sheetId: 3, tabColorStyle: { rgbColor: { red: 0.2, blue: 0.8 } } });
+    expect(
+      projectSheetProperties({ sheetId: 3, tabColorStyle: { themeColor: 'ACCENT2' } }),
+    ).toEqual({ sheetId: 3, tabColorStyle: { themeColor: 'ACCENT2' } });
+    expect(
+      projectSheetProperties({ sheetId: 3, tabColorStyle: { themeColor: 'BRAND_NEW_KIND' } }),
+    ).toEqual({ sheetId: 3, tabColorStyle: {} });
+  });
 });
 
 describe('projectSpreadsheet', () => {

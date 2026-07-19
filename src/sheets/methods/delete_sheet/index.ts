@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  */
 export const delete_sheet = sheetsOperation({
   description:
-    'Permanently delete a sheet (tab) and all of its data from a spreadsheet; refused if it is the last visible sheet.',
+    'Permanently delete a sheet (tab) and all of its data from a spreadsheet; removing the last remaining sheet is refused.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

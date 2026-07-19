@@ -28,10 +28,11 @@ The batchUpdate-backed operations (the sheet management, dimension,
 named-range, formatting, and chart rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
-to that request type's anchor on the batchUpdate reference page. The update
-pair derives its REST field mask from the properties actually provided, so an
-untouched property is never reset by a too-wide mask, and an empty update is
-refused rather than sent. `delete_dimension` is the one removal that is not
+to that request type's anchor on the batchUpdate reference page. The
+mask-deriving updates (`update_spreadsheet_properties`,
+`update_sheet_properties`, and `repeat_cell`) build their REST field mask
+from the properties actually provided, so an untouched property is never
+reset by a too-wide mask, and an empty update is refused rather than sent. `delete_dimension` is the one removal that is not
 idempotent: its range is index-addressed, so repeating the call deletes
 whatever shifted into the range. The chart operations carry a curated
 `ChartSpec` (the basic family and pie); the specialty chart types (bubble,
@@ -56,9 +57,9 @@ follow the suite's method naming (verb + resource noun):
 `get_spreadsheet` and `create_spreadsheet` return a **metadata-only**
 projection: `spreadsheetId`, `spreadsheetUrl`, properties (title, locale,
 timeZone, autoRecalc), and each sheet flattened to its properties (sheetId,
-title, index, sheetType, gridProperties' four counts, hidden), plus the
-spreadsheet's named ranges. Grid data
-(per-cell formatting, validation, notes), tab colors, themes, and the default
+title, index, sheetType, gridProperties' four counts, hidden, tab color),
+plus the spreadsheet's named ranges. Grid data
+(per-cell formatting, validation, notes), themes, and the default
 cell format are not carried; cell contents flow through the values operations
 as plain `CellValue` (`string | number | boolean | null`) 2D arrays. The API
 omits `values` entirely for an empty range, and rows may be ragged; the

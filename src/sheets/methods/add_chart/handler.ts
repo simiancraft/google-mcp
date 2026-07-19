@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { toChartSpec, toEmbeddedObjectPosition } from '../../lib/charts.js';
+import { assertOneChartType, toChartSpec, toEmbeddedObjectPosition } from '../../lib/charts.js';
 import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
@@ -8,11 +8,12 @@ export async function handler(
   sheets: sheets_v4.Sheets,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
-  if ((args.spec.basicChart === undefined) === (args.spec.pieChart === undefined)) {
-    throw new Error('Provide exactly one of spec.basicChart or spec.pieChart.');
-  }
-  if (args.position.overlayPosition === undefined && args.position.newSheet === undefined) {
-    throw new Error('Provide a position: an overlayPosition, or newSheet: true.');
+  assertOneChartType(args.spec);
+  if (
+    (args.position.overlayPosition === undefined) === (args.position.newSheet === undefined) ||
+    args.position.newSheet === false
+  ) {
+    throw new Error('Provide exactly one of position.overlayPosition or position.newSheet: true.');
   }
   const reply = await applyRequest(sheets, args.spreadsheetId, {
     addChart: {
@@ -22,9 +23,12 @@ export async function handler(
       },
     },
   });
-  const chart = reply.addChart?.chart ?? {};
+  const chart = reply.addChart?.chart;
+  if (chart?.chartId == null) {
+    throw new Error('Google accepted the chart but returned no chart ID in the reply.');
+  }
   return {
-    chartId: chart.chartId ?? 0,
+    chartId: chart.chartId,
     sheetId: chart.position?.sheetId ?? undefined,
   };
 }

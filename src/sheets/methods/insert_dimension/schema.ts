@@ -4,8 +4,13 @@ import { DimensionRange } from '../../entities/DimensionRange.js';
 export const schema = {
   input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to insert into.'),
-    range: DimensionRange.describe(
-      'The rows or columns to insert: new dimensions appear starting at startIndex, shifting existing ones toward endIndex; the count inserted is endIndex - startIndex.',
+    range: DimensionRange.required({
+      sheetId: true,
+      dimension: true,
+      startIndex: true,
+      endIndex: true,
+    }).describe(
+      'The rows or columns to insert: new dimensions appear starting at startIndex, shifting existing ones toward endIndex; the count inserted is endIndex - startIndex. All four fields are required here: an unbounded insert has no count.',
     ),
     inheritFromBefore: z
       .boolean()

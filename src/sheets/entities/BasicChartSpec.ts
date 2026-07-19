@@ -35,6 +35,7 @@ export const BasicChartSpec = z.strictObject({
         ),
       }),
     )
+    .max(1)
     .optional()
     .describe('The domain of the chart; only one is supported.'),
   series: z

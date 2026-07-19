@@ -10,7 +10,7 @@ export const schema = {
       .int()
       .optional()
       .describe(
-        'The zero-based position to insert the duplicate at; existing sheets shift over. Omitted, the duplicate lands right of the source.',
+        "The zero-based position to insert the duplicate at; existing sheets shift over. Omitted, the duplicate is inserted at the source sheet's index, shifting the source right (live-verified).",
       ),
     newSheetId: z
       .number()
