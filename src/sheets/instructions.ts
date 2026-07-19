@@ -28,12 +28,12 @@ export const instructions =
   'and formula-bearing copy/cut paste operations execute copied formulas at ' +
   "their destination. The spreadsheet projection carries metadata plus each sheet's " +
   'basic filter, filter views, protected ranges, conditional format rules, ' +
-  'banded ranges, ordered row and column groups, and merged ranges (never ' +
+  'banded ranges, ordered row and column groups, slicers, and merged ranges (never ' +
   'grid data), and the Sheets API has ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
   'edits (tabs, rows and columns, exact dimension sizes and visibility, ' +
-  'dimension groups, named ranges, formats, banding, borders, charts and ' +
-  'their position, ' +
+  'dimension groups, named ranges, developer metadata, formats, banding, borders, ' +
+  'charts and their position, slicers, ' +
   'conditional format rules, data validation, protected ranges, cell ' +
   'content, merges, sorting, filters, and data transformations) are ' +
   'purpose-named operations wrapping one batchUpdate request each. ' +
@@ -42,7 +42,8 @@ export const instructions =
   'and writing to an explicit range clears those fields in the part of the ' +
   'range the rows do not cover. ' +
   'The ' +
-  'property, format, filter-view, banding, and embedded-object layout updates derive ' +
+  'property, named-range, developer-metadata, format, filter-view, banding, slicer-spec, ' +
+  'and embedded-object layout updates derive ' +
   'their masks from the fields provided, ' +
   'so untouched properties are never reset, except that a filter view is backed by either ' +
   'a range or named range and providing one backing detaches the other; update_chart_spec and ' +
@@ -57,4 +58,7 @@ export const instructions =
   'banding update and delete operations. Row and column groups have no ID; ' +
   'update_dimension_group selects one by range plus depth, while add and ' +
   'delete take a range. Collapsing or expanding a group also hides or reveals ' +
-  'every dimension inside it.';
+  'every dimension inside it. Developer-metadata update and delete filters can ' +
+  'match multiple entries. Slicers have stable slicerId identities in each ' +
+  "sheet's slicers list; update_slicer_spec changes only provided spec fields " +
+  'and does not move or resize the slicer.';

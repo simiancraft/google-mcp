@@ -161,14 +161,14 @@ describe('add_chart', () => {
         spec: { title: 'Empty' },
         position: { newSheet: true },
       }),
-    ).rejects.toThrow('exactly one of spec.basicChart or spec.pieChart');
+    ).rejects.toThrow('exactly one of spec.basicChart, spec.pieChart');
     await expect(
       handler(fakeSheets(captured, {}), {
         spreadsheetId: 'SS',
         spec: { ...columnSpec, pieChart: {} },
         position: { newSheet: true },
       }),
-    ).rejects.toThrow('exactly one of spec.basicChart or spec.pieChart');
+    ).rejects.toThrow('exactly one of spec.basicChart, spec.pieChart');
     expect(captured.params).toBeUndefined();
   });
 

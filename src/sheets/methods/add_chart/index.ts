@@ -3,8 +3,8 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * The spec is the curated ChartSpec (basic family and pie); the reply's chart
- * ID feeds update_chart_spec and delete_embedded_object.
+ * ChartSpec carries every ordinary-grid chart family; the reply's chart ID
+ * feeds update_chart_spec and delete_embedded_object.
  */
 export const add_chart = sheetsOperation({
   description:

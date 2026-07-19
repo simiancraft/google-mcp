@@ -6,7 +6,9 @@ export const schema = {
     objectId: z
       .number()
       .int()
-      .describe('The ID of the embedded object to delete, such as a chart ID from add_chart.'),
+      .describe(
+        'The ID of the embedded object to delete, such as a chart ID from add_chart or a slicer ID from add_slicer.',
+      ),
   }),
   /** The delete reply is empty; we confirm the ids. */
   output: z.object({

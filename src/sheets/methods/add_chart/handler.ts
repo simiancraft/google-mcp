@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { assertOneChartType, toChartSpec, toEmbeddedObjectPosition } from '../../lib/charts.js';
+import { toChartSpec, toEmbeddedObjectPosition } from '../../lib/charts.js';
 import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
@@ -8,7 +8,6 @@ export async function handler(
   sheets: sheets_v4.Sheets,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
-  assertOneChartType(args.spec);
   const locationCount = [
     args.position.overlayPosition,
     args.position.sheetId,

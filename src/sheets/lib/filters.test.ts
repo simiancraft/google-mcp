@@ -9,7 +9,6 @@ describe('toGoogleDataFilter', () => {
   it('strips undefined keys at every nesting level', () => {
     expect(
       toGoogleDataFilter({
-        gridRange: { sheetId: 0, startRowIndex: 1, endRowIndex: undefined },
         developerMetadataLookup: {
           metadataKey: 'k',
           visibility: undefined,
@@ -20,7 +19,6 @@ describe('toGoogleDataFilter', () => {
         },
       }),
     ).toEqual({
-      gridRange: { sheetId: 0, startRowIndex: 1 },
       developerMetadataLookup: {
         metadataKey: 'k',
         metadataLocation: {
@@ -28,6 +26,27 @@ describe('toGoogleDataFilter', () => {
         },
       },
     });
+    expect(
+      toGoogleDataFilter({
+        gridRange: { sheetId: 0, startRowIndex: 1, endRowIndex: undefined },
+      }),
+    ).toEqual({ gridRange: { sheetId: 0, startRowIndex: 1 } });
+  });
+
+  it('enforces the data-filter and metadata-location oneofs', () => {
+    expect(() => toGoogleDataFilter({})).toThrow(
+      'exactly one of a1Range, gridRange, or developerMetadataLookup',
+    );
+    expect(() => toGoogleDataFilter({ a1Range: 'A1', gridRange: { sheetId: 0 } })).toThrow(
+      'exactly one of a1Range, gridRange, or developerMetadataLookup',
+    );
+    expect(() =>
+      toGoogleDataFilter({
+        developerMetadataLookup: {
+          metadataLocation: { spreadsheet: true, sheetId: 0 },
+        },
+      }),
+    ).toThrow('exactly one of spreadsheet, sheetId, or dimensionRange');
   });
 });
 

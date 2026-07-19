@@ -8,7 +8,7 @@ import { schema } from './schema.js';
  */
 export const update_chart_spec = sheetsOperation({
   description:
-    "Replace a chart's specification: its title, subtitle, type, data ranges, axes, and legend; the chart keeps its ID and position.",
+    "Replace a chart's complete specification across the basic, pie, bubble, candlestick, org, histogram, waterfall, treemap, or scorecard family; omitted spec fields are cleared, while the chart keeps its ID and position.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

@@ -15,11 +15,21 @@ import { DimensionRange } from '../entities/DimensionRange.js';
  */
 
 /** Convert an entity metadata location into the REST request shape (forGoogle is shallow; each level strips its own undefined keys). */
-function toGoogleLocation(
+export function toGoogleDeveloperMetadataLocation(
   location: DeveloperMetadataLocation,
 ): sheets_v4.Schema$DeveloperMetadataLocation {
+  const locationCount = [location.spreadsheet, location.sheetId, location.dimensionRange].filter(
+    (value) => value !== undefined,
+  ).length;
+  if (locationCount !== 1) {
+    throw new Error(
+      'Provide exactly one of spreadsheet, sheetId, or dimensionRange in a developer metadata location.',
+    );
+  }
   return forGoogle({
-    ...location,
+    locationType: location.locationType,
+    spreadsheet: location.spreadsheet,
+    sheetId: location.sheetId,
     dimensionRange: location.dimensionRange ? forGoogle(location.dimensionRange) : undefined,
   });
 }
@@ -29,13 +39,21 @@ function toGoogleLookup(lookup: DeveloperMetadataLookup): sheets_v4.Schema$Devel
   return forGoogle({
     ...lookup,
     metadataLocation: lookup.metadataLocation
-      ? toGoogleLocation(lookup.metadataLocation)
+      ? toGoogleDeveloperMetadataLocation(lookup.metadataLocation)
       : undefined,
   });
 }
 
 /** Convert an entity data filter into the REST request shape, stripping undefined at every level. */
 export function toGoogleDataFilter(filter: DataFilter): sheets_v4.Schema$DataFilter {
+  const selectorCount = [filter.a1Range, filter.gridRange, filter.developerMetadataLookup].filter(
+    (selector) => selector !== undefined,
+  ).length;
+  if (selectorCount !== 1) {
+    throw new Error(
+      'Provide exactly one of a1Range, gridRange, or developerMetadataLookup in each data filter.',
+    );
+  }
   return forGoogle({
     a1Range: filter.a1Range,
     gridRange: filter.gridRange ? forGoogle(filter.gridRange) : undefined,

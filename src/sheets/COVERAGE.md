@@ -16,13 +16,13 @@ tracked in issue #76.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 70 operations)
+## Methods: REST reference (`methods/`, 76 operations)
 
 | Resource | Implemented |
 |----------|-------------|
 | spreadsheets | `get_spreadsheet`, `create_spreadsheet`, `update_spreadsheet_properties` |
 | spreadsheets (layout and dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions`, `update_dimension_properties`, `move_dimension`, `append_dimension`, `add_dimension_group`, `update_dimension_group`, `delete_dimension_group` ⚠️ |
-| spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
+| spreadsheets (named ranges) | `add_named_range`, `update_named_range`, `delete_named_range` ⚠️ |
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
 | spreadsheets (banding) | `add_banding`, `update_banding`, `delete_banding` ⚠️ |
 | spreadsheets (cell content, merges) | `update_cells` ⚠️, `merge_cells` ⚠️, `unmerge_cells` ⚠️ |
@@ -32,14 +32,16 @@ tracked in issue #76.
 | spreadsheets (data validation) | `set_data_validation`, `clear_data_validation` ⚠️ |
 | spreadsheets (protected ranges) | `add_protected_range` ⚠️, `update_protected_range`, `delete_protected_range` ⚠️ |
 | spreadsheets (charts and embedded objects) | `add_chart`, `update_chart_spec`, `update_embedded_object_position`, `update_embedded_object_border`, `delete_embedded_object` ⚠️ |
+| spreadsheets (slicers) | `add_slicer`, `update_slicer_spec` |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
-| spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
+| spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata`, `create_developer_metadata`, `update_developer_metadata`, `delete_developer_metadata` ⚠️ |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` ⚠️ |
 
 The batchUpdate-backed operations (`update_spreadsheet_properties` plus the
-sheet management, layout and dimension, named-range, formatting, banding,
+sheet management, layout and dimension, named-range, developer-metadata,
+formatting, banding,
 cell-content, sorting, filter, data-operation, conditional-format,
-data-validation, protected-range, and embedded-object rows)
+data-validation, protected-range, embedded-object, and slicer rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (the
 reference page's request anchors, counted 2026-07-18; issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
@@ -52,9 +54,10 @@ is `update_conditional_format_rule` (replace) and
 `move_conditional_format_rule` (reorder, which also needs `sheetId`). The
 mask-deriving updates (`update_spreadsheet_properties`,
 `update_sheet_properties`, `update_dimension_properties`,
-`update_protected_range`, `update_filter_view`, `repeat_cell`,
+`update_named_range`, `update_developer_metadata`, `update_protected_range`,
+`update_filter_view`, `repeat_cell`,
 `update_banding`, `update_embedded_object_position`, and
-`update_embedded_object_border`)
+`update_embedded_object_border`, plus `update_slicer_spec`)
 build their REST field mask
 from the properties actually provided, so an untouched property is never
 reset by a too-wide mask, and an empty update is refused rather than sent;
@@ -75,18 +78,23 @@ onto whatever rule shifted into their index. `randomize_range` produces a new
 order on every call, `cut_paste` has already cleared its source when repeated,
 `copy_paste` can mutate an overlapping source, and `find_replace` can create
 new matches when the replacement contains the find value, so those operations
-are non-idempotent too. The chart operations carry a curated
-`ChartSpec` (the basic family and pie); the specialty chart types (bubble,
-candlestick, org, histogram, waterfall, treemap, scorecard) and styling
-fields are not carried, and `update_chart_spec` replaces the whole spec, as
-the REST request does. Embedded-object layout is separate:
+are non-idempotent too. The chart operations carry all nine ordinary-grid
+families: basic, pie, bubble, candlestick, org, histogram, waterfall, treemap,
+and scorecard. The specialty carriers include their documented data, series,
+domain, sizing, aggregation, color, and text options. Waterfall chart data
+labels, total data labels, and connector-line styling are the only
+specialty-family cosmetic tail deferred here. Basic-chart stacking, line
+smoothing, three-dimensional, interpolation, and data-label options remain
+outside its earlier curated carrier. Data-source-only chart fields stay with
+the excluded data-source family. `update_chart_spec` replaces the whole spec,
+as the REST request does. Embedded-object layout is separate:
 `update_embedded_object_position` updates overlay fields behind a derived mask
 and returns the projected new position (not idempotent: a newSheet move
 creates a sheet with a newly chosen ID on every call), while
 `update_embedded_object_border` updates its modern `colorStyle` border.
 
 ⚠️ = destructive (`destructiveHint`): the clears, banding and dimension-group
-deletes, and the filter-view delete are removals, per the
+deletes, developer-metadata delete, and filter-view delete are removals, per the
 annotation rubric in EXTENDING.md; `update_sheet_properties` is the one
 destructive update: shrinking gridProperties' rowCount or columnCount
 truncates the grid and discards the cells beyond the new bounds; and
@@ -106,6 +114,13 @@ including the formula-bearing writes: a written formula can reach external
 endpoints when the sheet later evaluates it (IMPORTDATA and friends, per
 the formula hazards on those fields), but the hint tracks the operation's
 own reach, uniformly with the values operations.
+
+`delete_developer_metadata` can irreversibly remove every entry matching its
+filter; the reply lists what was deleted, while the attached rows, columns,
+sheets, and cell values remain. Metadata creation is additive and
+non-idempotent because replay without an explicit ID creates another entry.
+Metadata update is idempotent and applies one derived-mask change set to every
+entry matching any filter.
 
 The data-operation annotation judgments follow the same rubric explicitly.
 `sort_range` and `randomize_range` reorder the row slices inside their
@@ -149,6 +164,10 @@ Dimension-group add and delete replies are projected as all returned
 follows the add-with-reply precedent: it fails loudly without a returned
 banded range and keeps the required add-reply `bandedRangeId` total when a
 zero-valued ID is omitted.
+Slicer add is additive and non-idempotent; its active criteria can change what
+charts and pivot tables display without modifying source cells. Slicer spec
+updates are non-destructive, idempotent, and masked per provided field. Moving
+or resizing a slicer remains the embedded-object position operation.
 
 Methods speak the REST vocabulary verbatim (`spreadsheetId`, `filterId`,
 `bandedRangeId`, `dimensionGroup`, `objectId`, `newPosition`,
@@ -170,7 +189,8 @@ the ID the update and delete operations take) and `conditionalFormats` (in
 rule order; the array position is the index the rule operations take),
 `bandedRanges` (each with an optional ID or output-only reference), ordered
 `rowGroups` and `columnGroups` (total range-and-depth readouts with no ID;
-updates select by both while deletes take only a range), and `merges` (the
+updates select by both while deletes take only a range), `slicers` (each with
+the required `slicerId` used by `update_slicer_spec`), and `merges` (the
 merged ranges), plus
 the spreadsheet's named ranges. The
 rule readout keeps its type fields as **open strings** rather than narrowed
@@ -181,7 +201,7 @@ is likewise total at the collection level: every upstream view projects with
 its required ID, and a table-backed view is retained while only its `tableId`
 backing detail is omitted. Connected Sheets sort and filter carrier details
 remain outside the write surface. Plain `spreadsheets.get` returns these
-filters, banded ranges, and dimension groups directly on each Sheet resource;
+filters, banded ranges, dimension groups, and slicers directly on each Sheet resource;
 no grid-data flag is required. Grid data
 (per-cell formatting, validation, notes), themes, and the default
 cell format are not carried; cell values flow through the values operations
@@ -199,15 +219,17 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   body is a union of 69 request types (sheet management, formatting, charts,
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
-  purpose-named operations above (issue #27). The remaining batchUpdate
-  tail is tracked in issue #77: named-range update; developer metadata writes; slicers;
-  extended chart types; appendCells and pasteData; pivot tables within
-  updateCells's CellData; and the data-source and table request families
-  excluded by decision.
+  purpose-named operations above (issue #27). What remains is excluded by
+  decision: the data-source and table request families; `AppendCellsRequest`,
+  because `append_values` covers ordinary appends and `update_cells` covers
+  structured cell writes; `PasteDataRequest`, because the typed value,
+  copy/cut, and text-to-columns operations avoid delegating delimiter or HTML
+  parsing to the API; and pivot tables and chip runs within `CellData`.
 - **CellData beyond cell content**: `update_cells` carries a curated
   `CellData` (value, note, format, text format runs, and hyperlinks via a
-  run's link field or the cell-level textFormat.link). Pivot tables are deferred (issue #77); chip runs and
-  the data-source fields are not carried; per-cell `dataValidation` travels
+  run's link field or the cell-level textFormat.link). Pivot tables and chip
+  runs are excluded by decision, and the data-source fields are not carried;
+  per-cell `dataValidation` travels
   through `set_data_validation` instead; and the read-only fields
   (effective value and format, formatted value, hyperlink) are grid data
   (issue #28).

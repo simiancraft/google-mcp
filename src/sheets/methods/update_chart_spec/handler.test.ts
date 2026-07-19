@@ -69,7 +69,7 @@ describe('update_chart_spec', () => {
     const captured: Captured = {};
     await expect(
       handler(fakeSheets(captured), { spreadsheetId: 'SS', chartId: 9, spec: {} }),
-    ).rejects.toThrow('exactly one of spec.basicChart or spec.pieChart');
+    ).rejects.toThrow('exactly one of spec.basicChart, spec.pieChart');
     expect(captured.params).toBeUndefined();
   });
 });

@@ -9,6 +9,7 @@ import { projectBasicFilter, projectFilterView } from './filtering.js';
 import { projectColorStyle } from './formats.js';
 import { projectBandedRange, projectDimensionGroup } from './layout.js';
 import { projectGridRange, projectProtectedRange } from './rules.js';
+import { projectSlicer } from './slicers.js';
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
 export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): SheetProperties {
@@ -149,7 +150,8 @@ export function projectConditionalFormatRule(
  * Project a REST spreadsheet onto the Spreadsheet shape: each `Sheet`
  * flattens to its properties plus its sheet-level collections (filters,
  * protected ranges, conditional format rules, banded ranges, ordered dimension
- * groups, merged ranges), grid data is never carried, and nulls clean to undefined.
+ * groups, slicers, merged ranges), grid data is never carried, and nulls clean
+ * to undefined.
  */
 export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsheet {
   return {
@@ -193,6 +195,7 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
                   columnGroups: sheet.columnGroups
                     ? sheet.columnGroups.map(projectDimensionGroup)
                     : undefined,
+                  slicers: sheet.slicers ? sheet.slicers.map(projectSlicer) : undefined,
                   merges: sheet.merges ? sheet.merges.map(projectGridRange) : undefined,
                 },
               ]

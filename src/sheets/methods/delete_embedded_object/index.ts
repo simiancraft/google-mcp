@@ -3,12 +3,12 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Deletes any embedded object (chart or image) by ID; with charts, the ID is
- * the one add_chart returned.
+ * Deletes any embedded object (chart, image, or slicer) by ID; chart and
+ * slicer adds return the corresponding ID.
  */
 export const delete_embedded_object = sheetsOperation({
   description:
-    'Permanently delete an embedded object (a chart or image) from a spreadsheet by its ID.',
+    'Permanently delete an embedded chart, image, or slicer from a spreadsheet by its ID; underlying cells and source values are unchanged.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
