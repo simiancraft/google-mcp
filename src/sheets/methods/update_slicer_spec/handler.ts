@@ -9,18 +9,14 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   // An explicitly empty filterCriteria is a reset: fieldPaths' expansion
-  // yields no subpaths for an empty object, so mask the whole field instead,
-  // which clears the slicer's filter.
+  // yields no subpaths for an empty object, so leave the key unexpanded and
+  // mask the whole field, which clears the slicer's filter.
   const clearingFilter =
     args.spec.filterCriteria !== undefined && Object.keys(args.spec.filterCriteria).length === 0;
-  const expanded = fieldPaths(args.spec, [
-    'dataRange',
-    ...(clearingFilter ? [] : (['filterCriteria'] as const)),
-    'textFormat',
-  ]);
-  const fields = clearingFilter
-    ? [expanded, 'filterCriteria'].filter((path) => path !== '').join(',')
-    : expanded;
+  const fields = fieldPaths(
+    args.spec,
+    clearingFilter ? ['dataRange', 'textFormat'] : ['dataRange', 'filterCriteria', 'textFormat'],
+  );
   if (fields === '') {
     throw new Error('Provide at least one slicer spec field to update.');
   }
