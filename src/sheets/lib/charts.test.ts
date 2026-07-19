@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { toChartSpec, toEmbeddedObjectPosition } from './charts.js';
+import { projectEmbeddedObjectPosition, toChartSpec, toEmbeddedObjectPosition } from './charts.js';
 
 describe('toChartSpec', () => {
   it('carries a basic chart with axes, domain, and series', () => {
@@ -126,5 +126,25 @@ describe('toEmbeddedObjectPosition', () => {
 
   it('carries a new-sheet position', () => {
     expect(toEmbeddedObjectPosition({ newSheet: true })).toEqual({ newSheet: true });
+  });
+
+  it('carries an explicit sheet id and a partial overlay', () => {
+    expect(toEmbeddedObjectPosition({ sheetId: 8 })).toEqual({ sheetId: 8 });
+    expect(toEmbeddedObjectPosition({ overlayPosition: { widthPixels: 500 } })).toEqual({
+      overlayPosition: { widthPixels: 500 },
+    });
+  });
+});
+
+describe('projectEmbeddedObjectPosition', () => {
+  it('projects write-only newSheet only when true and tolerates a bare overlay', () => {
+    expect(
+      projectEmbeddedObjectPosition({ sheetId: 12, newSheet: true, overlayPosition: {} }),
+    ).toEqual({
+      sheetId: 12,
+      newSheet: true,
+      overlayPosition: {},
+    });
+    expect(projectEmbeddedObjectPosition({ newSheet: false })).toEqual({});
   });
 });

@@ -9,8 +9,21 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   assertOneChartType(args.spec);
-  if ((args.position.overlayPosition === undefined) === (args.position.newSheet === undefined)) {
-    throw new Error('Provide exactly one of position.overlayPosition or position.newSheet: true.');
+  const locationCount = [
+    args.position.overlayPosition,
+    args.position.sheetId,
+    args.position.newSheet,
+  ].filter((location) => location !== undefined).length;
+  if (locationCount !== 1) {
+    throw new Error(
+      'Provide exactly one of position.overlayPosition, position.sheetId, or position.newSheet: true.',
+    );
+  }
+  if (
+    args.position.overlayPosition !== undefined &&
+    args.position.overlayPosition.anchorCell === undefined
+  ) {
+    throw new Error('Provide position.overlayPosition.anchorCell when adding an overlay chart.');
   }
   const reply = await applyRequest(sheets, args.spreadsheetId, {
     addChart: {

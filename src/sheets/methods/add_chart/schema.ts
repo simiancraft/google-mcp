@@ -9,7 +9,7 @@ export const schema = {
       'What the chart shows; provide exactly one of basicChart or pieChart.',
     ),
     position: EmbeddedObjectPosition.describe(
-      'Where the chart lives: an overlayPosition floating over the grid, or newSheet: true for its own sheet.',
+      'Where the chart lives. Provide exactly one of overlayPosition, sheetId for a new object sheet with that ID, or newSheet: true for a new object sheet with a generated ID.',
     ),
   }),
   /** The chart renders in the UI and in xlsx and pdf exports; the reply's chart is projected to its ids. */

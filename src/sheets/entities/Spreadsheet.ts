@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { BandedRange } from './BandedRange.js';
 import { BasicFilterReadout } from './BasicFilter.js';
 import { ConditionalFormatRuleReadout } from './ConditionalFormatRuleReadout.js';
+import { DimensionGroup } from './DimensionGroup.js';
 import { FilterViewReadout } from './FilterView.js';
 import { GridRange } from './GridRange.js';
 import { NamedRange } from './NamedRange.js';
@@ -11,7 +13,8 @@ import { SpreadsheetProperties } from './SpreadsheetProperties.js';
 /**
  * One sheet (tab) in the Spreadsheet projection: its properties, flattened,
  * plus the sheet-level collections (filters, protected ranges, conditional
- * format rules, merged ranges). Grid data is still never carried.
+ * format rules, banded ranges, dimension groups, merged ranges). Grid data is
+ * still never carried.
  */
 const Sheet = SheetProperties.extend({
   basicFilter: BasicFilterReadout.optional().describe(
@@ -35,6 +38,24 @@ const Sheet = SheetProperties.extend({
     .describe(
       'The conditional format rules on this sheet, in rule order; absent when there are none. The array index is the index that update_conditional_format_rule, move_conditional_format_rule, and delete_conditional_format_rule take.',
     ),
+  bandedRanges: z
+    .array(BandedRange)
+    .optional()
+    .describe(
+      'The banded ranges on this sheet; absent when there are none. A readout can carry bandedRangeId, used by update_banding and delete_banding, or bandedRangeReference when an ID is not supported.',
+    ),
+  rowGroups: z
+    .array(DimensionGroup)
+    .optional()
+    .describe(
+      'All row groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID; update_dimension_group selects by range and depth, while delete_dimension_group takes a range.',
+    ),
+  columnGroups: z
+    .array(DimensionGroup)
+    .optional()
+    .describe(
+      'All column groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID; update_dimension_group selects by range and depth, while delete_dimension_group takes a range.',
+    ),
   merges: z
     .array(GridRange)
     .optional()
@@ -47,8 +68,9 @@ const Sheet = SheetProperties.extend({
  * A spreadsheet: the top-level container, identified by `spreadsheetId`, holding
  * properties and one or more sheets. This projection carries metadata and the
  * sheet-level collections (filters, protected ranges, conditional format
- * rules, merged ranges); grid data (per-cell formatting, validation, notes) is
- * never carried, cell values flow through the values operations as plain 2D
+ * rules, banded ranges, ordered dimension groups, merged ranges); grid data
+ * (per-cell formatting, validation, notes) is never carried, cell values flow
+ * through the values operations as plain 2D
  * arrays, and update_cells writes structured cell content.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets#Spreadsheet
@@ -62,7 +84,7 @@ export const Spreadsheet = z.object({
     .array(Sheet)
     .optional()
     .describe(
-      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its basic filter, filter views, protected ranges, conditional format rules, and merged ranges.',
+      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its basic filter, filter views, protected ranges, conditional format rules, banded ranges, ordered row and column groups, and merged ranges.',
     ),
   namedRanges: z
     .array(NamedRange)

@@ -16,29 +16,30 @@ tracked in issue #76.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 59 operations)
+## Methods: REST reference (`methods/`, 70 operations)
 
 | Resource | Implemented |
 |----------|-------------|
 | spreadsheets | `get_spreadsheet`, `create_spreadsheet`, `update_spreadsheet_properties` |
-| spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
+| spreadsheets (layout and dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions`, `update_dimension_properties`, `move_dimension`, `append_dimension`, `add_dimension_group`, `update_dimension_group`, `delete_dimension_group` ⚠️ |
 | spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
+| spreadsheets (banding) | `add_banding`, `update_banding`, `delete_banding` ⚠️ |
 | spreadsheets (cell content, merges) | `update_cells` ⚠️, `merge_cells` ⚠️, `unmerge_cells` ⚠️ |
 | spreadsheets (sorting and filters) | `sort_range`, `set_basic_filter`, `clear_basic_filter` ⚠️, `add_filter_view`, `update_filter_view`, `duplicate_filter_view`, `delete_filter_view` ⚠️ |
 | spreadsheets (data operations) | `find_replace`, `delete_duplicates` ⚠️, `trim_whitespace` ⚠️, `text_to_columns` ⚠️, `auto_fill` ⚠️, `copy_paste` ⚠️, `cut_paste` ⚠️, `insert_range`, `delete_range` ⚠️, `randomize_range` |
 | spreadsheets (conditional format rules) | `add_conditional_format_rule`, `update_conditional_format_rule`, `move_conditional_format_rule`, `delete_conditional_format_rule` ⚠️ |
 | spreadsheets (data validation) | `set_data_validation`, `clear_data_validation` ⚠️ |
 | spreadsheets (protected ranges) | `add_protected_range` ⚠️, `update_protected_range`, `delete_protected_range` ⚠️ |
-| spreadsheets (charts) | `add_chart`, `update_chart_spec`, `delete_embedded_object` ⚠️ |
+| spreadsheets (charts and embedded objects) | `add_chart`, `update_chart_spec`, `update_embedded_object_position`, `update_embedded_object_border`, `delete_embedded_object` ⚠️ |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` ⚠️ |
 
 The batchUpdate-backed operations (`update_spreadsheet_properties` plus the
-sheet management, dimension, named-range, formatting, cell-content, sorting,
-filter, data-operation, conditional-format, data-validation, protected-range,
-and chart rows)
+sheet management, layout and dimension, named-range, formatting, banding,
+cell-content, sorting, filter, data-operation, conditional-format,
+data-validation, protected-range, and embedded-object rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (the
 reference page's request anchors, counted 2026-07-18; issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
@@ -50,8 +51,10 @@ no-rule form, a removal), and `UpdateConditionalFormatRuleRequest`'s oneof
 is `update_conditional_format_rule` (replace) and
 `move_conditional_format_rule` (reorder, which also needs `sheetId`). The
 mask-deriving updates (`update_spreadsheet_properties`,
-`update_sheet_properties`, `update_protected_range`, `update_filter_view`, and
-`repeat_cell`)
+`update_sheet_properties`, `update_dimension_properties`,
+`update_protected_range`, `update_filter_view`, `repeat_cell`,
+`update_banding`, `update_embedded_object_position`, and
+`update_embedded_object_border`)
 build their REST field mask
 from the properties actually provided, so an untouched property is never
 reset by a too-wide mask, and an empty update is refused rather than sent;
@@ -64,7 +67,7 @@ the REST request applies that mask to every written cell, so a masked field
 a cell omits is cleared in that cell, which is why the operation is marked
 destructive.
 The index-addressed operations are not
-idempotent: `delete_dimension` and `delete_range` repeat onto whatever shifted
+idempotent: `delete_dimension`, `move_dimension`, and `delete_range` repeat onto whatever shifted
 into their ranges, and `insert_range` repeats the insertion and shifts again,
 and conditional format rules have no ID, so
 `move_conditional_format_rule` and `delete_conditional_format_rule` repeat
@@ -76,9 +79,14 @@ are non-idempotent too. The chart operations carry a curated
 `ChartSpec` (the basic family and pie); the specialty chart types (bubble,
 candlestick, org, histogram, waterfall, treemap, scorecard) and styling
 fields are not carried, and `update_chart_spec` replaces the whole spec, as
-the REST request does.
+the REST request does. Embedded-object layout is separate:
+`update_embedded_object_position` updates overlay fields behind a derived mask
+and returns the projected new position (not idempotent: a newSheet move
+creates a sheet with a newly chosen ID on every call), while
+`update_embedded_object_border` updates its modern `colorStyle` border.
 
-⚠️ = destructive (`destructiveHint`): the clears and the filter-view delete are removals, per the
+⚠️ = destructive (`destructiveHint`): the clears, banding and dimension-group
+deletes, and the filter-view delete are removals, per the
 annotation rubric in EXTENDING.md; `update_sheet_properties` is the one
 destructive update: shrinking gridProperties' rowCount or columnCount
 truncates the grid and discards the cells beyond the new bounds; and
@@ -117,7 +125,33 @@ the removal halves and are destructive.
 operations because their batchUpdate replies return counts or metadata, not
 the resulting cell data.
 
+Exact dimension-property updates are non-destructive and idempotent.
+`move_dimension` preserves the
+rows or columns but is non-idempotent because its source is index-addressed;
+`append_dimension` is additive and repeats another append. Adding a dimension
+group is additive but can reshape overlapping group ranges and depths;
+deleting one is a destructive removal and is non-idempotent because each call
+decrements group depth over the range. `update_dimension_group` is a
+non-destructive idempotent state update, though changing `collapsed` also
+hides or reveals every dimension in that group. Banding add is additive,
+banding update is a non-destructive idempotent masked property update, and
+banding delete is an ID-addressed destructive removal. The embedded-object
+position and border operations are non-destructive idempotent property
+updates; the position operation exposes overlay move and resize plus both
+object-sheet creation forms. Its field mask preserves omitted anchor, offset,
+and size fields for overlay updates.
+`UpdateDimensionPropertiesRequest.dataSourceSheetRange` remains outside the
+curated surface with the data-source request families. The embedded-position
+operation accepts `newPosition.sheetId` and `newPosition.newSheet` to create an
+object sheet, as well as field-masked overlay moves and resizes.
+Dimension-group add and delete replies are projected as all returned
+`dimensionGroups` and fail loudly when Google omits that reply. Banding add
+follows the add-with-reply precedent: it fails loudly without a returned
+banded range and keeps the required add-reply `bandedRangeId` total when a
+zero-valued ID is omitted.
+
 Methods speak the REST vocabulary verbatim (`spreadsheetId`, `filterId`,
+`bandedRangeId`, `dimensionGroup`, `objectId`, `newPosition`,
 `valueInputOption`, `majorDimension`, `dateTimeRenderOption`); wire names
 follow the suite's method naming (verb + resource noun):
 `spreadsheets.values.batchGetByDataFilter` is
@@ -133,8 +167,11 @@ plus its sheet-level reactive collections: `basicFilter`, `filterViews` (each
 carrying the stable `filterViewId` used directly by `update_filter_view` and as
 the `filterId` for duplicate/delete), `protectedRanges` (each carrying
 the ID the update and delete operations take) and `conditionalFormats` (in
-rule order; the array position is the index the rule operations take) and
-`merges` (the merged ranges), plus
+rule order; the array position is the index the rule operations take),
+`bandedRanges` (each with an optional ID or output-only reference), ordered
+`rowGroups` and `columnGroups` (total range-and-depth readouts with no ID;
+updates select by both while deletes take only a range), and `merges` (the
+merged ranges), plus
 the spreadsheet's named ranges. The
 rule readout keeps its type fields as **open strings** rather than narrowed
 enums: rules are addressed by index, so the readout must be total, and
@@ -143,8 +180,9 @@ every rule after it; the write path stays the closed enum. Filter-view readout
 is likewise total at the collection level: every upstream view projects with
 its required ID, and a table-backed view is retained while only its `tableId`
 backing detail is omitted. Connected Sheets sort and filter carrier details
-remain outside the write surface. Plain `spreadsheets.get` returns `basicFilter` and `filterViews`
-directly on each Sheet resource; no grid-data flag is required. Grid data
+remain outside the write surface. Plain `spreadsheets.get` returns these
+filters, banded ranges, and dimension groups directly on each Sheet resource;
+no grid-data flag is required. Grid data
 (per-cell formatting, validation, notes), themes, and the default
 cell format are not carried; cell values flow through the values operations
 as plain `CellValue` (`string | number | boolean | null`) 2D arrays, and
@@ -162,9 +200,7 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
   purpose-named operations above (issue #27). The remaining batchUpdate
-  tail is tracked in issue #77: dimension-property updates, dimension
-  moves/appends, and dimension groups; banding; embedded-object position
-  and border; named-range update; developer metadata writes; slicers;
+  tail is tracked in issue #77: named-range update; developer metadata writes; slicers;
   extended chart types; appendCells and pasteData; pivot tables within
   updateCells's CellData; and the data-source and table request families
   excluded by decision.

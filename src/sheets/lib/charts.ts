@@ -2,7 +2,9 @@ import type { sheets_v4 } from '@googleapis/sheets';
 import { forGoogle } from '../../lib/optionality.js';
 import type { ChartData } from '../entities/ChartData.js';
 import type { ChartSpec } from '../entities/ChartSpec.js';
+import type { EmbeddedObjectBorder } from '../entities/EmbeddedObjectBorder.js';
 import type { EmbeddedObjectPosition } from '../entities/EmbeddedObjectPosition.js';
+import { toColorStyle } from './formats.js';
 
 /**
  * Reject a ChartSpec that does not carry exactly one chart type. The entity
@@ -63,15 +65,53 @@ export function toEmbeddedObjectPosition(
   position: EmbeddedObjectPosition,
 ): sheets_v4.Schema$EmbeddedObjectPosition {
   return forGoogle({
+    sheetId: position.sheetId,
     newSheet: position.newSheet,
     overlayPosition: position.overlayPosition
       ? forGoogle({
-          anchorCell: forGoogle(position.overlayPosition.anchorCell),
+          anchorCell: position.overlayPosition.anchorCell
+            ? forGoogle(position.overlayPosition.anchorCell)
+            : undefined,
           offsetXPixels: position.overlayPosition.offsetXPixels,
           offsetYPixels: position.overlayPosition.offsetYPixels,
           widthPixels: position.overlayPosition.widthPixels,
           heightPixels: position.overlayPosition.heightPixels,
         })
       : undefined,
+  });
+}
+
+/** Project a REST EmbeddedObjectPosition, cleaning nulls to undefined. */
+export function projectEmbeddedObjectPosition(
+  position: sheets_v4.Schema$EmbeddedObjectPosition,
+): EmbeddedObjectPosition {
+  return {
+    sheetId: position.sheetId ?? undefined,
+    newSheet: position.newSheet === true ? true : undefined,
+    overlayPosition: position.overlayPosition
+      ? {
+          anchorCell: position.overlayPosition.anchorCell
+            ? {
+                // Required coordinate scalars can be omitted when zero in proto3 replies.
+                sheetId: position.overlayPosition.anchorCell.sheetId ?? 0,
+                rowIndex: position.overlayPosition.anchorCell.rowIndex ?? 0,
+                columnIndex: position.overlayPosition.anchorCell.columnIndex ?? 0,
+              }
+            : undefined,
+          offsetXPixels: position.overlayPosition.offsetXPixels ?? undefined,
+          offsetYPixels: position.overlayPosition.offsetYPixels ?? undefined,
+          widthPixels: position.overlayPosition.widthPixels ?? undefined,
+          heightPixels: position.overlayPosition.heightPixels ?? undefined,
+        }
+      : undefined,
+  };
+}
+
+/** Carry an EmbeddedObjectBorder across the Google boundary. */
+export function toEmbeddedObjectBorder(
+  border: EmbeddedObjectBorder,
+): sheets_v4.Schema$EmbeddedObjectBorder {
+  return forGoogle({
+    colorStyle: border.colorStyle ? toColorStyle(border.colorStyle) : undefined,
   });
 }
