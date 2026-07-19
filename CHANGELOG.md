@@ -1,3 +1,29 @@
+## [1.12.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.2...v1.12.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add chart methods via batchUpdate ([c36a696](https://github.com/simiancraft/google-mcp-suite/commit/c36a6966d1a67ea240a016fb3a93995782eb24e2)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add dimension methods via batchUpdate ([c341b89](https://github.com/simiancraft/google-mcp-suite/commit/c341b89190c1b012e859972bbd3bdb70e6210292)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add formatting methods via batchUpdate ([113578e](https://github.com/simiancraft/google-mcp-suite/commit/113578e7dcffa66d55edd728e745a1e0040baf7b)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add named-range methods via batchUpdate ([640692d](https://github.com/simiancraft/google-mcp-suite/commit/640692deeaeab02e1e137881cbfee3a308fad52d)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add sheet management via curated batchUpdate requests ([072fb85](https://github.com/simiancraft/google-mcp-suite/commit/072fb8542628c21c44f15e88f33afb0be4ef9d02)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+
+### Bug Fixes
+
+* **sheets:** enforce the ColorStyle oneof at the carrier ([0715fb9](https://github.com/simiancraft/google-mcp-suite/commit/0715fb9bf32e833a3f03d541e4a3f9fa04a80a42))
+* **sheets:** reclassify grid resize as destructive, tighten input domains ([5dbc896](https://github.com/simiancraft/google-mcp-suite/commit/5dbc896e402feccf7d65f4c34644738e0c545896)), closes [#76](https://github.com/simiancraft/google-mcp-suite/issues/76)
+* **sheets:** tighten validation and correct describes per review ([ab25cce](https://github.com/simiancraft/google-mcp-suite/commit/ab25cce8140ffafed6db3858ce9c31238a9d1277))
+
+### Refactoring
+
+* **sheets:** split format carriers out of lib/requests ([250435e](https://github.com/simiancraft/google-mcp-suite/commit/250435e7a64aa45100075624ad00fe1313e9dc2d))
+
+### Documentation
+
+* finish the toolset-staleness sweep, source the behavioral claims ([649793f](https://github.com/simiancraft/google-mcp-suite/commit/649793f9226ed87c3d9682124db546f49531ac12))
+* **readme:** date the no-MCP-toolset claim for Sheets and Docs ([b244913](https://github.com/simiancraft/google-mcp-suite/commit/b244913e521e70817171278e97b52c65006a6313)), closes [#76](https://github.com/simiancraft/google-mcp-suite/issues/76)
+* update front-door operation counts and pin them to the registries ([1f7cdf4](https://github.com/simiancraft/google-mcp-suite/commit/1f7cdf40229bc68872a20707d1912124c2ac547c))
+
 ## [1.11.2](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.1...v1.11.2) (2026-07-02)
 
 ### Bug Fixes
