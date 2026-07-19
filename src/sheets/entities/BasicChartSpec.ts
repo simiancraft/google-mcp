@@ -47,9 +47,11 @@ export const BasicChartSpec = z.strictObject({
           .optional()
           .describe('The axis this series charts against.'),
         type: z
-          .enum(['BAR', 'LINE', 'AREA', 'COLUMN', 'SCATTER', 'STEPPED_AREA'])
+          .enum(['LINE', 'AREA', 'COLUMN'])
           .optional()
-          .describe('The type of this series, for COMBO charts only.'),
+          .describe(
+            'The type of this series, for COMBO charts only; LINE, AREA, and COLUMN are the types Google supports per series.',
+          ),
       }),
     )
     .describe('The data this chart visualizes, one entry per series.'),

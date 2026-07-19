@@ -27,6 +27,7 @@ describe('sheets operations', () => {
       'delete_embedded_object',
       'delete_named_range',
       'delete_sheet',
+      'update_sheet_properties',
     ],
     openWorld: [],
   });

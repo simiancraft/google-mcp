@@ -2,11 +2,14 @@
 
 Tracks what this server exposes against Google's surface, so gaps are visible.
 
-**Sheets has no MCP toolset.** Google publishes MCP references for Gmail,
-Drive, Calendar, Chat, and People; Sheets is not among them (the obvious URL,
-`developers.google.com/workspace/sheets/api/reference/mcp`, 404s). So this is
-the suite's first **methods-only** service: there is no `tools/` folder, and
-the REST-sourced `methods/` registry is the whole wire surface.
+**This is a methods-only service.** When it shipped, Google published MCP
+references only for Gmail, Drive, Calendar, Chat, and People, and the Sheets
+MCP URL 404'd, so there is no `tools/` folder and the REST-sourced `methods/`
+registry is the whole wire surface. Google has since published a Sheets MCP
+toolset in developer preview (`sheetsmcp.googleapis.com`: `get_values`,
+`get_spreadsheet`, `update_spreadsheet`, `update_values`, `update_formulas`,
+`insert_dimension`); reconciling this service with that toolset once it
+stabilizes is tracked in issue #76.
 
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
@@ -22,7 +25,7 @@ the REST-sourced `methods/` registry is the whole wire surface.
 | spreadsheets (charts) | `add_chart`, `update_chart_spec`, `delete_embedded_object` ⚠️ |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
-| spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` |
+| spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` ⚠️ |
 
 The batchUpdate-backed operations (the sheet management, dimension,
 named-range, formatting, and chart rows)
@@ -41,7 +44,9 @@ fields are not carried, and `update_chart_spec` replaces the whole spec, as
 the REST request does.
 
 ⚠️ = destructive (`destructiveHint`): the clears are removals, per the
-annotation rubric in EXTENDING.md. Updates and appends are not destructive,
+annotation rubric in EXTENDING.md, and `update_sheet_properties` is the one
+destructive update: shrinking gridProperties' rowCount or columnCount
+truncates the grid and discards the cells beyond the new bounds. Updates and appends are not destructive,
 matching Google's own classification of `update_event` (overwriting values is
 an update, not a removal); `valueInputOption` is required on every write
 because REST rejects writes without it.

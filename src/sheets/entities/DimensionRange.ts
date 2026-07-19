@@ -12,11 +12,13 @@ export const DimensionRange = z.strictObject({
   startIndex: z
     .number()
     .int()
+    .min(0)
     .optional()
     .describe('The start (inclusive) of the span, or not set if unbounded.'),
   endIndex: z
     .number()
     .int()
+    .min(0)
     .optional()
     .describe('The end (exclusive) of the span, or not set if unbounded.'),
 });

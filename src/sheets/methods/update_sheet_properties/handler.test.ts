@@ -52,6 +52,29 @@ describe('update_sheet_properties', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
+  it('resizes the grid, the destructive path', async () => {
+    const captured: Captured = {};
+    const result = await handler(fakeSheets(captured), {
+      spreadsheetId: 'SS',
+      sheetId: 3,
+      gridProperties: { rowCount: 100, columnCount: 8 },
+    });
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            updateSheetProperties: {
+              properties: { sheetId: 3, gridProperties: { rowCount: 100, columnCount: 8 } },
+              fields: 'gridProperties.rowCount,gridProperties.columnCount',
+            },
+          },
+        ],
+      },
+    });
+    expect(result.updatedFields).toBe('gridProperties.rowCount,gridProperties.columnCount');
+  });
+
   it('masks gridProperties per subkey so untouched counts survive', async () => {
     const captured: Captured = {};
     const result = await handler(fakeSheets(captured), {

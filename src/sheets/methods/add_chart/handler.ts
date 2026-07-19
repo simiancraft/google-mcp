@@ -9,10 +9,7 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   assertOneChartType(args.spec);
-  if (
-    (args.position.overlayPosition === undefined) === (args.position.newSheet === undefined) ||
-    args.position.newSheet === false
-  ) {
+  if ((args.position.overlayPosition === undefined) === (args.position.newSheet === undefined)) {
     throw new Error('Provide exactly one of position.overlayPosition or position.newSheet: true.');
   }
   const reply = await applyRequest(sheets, args.spreadsheetId, {

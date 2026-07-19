@@ -13,9 +13,11 @@ export const EmbeddedObjectPosition = z.strictObject({
     'The position the object floats at, over the grid.',
   ),
   newSheet: z
-    .boolean()
+    .literal(true)
     .optional()
-    .describe('True to put the object on its own new sheet; the sheet ID is chosen by Google.'),
+    .describe(
+      'True to put the object on its own new sheet; the sheet ID is chosen by Google. Only true is meaningful, so false is rejected.',
+    ),
 });
 
 export type EmbeddedObjectPosition = z.infer<typeof EmbeddedObjectPosition>;

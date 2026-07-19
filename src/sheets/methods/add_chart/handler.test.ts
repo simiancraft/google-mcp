@@ -122,7 +122,7 @@ describe('add_chart', () => {
     expect(captured.params).toBeUndefined();
   });
 
-  it('refuses a position that is empty, doubled, or newSheet: false', async () => {
+  it('refuses a position that is empty or doubled; the schema rejects newSheet: false', async () => {
     const captured: Captured = {};
     await expect(
       handler(fakeSheets(captured, {}), { spreadsheetId: 'SS', spec: columnSpec, position: {} }),
@@ -137,13 +137,13 @@ describe('add_chart', () => {
         },
       }),
     ).rejects.toThrow('exactly one of position.overlayPosition or position.newSheet');
-    await expect(
-      handler(fakeSheets(captured, {}), {
+    expect(
+      schema.input.safeParse({
         spreadsheetId: 'SS',
         spec: columnSpec,
         position: { newSheet: false },
-      }),
-    ).rejects.toThrow('exactly one of position.overlayPosition or position.newSheet');
+      }).success,
+    ).toBe(false);
     expect(captured.params).toBeUndefined();
   });
 });

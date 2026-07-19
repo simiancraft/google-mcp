@@ -19,8 +19,18 @@ export const OverlayPosition = z.strictObject({
     .int()
     .optional()
     .describe('The vertical offset from the anchor cell, in pixels.'),
-  widthPixels: z.number().int().optional().describe('The width of the object, in pixels.'),
-  heightPixels: z.number().int().optional().describe('The height of the object, in pixels.'),
+  widthPixels: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('The width of the object, in pixels.'),
+  heightPixels: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('The height of the object, in pixels.'),
 });
 
 export type OverlayPosition = z.infer<typeof OverlayPosition>;

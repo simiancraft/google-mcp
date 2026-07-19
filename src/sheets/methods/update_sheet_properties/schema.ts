@@ -17,7 +17,7 @@ export const schema = {
     hidden: z.boolean().optional().describe('True to hide the sheet in the UI, false to show it.'),
     tabColorStyle: ColorStyle.optional().describe('The color of the sheet tab in the UI.'),
     gridProperties: GridProperties.optional().describe(
-      'Grid dimensions and frozen row/column counts; only the subfields provided are updated.',
+      'Grid dimensions and frozen row/column counts; only the subfields provided are updated. Shrinking rowCount or columnCount truncates the grid, permanently discarding the cells beyond the new bounds.',
     ),
   }),
   /** The update reply is empty; we confirm the ids and the mask applied. */

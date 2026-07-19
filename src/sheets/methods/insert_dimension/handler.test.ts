@@ -41,6 +41,35 @@ describe('insert_dimension', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
+  it('refuses a reversed or empty range', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        range: { sheetId: 3, dimension: 'ROWS', startIndex: 8, endIndex: 5 },
+      }),
+    ).rejects.toThrow('endIndex must be greater than range.startIndex');
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        range: { sheetId: 3, dimension: 'ROWS', startIndex: 5, endIndex: 5 },
+      }),
+    ).rejects.toThrow('endIndex must be greater than range.startIndex');
+    expect(captured.params).toBeUndefined();
+  });
+
+  it('refuses inheritFromBefore at the start of the sheet', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        range: { sheetId: 3, dimension: 'COLUMNS', startIndex: 0, endIndex: 2 },
+        inheritFromBefore: true,
+      }),
+    ).rejects.toThrow('inheritFromBefore cannot be true when startIndex is 0');
+    expect(captured.params).toBeUndefined();
+  });
+
   it('inserts columns bare', async () => {
     const captured: Captured = {};
     await handler(fakeSheets(captured), {

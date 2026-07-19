@@ -15,6 +15,7 @@ export const schema = {
     newSheetId: z
       .number()
       .int()
+      .min(0)
       .optional()
       .describe(
         'The ID for the duplicate; must not already be in use. Omitted, Google assigns one.',
