@@ -73,4 +73,28 @@ describe('update_slicer_spec', () => {
     ).rejects.toThrow('Provide at least one slicer spec field');
     expect(captured.params).toBeUndefined();
   });
+
+  it('clears the filter with an explicitly empty filterCriteria', async () => {
+    const captured: Captured = {};
+    const result = await handler(fakeSheets(captured), {
+      spreadsheetId: 'SS',
+      slicerId: 12,
+      spec: { filterCriteria: {} },
+    });
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            updateSlicerSpec: {
+              slicerId: 12,
+              spec: { filterCriteria: {} },
+              fields: 'filterCriteria',
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({ spreadsheetId: 'SS', slicerId: 12, updatedFields: 'filterCriteria' });
+  });
 });

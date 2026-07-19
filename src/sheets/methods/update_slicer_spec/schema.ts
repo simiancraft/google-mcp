@@ -6,7 +6,7 @@ export const schema = {
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the slicer.'),
     slicerId: z.number().int().min(0).describe('The ID of the slicer to update.'),
     spec: SlicerSpec.describe(
-      'The slicer fields to update. This is field-masked, not a whole-spec replacement; omitted fields remain unchanged.',
+      'The slicer fields to update. This is field-masked, not a whole-spec replacement; omitted fields remain unchanged, and an explicitly empty filterCriteria clears the filter.',
     ),
   }),
   /** The update reply is empty; confirm the target and derived mask. */
