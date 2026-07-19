@@ -1,3 +1,15 @@
+## [1.14.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.13.0...v1.14.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add the data operations: sort, filters, and grid editing ([9ed5265](https://github.com/simiancraft/google-mcp-suite/commit/9ed52653e12f4ed297c5372e194352eb1212ae19))
+
+### Bug Fixes
+
+* **sheets:** finish the data-operations convergence pass ([4cb2ecc](https://github.com/simiancraft/google-mcp-suite/commit/4cb2ecc928660338c9a215f0dec21e7c568e54bb))
+* **sheets:** harden the data operations after review ([49dfa54](https://github.com/simiancraft/google-mcp-suite/commit/49dfa54fb234f1cf7081cceb4cc4d7641170df5c))
+* **sheets:** repair the convergence-pass build ([4b36aab](https://github.com/simiancraft/google-mcp-suite/commit/4b36aab4d9e8b62e27e92ae23d442369ce9fb84f))
+
 ## [1.13.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.12.0...v1.13.0) (2026-07-19)
 
 ### Features
