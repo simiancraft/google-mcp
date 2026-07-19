@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { ChartData } from './ChartData.js';
 
 /**
- * A basic chart: bar, line, area, column, scatter, combo, or stepped area. A
- * curated projection of the REST `BasicChartSpec` (stacking, line smoothing,
- * three-dimensional, and interpolation options are not carried).
+ * A basic chart: bar, line, area, column, scatter, combo, or stepped area. This
+ * is a curated projection of the REST `BasicChartSpec`. It excludes compare
+ * mode, domain reversal, axis formatting and view windows, axis title
+ * positioning, series colors and style controls, data labels, stacking, line
+ * smoothing, three-dimensional rendering, and null interpolation.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/charts#BasicChartSpec
  */

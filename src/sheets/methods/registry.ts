@@ -8,6 +8,7 @@ import { add_filter_view } from './add_filter_view/index.js';
 import { add_named_range } from './add_named_range/index.js';
 import { add_protected_range } from './add_protected_range/index.js';
 import { add_sheet } from './add_sheet/index.js';
+import { add_slicer } from './add_slicer/index.js';
 import { append_dimension } from './append_dimension/index.js';
 import { append_values } from './append_values/index.js';
 import { auto_fill } from './auto_fill/index.js';
@@ -23,10 +24,12 @@ import { clear_data_validation } from './clear_data_validation/index.js';
 import { clear_values } from './clear_values/index.js';
 import { copy_paste } from './copy_paste/index.js';
 import { copy_sheet } from './copy_sheet/index.js';
+import { create_developer_metadata } from './create_developer_metadata/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
 import { cut_paste } from './cut_paste/index.js';
 import { delete_banding } from './delete_banding/index.js';
 import { delete_conditional_format_rule } from './delete_conditional_format_rule/index.js';
+import { delete_developer_metadata } from './delete_developer_metadata/index.js';
 import { delete_dimension } from './delete_dimension/index.js';
 import { delete_dimension_group } from './delete_dimension_group/index.js';
 import { delete_duplicates } from './delete_duplicates/index.js';
@@ -61,13 +64,16 @@ import { update_borders } from './update_borders/index.js';
 import { update_cells } from './update_cells/index.js';
 import { update_chart_spec } from './update_chart_spec/index.js';
 import { update_conditional_format_rule } from './update_conditional_format_rule/index.js';
+import { update_developer_metadata } from './update_developer_metadata/index.js';
 import { update_dimension_group } from './update_dimension_group/index.js';
 import { update_dimension_properties } from './update_dimension_properties/index.js';
 import { update_embedded_object_border } from './update_embedded_object_border/index.js';
 import { update_embedded_object_position } from './update_embedded_object_position/index.js';
 import { update_filter_view } from './update_filter_view/index.js';
+import { update_named_range } from './update_named_range/index.js';
 import { update_protected_range } from './update_protected_range/index.js';
 import { update_sheet_properties } from './update_sheet_properties/index.js';
+import { update_slicer_spec } from './update_slicer_spec/index.js';
 import { update_spreadsheet_properties } from './update_spreadsheet_properties/index.js';
 import { update_values } from './update_values/index.js';
 
@@ -99,6 +105,9 @@ export const methods = {
   // developer metadata
   get_developer_metadata,
   search_developer_metadata,
+  create_developer_metadata,
+  update_developer_metadata,
+  delete_developer_metadata,
   // sheets
   copy_sheet,
   add_sheet,
@@ -117,6 +126,7 @@ export const methods = {
   delete_dimension_group,
   // named ranges
   add_named_range,
+  update_named_range,
   delete_named_range,
   // formatting
   repeat_cell,
@@ -165,4 +175,7 @@ export const methods = {
   update_embedded_object_position,
   update_embedded_object_border,
   delete_embedded_object,
+  // slicers
+  add_slicer,
+  update_slicer_spec,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;

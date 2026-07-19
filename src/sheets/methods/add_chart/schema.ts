@@ -6,7 +6,7 @@ export const schema = {
   input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet to add the chart to.'),
     spec: ChartSpec.describe(
-      'What the chart shows; provide exactly one of basicChart or pieChart.',
+      'What the chart shows; provide exactly one chart family: basic, pie, bubble, candlestick, org, histogram, waterfall, treemap, or scorecard.',
     ),
     position: EmbeddedObjectPosition.describe(
       'Where the chart lives. Provide exactly one of overlayPosition, sheetId for a new object sheet with that ID, or newSheet: true for a new object sheet with a generated ID.',

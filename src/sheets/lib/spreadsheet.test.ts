@@ -94,7 +94,7 @@ describe('projectSpreadsheet', () => {
     });
   });
 
-  it("carries each sheet's filters, protected ranges, rules, banding, groups, and merges", () => {
+  it("carries each sheet's filters, protected ranges, rules, banding, groups, slicers, and merges", () => {
     expect(
       projectSpreadsheet({
         spreadsheetId: 'S1',
@@ -185,6 +185,29 @@ describe('projectSpreadsheet', () => {
                 depth: 1,
                 collapsed: false,
               },
+            ],
+            slicers: [
+              {
+                slicerId: 21,
+                spec: {
+                  dataRange: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+                  filterCriteria: { hiddenValues: ['archived'] },
+                  columnIndex: 1,
+                  applyToPivotTables: true,
+                  title: 'Status',
+                  textFormat: { bold: true },
+                  backgroundColor: { red: 0.8, green: 0.9, blue: 1 },
+                  horizontalAlignment: 'LEFT',
+                },
+                position: {
+                  overlayPosition: {
+                    anchorCell: { sheetId: 0, rowIndex: 0, columnIndex: 5 },
+                    widthPixels: 300,
+                    heightPixels: 180,
+                  },
+                },
+              },
+              {},
             ],
           },
         ],
@@ -279,6 +302,29 @@ describe('projectSpreadsheet', () => {
               depth: 1,
               collapsed: false,
             },
+          ],
+          slicers: [
+            {
+              slicerId: 21,
+              spec: {
+                dataRange: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+                filterCriteria: { hiddenValues: ['archived'] },
+                columnIndex: 1,
+                applyToPivotTables: true,
+                title: 'Status',
+                textFormat: { bold: true },
+                backgroundColorStyle: { rgbColor: { red: 0.8, green: 0.9, blue: 1 } },
+                horizontalAlignment: 'LEFT',
+              },
+              position: {
+                overlayPosition: {
+                  anchorCell: { sheetId: 0, rowIndex: 0, columnIndex: 5 },
+                  widthPixels: 300,
+                  heightPixels: 180,
+                },
+              },
+            },
+            { slicerId: 0 },
           ],
         },
       ],

@@ -22,7 +22,7 @@ export const DeveloperMetadataLocation = z.strictObject({
     .optional()
     .describe('The ID of the sheet when metadata is associated with an entire sheet.'),
   dimensionRange: DimensionRange.optional().describe(
-    'The row or column when metadata is associated with a dimension; must represent a single row or column.',
+    'The row or column when metadata is associated with a dimension; must be bounded and span exactly one row or column.',
   ),
 });
 

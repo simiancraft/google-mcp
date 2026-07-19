@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'bun:test';
-import { toBorder, toCellFormat, toColorStyle, toTextFormat } from './formats.js';
+import {
+  projectTextFormat,
+  toBorder,
+  toCellFormat,
+  toColorStyle,
+  toTextFormat,
+} from './formats.js';
 
 describe('toColorStyle', () => {
   it('carries an RGB color', () => {
@@ -35,6 +41,35 @@ describe('toTextFormat', () => {
     expect(toTextFormat({ underline: true, link: { uri: 'https://example.test/doc' } })).toEqual({
       underline: true,
       link: { uri: 'https://example.test/doc' },
+    });
+  });
+});
+
+describe('projectTextFormat', () => {
+  it('cleans nulls, carries links, and falls back to the deprecated foreground color', () => {
+    expect(
+      projectTextFormat({
+        foregroundColor: { red: 1, green: null, blue: 0.5 },
+        fontFamily: 'Inter',
+        fontSize: 12,
+        bold: true,
+        italic: false,
+        strikethrough: true,
+        underline: false,
+        link: { uri: 'https://example.test' },
+      }),
+    ).toEqual({
+      foregroundColorStyle: { rgbColor: { red: 1, blue: 0.5 } },
+      fontFamily: 'Inter',
+      fontSize: 12,
+      bold: true,
+      italic: false,
+      strikethrough: true,
+      underline: false,
+      link: { uri: 'https://example.test' },
+    });
+    expect(projectTextFormat({ foregroundColorStyle: { themeColor: 'TEXT' }, link: {} })).toEqual({
+      foregroundColorStyle: { themeColor: 'TEXT' },
     });
   });
 });

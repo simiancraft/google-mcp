@@ -49,6 +49,24 @@ export function toTextFormat(textFormat: TextFormat): sheets_v4.Schema$TextForma
   });
 }
 
+/** Project a REST text format, cleaning nulls and narrowing its color style. */
+export function projectTextFormat(data: sheets_v4.Schema$TextFormat): TextFormat {
+  return {
+    foregroundColorStyle: data.foregroundColorStyle
+      ? projectColorStyle(data.foregroundColorStyle)
+      : data.foregroundColor
+        ? projectColorStyle({ rgbColor: data.foregroundColor })
+        : undefined,
+    fontFamily: data.fontFamily ?? undefined,
+    fontSize: data.fontSize ?? undefined,
+    bold: data.bold ?? undefined,
+    italic: data.italic ?? undefined,
+    strikethrough: data.strikethrough ?? undefined,
+    underline: data.underline ?? undefined,
+    link: data.link?.uri ? { uri: data.link.uri } : undefined,
+  };
+}
+
 /** Carry a CellFormat across the Google boundary. */
 export function toCellFormat(format: CellFormat): sheets_v4.Schema$CellFormat {
   return forGoogle({
