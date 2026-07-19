@@ -10,13 +10,16 @@ served by `server()` over an [`auth`](../auth) client.
 
 ## Capabilities
 
-42 operations across spreadsheets, values, developer metadata, sheets, and
+59 operations across spreadsheets, values, developer metadata, sheets, and
 the batchUpdate surface: spreadsheet metadata and properties, single-range
 and batch values, data-filter-addressed values, developer metadata reads,
 sheet management (add, delete, duplicate, copy, properties), dimensions,
 named ranges, formatting (`repeat_cell`, `update_borders`), conditional
 format rules, data validation, protected ranges, cell content and merges
-(`update_cells`, `merge_cells`, `unmerge_cells`), and charts. Every operation
+(`update_cells`, `merge_cells`, `unmerge_cells`), sorting, basic filters and
+filter views, find/replace, deduplication, whitespace trimming, text-to-columns,
+autofill, copy/cut paste, cell-range insertion/deletion, randomization, and
+charts. Every operation
 carries the four MCP annotation hints; the removals, the discarding writes
 (`merge_cells`, `update_cells`), and `add_protected_range` (a standing
 restriction) are marked destructive (`destructiveHint`).
@@ -29,7 +32,9 @@ are deferred, see [`COVERAGE.md`](./COVERAGE.md)). One caution on writes:
 with `valueInputOption: USER_ENTERED`, a leading `=` becomes a live formula,
 so writing untrusted content that way is a formula-injection risk
 (`IMPORTRANGE` and friends can exfiltrate sheet data when the spreadsheet is
-next opened); use `RAW` for content you do not control. The full, always-current
+next opened); use `RAW` for content you do not control. Formula-bearing
+find/replace and paste operations carry the same warning on their wire fields.
+The full, always-current
 operation list is [`CAPABILITIES.md`](./CAPABILITIES.md), regenerated from the
 registry with `bun run capabilities`. An MCP client discovers the live
 surface, with input and output JSON Schema, from the server's `tools/list`.

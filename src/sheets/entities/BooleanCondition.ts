@@ -42,9 +42,10 @@ export const BooleanCondition = z.strictObject({
       'NOT_BLANK',
       'CUSTOM_FORMULA',
       'BOOLEAN',
+      'FILTER_EXPRESSION',
     ])
     .describe(
-      'The type of condition. Support varies by context: TEXT_IS_EMAIL, TEXT_IS_URL, DATE_ON_OR_BEFORE, DATE_ON_OR_AFTER, DATE_BETWEEN, DATE_NOT_BETWEEN, DATE_IS_VALID, ONE_OF_RANGE, ONE_OF_LIST, and BOOLEAN apply only to data validation; TEXT_STARTS_WITH, TEXT_ENDS_WITH, BLANK, and NOT_BLANK apply only to conditional formatting and filters.',
+      'The type of condition. Support varies by context: TEXT_IS_EMAIL, TEXT_IS_URL, DATE_ON_OR_BEFORE, DATE_ON_OR_AFTER, DATE_BETWEEN, DATE_NOT_BETWEEN, DATE_IS_VALID, ONE_OF_RANGE, ONE_OF_LIST, and BOOLEAN apply only to data validation; TEXT_STARTS_WITH, TEXT_ENDS_WITH, BLANK, and NOT_BLANK apply only to conditional formatting and filters; FILTER_EXPRESSION is a filter pattern and takes one value.',
     ),
   values: z
     .array(ConditionValue)

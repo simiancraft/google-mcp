@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { BasicFilter } from './BasicFilter.js';
 import { ConditionalFormatRuleReadout } from './ConditionalFormatRuleReadout.js';
+import { FilterView } from './FilterView.js';
 import { GridRange } from './GridRange.js';
 import { NamedRange } from './NamedRange.js';
 import { ProtectedRange } from './ProtectedRange.js';
@@ -8,10 +10,19 @@ import { SpreadsheetProperties } from './SpreadsheetProperties.js';
 
 /**
  * One sheet (tab) in the Spreadsheet projection: its properties, flattened,
- * plus the sheet-level collections (protected ranges, conditional format
- * rules, merged ranges). Grid data is still never carried.
+ * plus the sheet-level collections (filters, protected ranges, conditional
+ * format rules, merged ranges). Grid data is still never carried.
  */
 const Sheet = SheetProperties.extend({
+  basicFilter: BasicFilter.optional().describe(
+    'The basic filter on this sheet, if one exists; its range, sort specifications, and per-column filter specifications.',
+  ),
+  filterViews: z
+    .array(FilterView)
+    .optional()
+    .describe(
+      'The filter views on this sheet; absent when there are none. Each carries the filterViewId that update_filter_view, duplicate_filter_view, and delete_filter_view take.',
+    ),
   protectedRanges: z
     .array(ProtectedRange)
     .optional()
@@ -35,8 +46,8 @@ const Sheet = SheetProperties.extend({
 /**
  * A spreadsheet: the top-level container, identified by `spreadsheetId`, holding
  * properties and one or more sheets. This projection carries metadata and the
- * sheet-level collections (protected ranges, conditional format rules,
- * merged ranges); grid data (per-cell formatting, validation, notes) is
+ * sheet-level collections (filters, protected ranges, conditional format
+ * rules, merged ranges); grid data (per-cell formatting, validation, notes) is
  * never carried, cell values flow through the values operations as plain 2D
  * arrays, and update_cells writes structured cell content.
  *
@@ -51,7 +62,7 @@ export const Spreadsheet = z.object({
     .array(Sheet)
     .optional()
     .describe(
-      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its protected ranges, conditional format rules, and merged ranges.',
+      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its basic filter, filter views, protected ranges, conditional format rules, and merged ranges.',
     ),
   namedRanges: z
     .array(NamedRange)

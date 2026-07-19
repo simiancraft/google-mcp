@@ -6,6 +6,7 @@ import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
+import { projectBasicFilter, projectFilterView } from './filters-write.js';
 import { projectGridRange, projectProtectedRange } from './rules.js';
 
 /** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */
@@ -159,8 +160,8 @@ export function projectConditionalFormatRule(
 
 /**
  * Project a REST spreadsheet onto the Spreadsheet shape: each `Sheet`
- * flattens to its properties plus its sheet-level collections (protected
- * ranges, conditional format rules, merged ranges), grid data is never
+ * flattens to its properties plus its sheet-level collections (filters,
+ * protected ranges, conditional format rules, merged ranges), grid data is never
  * carried, and nulls clean to undefined.
  */
 export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsheet {
@@ -184,6 +185,12 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
             ? [
                 {
                   ...projectSheetProperties(sheet.properties),
+                  basicFilter: sheet.basicFilter
+                    ? projectBasicFilter(sheet.basicFilter)
+                    : undefined,
+                  filterViews: sheet.filterViews
+                    ? sheet.filterViews.map(projectFilterView)
+                    : undefined,
                   protectedRanges: sheet.protectedRanges
                     ? sheet.protectedRanges.map(projectProtectedRange)
                     : undefined,
