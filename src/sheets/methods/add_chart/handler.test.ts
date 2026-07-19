@@ -131,6 +131,20 @@ describe('add_chart', () => {
       handler(fakeSheets(captured, {}), {
         spreadsheetId: 'SS',
         spec: columnSpec,
+        position: { sheetId: 9, newSheet: true },
+      }),
+    ).rejects.toThrow('Do not provide position.sheetId');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { overlayPosition: {} },
+      }),
+    ).rejects.toThrow('Provide position.overlayPosition.anchorCell');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
         position: {
           newSheet: true,
           overlayPosition: { anchorCell: { sheetId: 0, rowIndex: 0, columnIndex: 0 } },

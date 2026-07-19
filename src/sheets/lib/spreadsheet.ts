@@ -7,6 +7,7 @@ import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
 import { projectBasicFilter, projectFilterView } from './filtering.js';
 import { projectColorStyle } from './formats.js';
+import { projectBandedRange, projectDimensionGroup } from './layout.js';
 import { projectGridRange, projectProtectedRange } from './rules.js';
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
@@ -147,8 +148,8 @@ export function projectConditionalFormatRule(
 /**
  * Project a REST spreadsheet onto the Spreadsheet shape: each `Sheet`
  * flattens to its properties plus its sheet-level collections (filters,
- * protected ranges, conditional format rules, merged ranges), grid data is never
- * carried, and nulls clean to undefined.
+ * protected ranges, conditional format rules, banded ranges, ordered dimension
+ * groups, merged ranges), grid data is never carried, and nulls clean to undefined.
  */
 export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsheet {
   return {
@@ -182,6 +183,15 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
                     : undefined,
                   conditionalFormats: sheet.conditionalFormats
                     ? sheet.conditionalFormats.map(projectConditionalFormatRule)
+                    : undefined,
+                  bandedRanges: sheet.bandedRanges
+                    ? sheet.bandedRanges.map(projectBandedRange)
+                    : undefined,
+                  rowGroups: sheet.rowGroups
+                    ? sheet.rowGroups.map(projectDimensionGroup)
+                    : undefined,
+                  columnGroups: sheet.columnGroups
+                    ? sheet.columnGroups.map(projectDimensionGroup)
                     : undefined,
                   merges: sheet.merges ? sheet.merges.map(projectGridRange) : undefined,
                 },

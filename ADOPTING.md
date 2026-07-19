@@ -19,8 +19,8 @@ the differences are concrete:
 
 - **MCP and then some.** The Gmail, Calendar, and Drive servers expose
   Google's curated MCP toolset *plus* the broader REST method surface;
-  Sheets and Docs are REST-sourced throughout: [161 operations](./README.md#services)
-  across Gmail (33), Calendar (25), Drive (35), Sheets (59), and Docs (9). Each
+  Sheets and Docs are REST-sourced throughout: [172 operations](./README.md#services)
+  across Gmail (33), Calendar (25), Drive (35), Sheets (70), and Docs (9). Each
   service's `CAPABILITIES.md` enumerates its operations with provenance.
   Built-in connectors document a narrower surface; as of this writing,
   Anthropic documents its claude.ai Gmail connector as searching, reading,

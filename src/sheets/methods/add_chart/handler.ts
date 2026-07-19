@@ -12,6 +12,17 @@ export async function handler(
   if ((args.position.overlayPosition === undefined) === (args.position.newSheet === undefined)) {
     throw new Error('Provide exactly one of position.overlayPosition or position.newSheet: true.');
   }
+  if (args.position.sheetId !== undefined) {
+    throw new Error(
+      'Do not provide position.sheetId when adding a chart; use overlayPosition or newSheet: true.',
+    );
+  }
+  if (
+    args.position.overlayPosition !== undefined &&
+    args.position.overlayPosition.anchorCell === undefined
+  ) {
+    throw new Error('Provide position.overlayPosition.anchorCell when adding an overlay chart.');
+  }
   const reply = await applyRequest(sheets, args.spreadsheetId, {
     addChart: {
       chart: {

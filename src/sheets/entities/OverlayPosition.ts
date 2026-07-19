@@ -8,7 +8,7 @@ import { GridCoordinate } from './GridCoordinate.js';
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#OverlayPosition
  */
 export const OverlayPosition = z.strictObject({
-  anchorCell: GridCoordinate.describe('The cell the object is anchored to.'),
+  anchorCell: GridCoordinate.optional().describe('The cell the object is anchored to.'),
   offsetXPixels: z
     .number()
     .int()

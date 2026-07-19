@@ -15,9 +15,8 @@ export const instructions =
   untrustedContentInstructions() +
   'Ranges use A1 notation (or R1C1); cell values move as 2D arrays of string, ' +
   'number, boolean, or null values; the values field is absent entirely for ' +
-  'an empty range, and rows may be ragged. Every write through the values ' +
-  'operations requires ' +
-  'valueInputOption: RAW stores text as-is; USER_ENTERED parses values as if ' +
+  'an empty range, and rows may be ragged. Writes through the values ' +
+  'operations require valueInputOption. RAW stores text as-is; USER_ENTERED parses values as if ' +
   'typed, so a leading = becomes a live formula; write untrusted content ' +
   'with RAW. update_cells types each value explicitly instead: a ' +
   'stringValue is never parsed and a formulaValue always executes. ' +
@@ -29,10 +28,12 @@ export const instructions =
   'and formula-bearing copy/cut paste operations execute copied formulas at ' +
   "their destination. The spreadsheet projection carries metadata plus each sheet's " +
   'basic filter, filter views, protected ranges, conditional format rules, ' +
-  'and merged ranges (never ' +
+  'banded ranges, ordered row and column groups, and merged ranges (never ' +
   'grid data), and the Sheets API has ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
-  'edits (tabs, rows and columns, named ranges, formats, borders, charts, ' +
+  'edits (tabs, rows and columns, exact dimension sizes and visibility, ' +
+  'dimension groups, named ranges, formats, banding, borders, charts and ' +
+  'their position, ' +
   'conditional format rules, data validation, protected ranges, cell ' +
   'content, merges, sorting, filters, and data transformations) are ' +
   'purpose-named operations wrapping one batchUpdate request each. ' +
@@ -41,7 +42,8 @@ export const instructions =
   'and writing to an explicit range clears those fields in the part of the ' +
   'range the rows do not cover. ' +
   'The ' +
-  'property, format, and filter-view updates derive their masks from the fields provided, ' +
+  'property, format, filter-view, banding, and embedded-object layout updates derive ' +
+  'their masks from the fields provided, ' +
   'so untouched properties are never reset, except that a filter view is backed by either ' +
   'a range or named range and providing one backing detaches the other; update_chart_spec and ' +
   'update_conditional_format_rule are the exceptions, replacing the whole ' +
@@ -50,4 +52,7 @@ export const instructions =
   "get_spreadsheet's conditionalFormats list), and adds, moves, and " +
   'deletes renumber the rules around them. Filter views instead have stable ' +
   'filterViewId identities listed by get_spreadsheet; the basic filter is a ' +
-  'single sheet-level basicFilter.';
+  'single sheet-level basicFilter. Banded ranges have stable bandedRangeId ' +
+  'identities; row and column groups have no ID and are addressed by their ' +
+  'range plus depth. Collapsing or expanding a group also hides or reveals ' +
+  'every dimension inside it.';

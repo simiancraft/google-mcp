@@ -10,7 +10,7 @@ describe('sheets operations', () => {
     instructions,
     groups: [{ kind: 'REST Method', operations: methods }],
     methodSourcePrefix: 'https://developers.google.com/workspace/sheets/api/reference/rest/v4/',
-    counts: { methods: 59 },
+    counts: { methods: 70 },
     readOnly: [
       'batch_get_values',
       'batch_get_values_by_data_filter',
@@ -30,7 +30,9 @@ describe('sheets operations', () => {
       'copy_paste',
       'cut_paste',
       'delete_conditional_format_rule',
+      'delete_banding',
       'delete_dimension',
+      'delete_dimension_group',
       'delete_duplicates',
       'delete_embedded_object',
       'delete_filter_view',

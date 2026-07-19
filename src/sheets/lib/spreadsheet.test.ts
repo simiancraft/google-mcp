@@ -94,7 +94,7 @@ describe('projectSpreadsheet', () => {
     });
   });
 
-  it("carries each sheet's filters, protected ranges, conditional format rules, and merges", () => {
+  it("carries each sheet's filters, protected ranges, rules, banding, groups, and merges", () => {
     expect(
       projectSpreadsheet({
         spreadsheetId: 'S1',
@@ -150,6 +150,32 @@ describe('projectSpreadsheet', () => {
                     textFormat: { bold: true, foregroundColorStyle: { themeColor: 'TEXT' } },
                   },
                 },
+              },
+            ],
+            bandedRanges: [
+              {
+                bandedRangeId: 17,
+                range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+                rowProperties: {
+                  firstBandColorStyle: { themeColor: 'ACCENT1' },
+                  secondBandColorStyle: { rgbColor: { blue: 1 } },
+                },
+              },
+              {},
+            ],
+            rowGroups: [
+              {
+                range: { sheetId: 0, dimension: 'ROWS', startIndex: 1, endIndex: 9 },
+                depth: 1,
+                collapsed: true,
+              },
+              { range: { sheetId: 0, dimension: 'FUTURE_DIMENSION' }, depth: null },
+            ],
+            columnGroups: [
+              {
+                range: { sheetId: 0, dimension: 'COLUMNS', startIndex: 2, endIndex: 5 },
+                depth: 1,
+                collapsed: false,
               },
             ],
           },
@@ -210,6 +236,32 @@ describe('projectSpreadsheet', () => {
                   textFormat: { bold: true, foregroundColorStyle: { themeColor: 'TEXT' } },
                 },
               },
+            },
+          ],
+          bandedRanges: [
+            {
+              bandedRangeId: 17,
+              range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+              rowProperties: {
+                firstBandColorStyle: { themeColor: 'ACCENT1' },
+                secondBandColorStyle: { rgbColor: { blue: 1 } },
+              },
+            },
+            { bandedRangeId: 0 },
+          ],
+          rowGroups: [
+            {
+              range: { sheetId: 0, dimension: 'ROWS', startIndex: 1, endIndex: 9 },
+              depth: 1,
+              collapsed: true,
+            },
+            { range: { sheetId: 0 }, depth: 0 },
+          ],
+          columnGroups: [
+            {
+              range: { sheetId: 0, dimension: 'COLUMNS', startIndex: 2, endIndex: 5 },
+              depth: 1,
+              collapsed: false,
             },
           ],
         },
