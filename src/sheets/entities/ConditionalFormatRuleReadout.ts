@@ -80,7 +80,10 @@ const InterpolationPointReadout = z.object({
     .describe(
       'How the value should be interpreted; the write vocabulary is MIN, MAX, NUMBER, PERCENT, or PERCENTILE.',
     ),
-  value: z.string().optional().describe('The value this interpolation point uses.'),
+  value: z
+    .string()
+    .optional()
+    .describe('The value this interpolation point uses; may be a live formula.'),
 });
 
 const GradientRuleReadout = z.object({

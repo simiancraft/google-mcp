@@ -12,7 +12,7 @@ import { GridRange } from './GridRange.js';
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/sheets#ProtectedRange
  */
 export const ProtectedRange = z.object({
-  protectedRangeId: z.number().int().optional().describe('The ID of the protected range.'),
+  protectedRangeId: z.number().int().describe('The ID of the protected range.'),
   range: GridRange.optional().describe(
     'The range that is being protected; fully unbounded means the whole sheet is protected.',
   ),

@@ -85,7 +85,8 @@ timeZone, autoRecalc), and each sheet flattened to its properties (sheetId,
 title, index, sheetType, gridProperties' four counts, hidden, tab color)
 plus its sheet-level reactive collections: `protectedRanges` (each carrying
 the ID the update and delete operations take) and `conditionalFormats` (in
-rule order; the array position is the index the rule operations take). The
+rule order; the array position is the index the rule operations take), plus
+the spreadsheet's named ranges. The
 rule readout keeps its type fields as **open strings** rather than narrowed
 enums: rules are addressed by index, so the readout must be total, and
 dropping a rule over an unrecognized upstream value would silently renumber

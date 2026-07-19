@@ -125,7 +125,7 @@ export function projectGridRange(data: sheets_v4.Schema$GridRange): GridRange {
 /** Project a REST protected range, cleaning nulls to undefined. */
 export function projectProtectedRange(data: sheets_v4.Schema$ProtectedRange): ProtectedRange {
   return {
-    protectedRangeId: data.protectedRangeId ?? undefined,
+    protectedRangeId: data.protectedRangeId ?? 0,
     range: data.range ? projectGridRange(data.range) : undefined,
     namedRangeId: data.namedRangeId ?? undefined,
     description: data.description ?? undefined,
