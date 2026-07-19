@@ -161,13 +161,13 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   body is a union of 69 request types (sheet management, formatting, charts,
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
-  purpose-named operations above (issue #27). The remaining batchUpdate tail—
-  dimension-property updates, dimension moves/appends, and dimension groups;
-  banding;
-  embedded-object position and border; named-range update; developer metadata
-  writes; slicers; extended chart types; and the data-source and table request
-  families excluded by decision—is tracked in issue #77. Pivot tables within
-  updateCells's CellData are tracked there as well.
+  purpose-named operations above (issue #27). The remaining batchUpdate
+  tail is tracked in issue #77: dimension-property updates, dimension
+  moves/appends, and dimension groups; banding; embedded-object position
+  and border; named-range update; developer metadata writes; slicers;
+  extended chart types; appendCells and pasteData; pivot tables within
+  updateCells's CellData; and the data-source and table request families
+  excluded by decision.
 - **CellData beyond cell content**: `update_cells` carries a curated
   `CellData` (value, note, format, text format runs, and hyperlinks via a
   run's link field or the cell-level textFormat.link). Pivot tables are deferred (issue #77); chip runs and

@@ -1,27 +1,13 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/utils/narrow.js';
-import { ColorStyle } from '../entities/ColorStyle.js';
 import type { ConditionalFormatRuleReadout } from '../entities/ConditionalFormatRuleReadout.js';
 import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
 import { projectBasicFilter, projectFilterView } from './filtering.js';
+import { projectColorStyle } from './formats.js';
 import { projectGridRange, projectProtectedRange } from './rules.js';
-
-/** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */
-function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
-  return {
-    rgbColor: data.rgbColor
-      ? {
-          red: data.rgbColor.red ?? undefined,
-          green: data.rgbColor.green ?? undefined,
-          blue: data.rgbColor.blue ?? undefined,
-        }
-      : undefined,
-    themeColor: narrow(data.themeColor, ColorStyle.shape.themeColor.unwrap().options),
-  };
-}
 
 /** Project REST sheet properties onto the SheetProperties shape, cleaning nulls to undefined. */
 export function projectSheetProperties(data: sheets_v4.Schema$SheetProperties): SheetProperties {

@@ -1,8 +1,9 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { forGoogle } from '../../lib/optionality.js';
+import { narrow } from '../../lib/utils/narrow.js';
 import type { Border } from '../entities/Border.js';
 import type { CellFormat } from '../entities/CellFormat.js';
-import type { ColorStyle } from '../entities/ColorStyle.js';
+import { ColorStyle } from '../entities/ColorStyle.js';
 import type { TextFormat } from '../entities/TextFormat.js';
 
 /**
@@ -68,4 +69,18 @@ export function toBorder(border: Border): sheets_v4.Schema$Border {
     style: border.style,
     colorStyle: border.colorStyle ? toColorStyle(border.colorStyle) : undefined,
   });
+}
+
+/** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */
+export function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
+  return {
+    rgbColor: data.rgbColor
+      ? {
+          red: data.rgbColor.red ?? undefined,
+          green: data.rgbColor.green ?? undefined,
+          blue: data.rgbColor.blue ?? undefined,
+        }
+      : undefined,
+    themeColor: narrow(data.themeColor, ColorStyle.shape.themeColor.unwrap().options),
+  };
 }

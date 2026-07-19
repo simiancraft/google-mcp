@@ -8,6 +8,9 @@ export async function handler(
   sheets: sheets_v4.Sheets,
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
+  if ((args.filter.range === undefined) === (args.filter.namedRangeId === undefined)) {
+    throw new Error('Provide exactly one of range or namedRangeId in the filter view.');
+  }
   const reply = await applyRequest(sheets, args.spreadsheetId, {
     addFilterView: { filter: toFilterView(args.filter) },
   });

@@ -19,6 +19,20 @@ function fakeSheets(
 }
 
 describe('add_filter_view', () => {
+  it('refuses both range and namedRangeId, and neither', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        filter: { title: 'Mine', range: { sheetId: 0 }, namedRangeId: 'nr1' },
+      }),
+    ).rejects.toThrow('exactly one of range or namedRangeId');
+    await expect(
+      handler(fakeSheets(captured), { spreadsheetId: 'SS', filter: { title: 'Mine' } }),
+    ).rejects.toThrow('exactly one of range or namedRangeId');
+    expect(captured.params).toBeUndefined();
+  });
+
   it('adds an omitted-ID view and projects the generated ID', async () => {
     const captured: Captured = {};
     const result = await handler(
@@ -44,7 +58,10 @@ describe('add_filter_view', () => {
 
   it('refuses a missing add reply', async () => {
     await expect(
-      handler(fakeSheets({}, {}), { spreadsheetId: 'SS', filter: { title: 'Mine' } }),
+      handler(fakeSheets({}, {}), {
+        spreadsheetId: 'SS',
+        filter: { title: 'Mine', range: { sheetId: 0 } },
+      }),
     ).rejects.toThrow('no filter view');
   });
 });

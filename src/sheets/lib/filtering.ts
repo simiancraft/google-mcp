@@ -9,7 +9,7 @@ import type { FilterCriteria } from '../entities/FilterCriteria.js';
 import type { FilterSpec } from '../entities/FilterSpec.js';
 import type { FilterView, FilterViewReadout } from '../entities/FilterView.js';
 import type { SortSpec, SortSpecReadout } from '../entities/SortSpec.js';
-import { toColorStyle } from './formats.js';
+import { projectColorStyle, toColorStyle } from './formats.js';
 import { projectGridRange, toBooleanCondition } from './rules.js';
 
 /** Carry an ordinary-grid SortSpec across the Google boundary. */
@@ -80,19 +80,6 @@ export function toBasicFilter(filter: BasicFilter): sheets_v4.Schema$BasicFilter
     sortSpecs: filter.sortSpecs ? filter.sortSpecs.map(toSortSpec) : undefined,
     filterSpecs: filter.filterSpecs ? filter.filterSpecs.map(toFilterSpec) : undefined,
   });
-}
-
-function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
-  return {
-    rgbColor: data.rgbColor
-      ? {
-          red: data.rgbColor.red ?? undefined,
-          green: data.rgbColor.green ?? undefined,
-          blue: data.rgbColor.blue ?? undefined,
-        }
-      : undefined,
-    themeColor: narrow(data.themeColor, ColorStyle.shape.themeColor.unwrap().options),
-  };
 }
 
 /** Project every REST SortSpec, keeping upstream sort-order vocabulary open. */
