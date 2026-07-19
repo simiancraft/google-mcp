@@ -5,11 +5,13 @@ import { schema } from './schema.js';
 /**
  * The mask is derived from the fields actually provided, so an untouched
  * property (the description, the editor list) is never reset by a too-wide
- * mask, and an empty update is refused rather than sent.
+ * mask, and an empty update is refused rather than sent. One REST behavior
+ * pierces the mask: turning warningOnly off without also providing editors
+ * resets the editors to all the editors in the document.
  */
 export const update_protected_range = sheetsOperation({
   description:
-    'Update a protected range by ID: move it, redescribe it, switch it between warning-only and editor-restricted, or change its editors and unprotected ranges; only the fields provided change.',
+    'Update a protected range by ID: move it, redescribe it, switch it between warning-only and editor-restricted, or change its editors and unprotected ranges; only the fields provided change, except that turning warningOnly off without also providing editors resets the editors to all the editors in the document.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

@@ -89,14 +89,14 @@ describe('add_named_range', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
-  it('survives a bare reply', async () => {
+  it('fails loud when the reply carries no named range', async () => {
     const captured: Captured = {};
-    const result = await handler(fakeSheets(captured, {}), {
-      spreadsheetId: 'SS',
-      name: 'FG_PRICE',
-      range: { sheetId: 0 },
-    });
-    expect(result).toEqual({});
-    expect(() => schema.output.parse(result)).not.toThrow();
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        name: 'FG_PRICE',
+        range: { sheetId: 0 },
+      }),
+    ).rejects.toThrow('Google returned no named range');
   });
 });

@@ -10,7 +10,7 @@ import { schema } from './schema.js';
  */
 export const set_data_validation = sheetsOperation({
   description:
-    'Set a data validation rule on every cell in a range, replacing any validation already there: a dropdown (ONE_OF_LIST or ONE_OF_RANGE with showCustomUi), a constraint (number, date, or text conditions), or a checkbox (BOOLEAN); strict rules reject invalid input.',
+    'Set a data validation rule on every cell in a range (filtered-out rows only when filteredRowsIncluded), replacing any validation already there: a dropdown (ONE_OF_LIST or ONE_OF_RANGE with showCustomUi), a constraint (number, date, or text conditions), or a checkbox (BOOLEAN); strict rules reject invalid input.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

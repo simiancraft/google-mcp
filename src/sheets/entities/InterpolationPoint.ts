@@ -18,7 +18,7 @@ export const InterpolationPoint = z.strictObject({
     .string()
     .optional()
     .describe(
-      'The value this interpolation point uses; may be a formula. Unused when the type is MIN or MAX.',
+      'The value this interpolation point uses; may be a formula, which executes in the sheet, so do not pass untrusted text that starts with = or +. Unused when the type is MIN or MAX.',
     ),
 });
 

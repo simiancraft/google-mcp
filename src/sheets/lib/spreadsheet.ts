@@ -1,11 +1,12 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { narrow } from '../../lib/utils/narrow.js';
 import { ColorStyle } from '../entities/ColorStyle.js';
+import type { ConditionalFormatRuleReadout } from '../entities/ConditionalFormatRuleReadout.js';
 import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
-import type { ConditionalFormatRuleReadout, Spreadsheet } from '../entities/Spreadsheet.js';
+import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
-import { projectProtectedRange } from './rules.js';
+import { projectGridRange, projectProtectedRange } from './rules.js';
 
 /** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */
 function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
@@ -55,17 +56,6 @@ export function projectNamedRange(data: sheets_v4.Schema$NamedRange): NamedRange
           endColumnIndex: data.range.endColumnIndex ?? undefined,
         }
       : undefined,
-  };
-}
-
-/** Project a REST grid range, cleaning nulls to undefined. */
-function projectGridRange(data: sheets_v4.Schema$GridRange) {
-  return {
-    sheetId: data.sheetId ?? undefined,
-    startRowIndex: data.startRowIndex ?? undefined,
-    endRowIndex: data.endRowIndex ?? undefined,
-    startColumnIndex: data.startColumnIndex ?? undefined,
-    endColumnIndex: data.endColumnIndex ?? undefined,
   };
 }
 
@@ -122,16 +112,26 @@ export function projectConditionalFormatRule(
             : undefined,
           format: data.booleanRule.format
             ? {
+                // Legacy sheets may carry only the deprecated color fields;
+                // fall back like the interpolation-point projection does.
                 backgroundColorStyle: data.booleanRule.format.backgroundColorStyle
                   ? projectColorStyleReadout(data.booleanRule.format.backgroundColorStyle)
-                  : undefined,
+                  : data.booleanRule.format.backgroundColor
+                    ? projectColorStyleReadout({
+                        rgbColor: data.booleanRule.format.backgroundColor,
+                      })
+                    : undefined,
                 textFormat: data.booleanRule.format.textFormat
                   ? {
                       foregroundColorStyle: data.booleanRule.format.textFormat.foregroundColorStyle
                         ? projectColorStyleReadout(
                             data.booleanRule.format.textFormat.foregroundColorStyle,
                           )
-                        : undefined,
+                        : data.booleanRule.format.textFormat.foregroundColor
+                          ? projectColorStyleReadout({
+                              rgbColor: data.booleanRule.format.textFormat.foregroundColor,
+                            })
+                          : undefined,
                       bold: data.booleanRule.format.textFormat.bold ?? undefined,
                       italic: data.booleanRule.format.textFormat.italic ?? undefined,
                       strikethrough: data.booleanRule.format.textFormat.strikethrough ?? undefined,

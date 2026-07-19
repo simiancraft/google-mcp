@@ -112,7 +112,7 @@ export function toEditors(editors: Editors): sheets_v4.Schema$Editors {
 }
 
 /** Project a REST grid range, cleaning nulls to undefined. */
-function projectGridRange(data: sheets_v4.Schema$GridRange): GridRange {
+export function projectGridRange(data: sheets_v4.Schema$GridRange): GridRange {
   return {
     sheetId: data.sheetId ?? undefined,
     startRowIndex: data.startRowIndex ?? undefined,

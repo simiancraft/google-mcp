@@ -14,5 +14,11 @@ export async function handler(
       namedRange: { name: args.name, range: forGoogle(args.range) },
     },
   });
-  return projectNamedRange(reply.addNamedRange?.namedRange ?? {});
+  const added = reply.addNamedRange?.namedRange;
+  if (!added) {
+    throw new Error(
+      'Google returned no named range for the add; the name may not have been defined.',
+    );
+  }
+  return projectNamedRange(added);
 }

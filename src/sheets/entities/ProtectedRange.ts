@@ -3,7 +3,8 @@ import { Editors } from './Editors.js';
 import { GridRange } from './GridRange.js';
 
 /**
- * A protected range or protected sheet: a region only the listed editors can
+ * A protected range or protected sheet: a region only the granted editors
+ * (listed users and groups, or the whole domain with domainUsersCanEdit) can
  * change, or (when warning-only) a region anyone can change after confirming
  * a warning. Backed by either a grid range (fully unbounded means the whole
  * sheet is protected) or a named range.

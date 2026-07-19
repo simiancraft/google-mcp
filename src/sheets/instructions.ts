@@ -18,8 +18,9 @@ export const instructions =
   'an empty range, and rows may be ragged. Every value write requires ' +
   'valueInputOption: RAW stores text as-is; USER_ENTERED parses values as if ' +
   'typed, so a leading = becomes a live formula; write untrusted content ' +
-  'with RAW; condition values in rules are likewise always parsed as typed, ' +
-  'so a value starting with = or + becomes a live formula. append_values ' +
+  'with RAW; condition values in rules are likewise parsed as typed, so a ' +
+  'value starting with = or + becomes a live formula (ONE_OF_LIST list ' +
+  'items excepted). append_values ' +
   'searches its range for a table and appends after ' +
   "it. The spreadsheet projection carries metadata plus each sheet's " +
   'protected ranges and conditional format rules (never grid data), and the ' +

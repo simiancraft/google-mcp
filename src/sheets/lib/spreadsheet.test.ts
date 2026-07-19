@@ -200,6 +200,30 @@ describe('projectConditionalFormatRule', () => {
   it('survives a bare rule', () => {
     expect(projectConditionalFormatRule({})).toEqual({});
   });
+
+  it('falls back to the deprecated boolean-rule color fields for old sheets', () => {
+    expect(
+      projectConditionalFormatRule({
+        ranges: [{ sheetId: 0 }],
+        booleanRule: {
+          condition: { type: 'NOT_BLANK' },
+          format: {
+            backgroundColor: { red: 1 },
+            textFormat: { foregroundColor: { blue: 1 }, bold: true },
+          },
+        },
+      }),
+    ).toEqual({
+      ranges: [{ sheetId: 0 }],
+      booleanRule: {
+        condition: { type: 'NOT_BLANK' },
+        format: {
+          backgroundColorStyle: { rgbColor: { red: 1 } },
+          textFormat: { foregroundColorStyle: { rgbColor: { blue: 1 } }, bold: true },
+        },
+      },
+    });
+  });
 });
 
 describe('projectNamedRange', () => {

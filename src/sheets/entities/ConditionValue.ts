@@ -12,7 +12,7 @@ export const ConditionValue = z.strictObject({
     .enum(['PAST_YEAR', 'PAST_MONTH', 'PAST_WEEK', 'YESTERDAY', 'TODAY', 'TOMORROW'])
     .optional()
     .describe(
-      'A date relative to the current date; provide this or userEnteredValue, not both. Valid only with DATE_BEFORE, DATE_AFTER, DATE_ON_OR_BEFORE, or DATE_ON_OR_AFTER, and only in conditional formatting and filters, not in data validation.',
+      'A date relative to the current date; provide this or userEnteredValue, not both. Valid only with date-comparison condition types in conditional formatting and filters, never in data validation; in practice that pairs it with DATE_BEFORE and DATE_AFTER (Google documents the ON_OR variants as data-validation types).',
     ),
   userEnteredValue: z
     .string()

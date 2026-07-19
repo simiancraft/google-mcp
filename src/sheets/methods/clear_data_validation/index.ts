@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  */
 export const clear_data_validation = sheetsOperation({
   description:
-    'Remove all data validation rules from every cell in a range; the cell values are untouched.',
+    'Remove all data validation rules from every cell in a range (filtered-out rows only when filteredRowsIncluded); the cell values are untouched.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
