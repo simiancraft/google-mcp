@@ -15,8 +15,6 @@ export const schema = {
   output: z.object({
     dimensionGroups: z
       .array(DimensionGroup)
-      .describe(
-        'All groups in this dimension after the add, ordered by increasing range start index and then depth.',
-      ),
+      .describe('All groups in this dimension after the add, as returned by Google.'),
   }),
 };

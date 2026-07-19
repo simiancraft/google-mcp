@@ -19,7 +19,7 @@ function fakeSheets(
 }
 
 describe('add_banding', () => {
-  it('adds row and column banding and projects its required ID', async () => {
+  it('adds row banding with exact request parameters and projects its required ID', async () => {
     const captured: Captured = {};
     const result = await handler(
       fakeSheets(captured, {
@@ -35,10 +35,6 @@ describe('add_banding', () => {
                   secondBandColorStyle: { themeColor: 'BACKGROUND' },
                   footerColorStyle: { themeColor: 'ACCENT2' },
                 },
-                columnProperties: {
-                  firstBandColorStyle: { themeColor: 'ACCENT3' },
-                  secondBandColorStyle: { themeColor: 'ACCENT4' },
-                },
               },
             },
           },
@@ -53,10 +49,6 @@ describe('add_banding', () => {
           firstBandColorStyle: { rgbColor: { red: 1, green: 0.9, blue: 0.8 } },
           secondBandColorStyle: { themeColor: 'BACKGROUND' },
           footerColorStyle: { themeColor: 'ACCENT2' },
-        },
-        columnProperties: {
-          firstBandColorStyle: { themeColor: 'ACCENT3' },
-          secondBandColorStyle: { themeColor: 'ACCENT4' },
         },
       },
     );
@@ -75,10 +67,6 @@ describe('add_banding', () => {
                   secondBandColorStyle: { themeColor: 'BACKGROUND' },
                   footerColorStyle: { themeColor: 'ACCENT2' },
                 },
-                columnProperties: {
-                  firstBandColorStyle: { themeColor: 'ACCENT3' },
-                  secondBandColorStyle: { themeColor: 'ACCENT4' },
-                },
               },
             },
           },
@@ -94,6 +82,60 @@ describe('add_banding', () => {
         secondBandColorStyle: { themeColor: 'BACKGROUND' },
         footerColorStyle: { themeColor: 'ACCENT2' },
       },
+    });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('adds column banding with column bounds and keeps an omitted zero ID total', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, {
+        replies: [
+          {
+            addBanding: {
+              bandedRange: {
+                range: { sheetId: 2, startColumnIndex: 3, endColumnIndex: 9 },
+                columnProperties: {
+                  firstBandColorStyle: { themeColor: 'ACCENT3' },
+                  secondBandColorStyle: { themeColor: 'ACCENT4' },
+                },
+              },
+            },
+          },
+        ],
+      }),
+      {
+        spreadsheetId: 'SS',
+        bandedRangeId: 0,
+        range: { sheetId: 2, startColumnIndex: 3, endColumnIndex: 9 },
+        columnProperties: {
+          firstBandColorStyle: { themeColor: 'ACCENT3' },
+          secondBandColorStyle: { themeColor: 'ACCENT4' },
+        },
+      },
+    );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            addBanding: {
+              bandedRange: {
+                bandedRangeId: 0,
+                range: { sheetId: 2, startColumnIndex: 3, endColumnIndex: 9 },
+                columnProperties: {
+                  firstBandColorStyle: { themeColor: 'ACCENT3' },
+                  secondBandColorStyle: { themeColor: 'ACCENT4' },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({
+      bandedRangeId: 0,
+      range: { sheetId: 2, startColumnIndex: 3, endColumnIndex: 9 },
       columnProperties: {
         firstBandColorStyle: { themeColor: 'ACCENT3' },
         secondBandColorStyle: { themeColor: 'ACCENT4' },
@@ -119,6 +161,6 @@ describe('add_banding', () => {
           secondBandColorStyle: { themeColor: 'ACCENT2' },
         },
       }),
-    ).rejects.toThrow('no banded range with an ID');
+    ).rejects.toThrow('no banded range for the add');
   });
 });

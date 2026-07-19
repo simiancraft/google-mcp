@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { ColorStyle } from './ColorStyle.js';
 
 /**
- * Alternating color properties for one dimension of a banded range.
+ * Alternating color properties for one dimension of a banded range. Header
+ * and footer colors take priority over band colors, first-band colors take
+ * priority over second-band colors, then row properties take priority over
+ * column properties. A column header or first band can therefore override a
+ * lower-priority row band.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/sheets#BandingProperties
  */

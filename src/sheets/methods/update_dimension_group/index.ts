@@ -3,9 +3,10 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * The wire name is plural to read as a group-state operation. The REST
- * request is singular UpdateDimensionGroupRequest and carries the exact
- * `dimensionGroup` selector plus a `collapsed` field mask.
+ * One group is updated per call, so the wire name is singular like its
+ * siblings and matches the REST request UpdateDimensionGroupRequest. The
+ * request carries the exact `dimensionGroup` selector plus a `collapsed`
+ * field mask.
  */
 export const update_dimension_group = sheetsOperation({
   description:

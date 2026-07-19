@@ -52,7 +52,9 @@ export const instructions =
   "get_spreadsheet's conditionalFormats list), and adds, moves, and " +
   'deletes renumber the rules around them. Filter views instead have stable ' +
   'filterViewId identities listed by get_spreadsheet; the basic filter is a ' +
-  'single sheet-level basicFilter. Banded ranges have stable bandedRangeId ' +
-  'identities; row and column groups have no ID and are addressed by their ' +
-  'range plus depth. Collapsing or expanding a group also hides or reveals ' +
+  'single sheet-level basicFilter. Banded-range readouts carry either a ' +
+  'bandedRangeId or bandedRangeReference; only an ID can be passed to the ' +
+  'banding update and delete operations. Row and column groups have no ID; ' +
+  'update_dimension_group selects one by range plus depth, while add and ' +
+  'delete take a range. Collapsing or expanding a group also hides or reveals ' +
   'every dimension inside it.';

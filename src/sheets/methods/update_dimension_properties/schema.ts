@@ -12,9 +12,15 @@ export const schema = {
       'The dimension properties to update; only the fields provided change.',
     ),
   }),
-  /** The update reply is empty; confirm the spreadsheet and exact mask applied. */
+  /** The update reply is empty; echo the affected range, applied values, and exact mask. */
   output: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet that was updated.'),
+    range: DimensionRange.required({ sheetId: true, dimension: true }).describe(
+      'The affected dimension range, including its sheet, dimension, and any provided bounds.',
+    ),
+    properties: DimensionProperties.describe(
+      'The property values applied to the range, exactly as provided.',
+    ),
     updatedFields: z
       .string()
       .describe('The field mask applied, one path per provided dimension property.'),

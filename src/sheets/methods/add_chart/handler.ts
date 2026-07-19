@@ -9,12 +9,14 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   assertOneChartType(args.spec);
-  if ((args.position.overlayPosition === undefined) === (args.position.newSheet === undefined)) {
-    throw new Error('Provide exactly one of position.overlayPosition or position.newSheet: true.');
-  }
-  if (args.position.sheetId !== undefined) {
+  const locationCount = [
+    args.position.overlayPosition,
+    args.position.sheetId,
+    args.position.newSheet,
+  ].filter((location) => location !== undefined).length;
+  if (locationCount !== 1) {
     throw new Error(
-      'Do not provide position.sheetId when adding a chart; use overlayPosition or newSheet: true.',
+      'Provide exactly one of position.overlayPosition, position.sheetId, or position.newSheet: true.',
     );
   }
   if (

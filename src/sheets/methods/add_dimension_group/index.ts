@@ -2,9 +2,10 @@ import { sheetsOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
+/** The reply returns all groups after the add; REST does not define their reply ordering. */
 export const add_dimension_group = sheetsOperation({
   description:
-    'Group a row or column range for collapse and expansion; overlapping groups can be resized or moved to deeper nesting, cell content is untouched, and the reply returns the complete ordered group list for that dimension.',
+    'Group a row or column range for collapse and expansion; overlapping groups can be resized or moved to deeper nesting, cell content is untouched, and the reply returns all groups for that dimension.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

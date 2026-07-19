@@ -21,5 +21,10 @@ export async function handler(
       fields,
     },
   });
-  return { spreadsheetId: args.spreadsheetId, updatedFields: fields };
+  return {
+    spreadsheetId: args.spreadsheetId,
+    range: args.range,
+    properties: args.properties,
+    updatedFields: fields,
+  };
 }

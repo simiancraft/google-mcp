@@ -19,7 +19,7 @@ function fakeSheets(
 }
 
 describe('delete_dimension_group', () => {
-  it('deletes grouping and returns the resulting ordered groups', async () => {
+  it('deletes grouping and returns all resulting groups', async () => {
     const captured: Captured = {};
     const result = await handler(
       fakeSheets(captured, {

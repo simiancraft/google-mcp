@@ -15,8 +15,6 @@ export const schema = {
   output: z.object({
     dimensionGroups: z
       .array(DimensionGroup)
-      .describe(
-        'All groups in this dimension after the delete, ordered by increasing range start index and then depth.',
-      ),
+      .describe('All groups in this dimension after the delete, as returned by Google.'),
   }),
 };

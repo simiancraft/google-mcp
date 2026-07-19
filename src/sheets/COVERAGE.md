@@ -124,8 +124,8 @@ the removal halves and are destructive.
 operations because their batchUpdate replies return counts or metadata, not
 the resulting cell data.
 
-The layout annotation judgments are explicit too. Exact dimension-property
-updates are non-destructive and idempotent. `move_dimension` preserves the
+Exact dimension-property updates are non-destructive and idempotent.
+`move_dimension` preserves the
 rows or columns but is non-idempotent because its source is index-addressed;
 `append_dimension` is additive and repeats another append. Adding a dimension
 group is additive but can reshape overlapping group ranges and depths;
@@ -136,17 +136,18 @@ hides or reveals every dimension in that group. Banding add is additive,
 banding update is a non-destructive idempotent masked property update, and
 banding delete is an ID-addressed destructive removal. The embedded-object
 position and border operations are non-destructive idempotent property
-updates; the position operation exposes the overlay move and resize form,
-whose field mask preserves omitted anchor, offset, and size fields.
+updates; the position operation exposes overlay move and resize plus both
+object-sheet creation forms. Its field mask preserves omitted anchor, offset,
+and size fields for overlay updates.
 `UpdateDimensionPropertiesRequest.dataSourceSheetRange` remains outside the
 curated surface with the data-source request families. The embedded-position
-operation likewise omits `newPosition.sheetId` and `newPosition.newSheet`:
-those alternatives create an object sheet, while this operation is the
-field-masked overlay move and resize update.
-Dimension-group add and delete replies are projected as the complete ordered
-`dimensionGroups` list and fail loudly when Google omits that reply. Banding
-add follows the add-with-reply precedent: it fails loudly without a returned
-banded range and requires `bandedRangeId` on the read side.
+operation accepts `newPosition.sheetId` and `newPosition.newSheet` to create an
+object sheet, as well as field-masked overlay moves and resizes.
+Dimension-group add and delete replies are projected as all returned
+`dimensionGroups` and fail loudly when Google omits that reply. Banding add
+follows the add-with-reply precedent: it fails loudly without a returned
+banded range and keeps the required add-reply `bandedRangeId` total when a
+zero-valued ID is omitted.
 
 Methods speak the REST vocabulary verbatim (`spreadsheetId`, `filterId`,
 `bandedRangeId`, `dimensionGroup`, `objectId`, `newPosition`,
@@ -166,8 +167,9 @@ carrying the stable `filterViewId` used directly by `update_filter_view` and as
 the `filterId` for duplicate/delete), `protectedRanges` (each carrying
 the ID the update and delete operations take) and `conditionalFormats` (in
 rule order; the array position is the index the rule operations take),
-`bandedRanges` (each with the required stable ID), ordered `rowGroups` and
-`columnGroups` (total range-plus-depth readouts with no ID), and `merges` (the
+`bandedRanges` (each with an optional ID or output-only reference), ordered
+`rowGroups` and `columnGroups` (total range-and-depth readouts with no ID;
+updates select by both while deletes take only a range), and `merges` (the
 merged ranges), plus
 the spreadsheet's named ranges. The
 rule readout keeps its type fields as **open strings** rather than narrowed

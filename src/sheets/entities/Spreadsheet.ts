@@ -42,19 +42,19 @@ const Sheet = SheetProperties.extend({
     .array(BandedRange)
     .optional()
     .describe(
-      'The banded ranges on this sheet; absent when there are none. Each carries the required bandedRangeId that update_banding and delete_banding take.',
+      'The banded ranges on this sheet; absent when there are none. A readout can carry bandedRangeId, used by update_banding and delete_banding, or bandedRangeReference when an ID is not supported.',
     ),
   rowGroups: z
     .array(DimensionGroup)
     .optional()
     .describe(
-      'All row groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID and are addressed by range plus depth.',
+      'All row groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID; update_dimension_group selects by range and depth, while delete_dimension_group takes a range.',
     ),
   columnGroups: z
     .array(DimensionGroup)
     .optional()
     .describe(
-      'All column groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID and are addressed by range plus depth.',
+      'All column groups on this sheet, ordered by increasing range start index and then group depth. Groups have no ID; update_dimension_group selects by range and depth, while delete_dimension_group takes a range.',
     ),
   merges: z
     .array(GridRange)

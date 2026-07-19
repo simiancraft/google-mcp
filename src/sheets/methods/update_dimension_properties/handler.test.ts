@@ -38,7 +38,12 @@ describe('update_dimension_properties', () => {
         ],
       },
     });
-    expect(result).toEqual({ spreadsheetId: 'SS', updatedFields: 'pixelSize,hiddenByUser' });
+    expect(result).toEqual({
+      spreadsheetId: 'SS',
+      range: { sheetId: 4, dimension: 'COLUMNS', startIndex: 2, endIndex: 5 },
+      properties: { pixelSize: 120, hiddenByUser: false },
+      updatedFields: 'pixelSize,hiddenByUser',
+    });
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 

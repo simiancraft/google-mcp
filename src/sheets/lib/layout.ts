@@ -67,21 +67,34 @@ export function toBandingProperties(
 /** Project REST BandingProperties onto the modern ColorStyle-only shape. */
 function projectBandingProperties(data: sheets_v4.Schema$BandingProperties): BandingProperties {
   return {
-    headerColorStyle: data.headerColorStyle ? projectColorStyle(data.headerColorStyle) : undefined,
+    headerColorStyle: data.headerColorStyle
+      ? projectColorStyle(data.headerColorStyle)
+      : data.headerColor
+        ? projectColorStyle({ rgbColor: data.headerColor })
+        : undefined,
     firstBandColorStyle: data.firstBandColorStyle
       ? projectColorStyle(data.firstBandColorStyle)
-      : undefined,
+      : data.firstBandColor
+        ? projectColorStyle({ rgbColor: data.firstBandColor })
+        : undefined,
     secondBandColorStyle: data.secondBandColorStyle
       ? projectColorStyle(data.secondBandColorStyle)
-      : undefined,
-    footerColorStyle: data.footerColorStyle ? projectColorStyle(data.footerColorStyle) : undefined,
+      : data.secondBandColor
+        ? projectColorStyle({ rgbColor: data.secondBandColor })
+        : undefined,
+    footerColorStyle: data.footerColorStyle
+      ? projectColorStyle(data.footerColorStyle)
+      : data.footerColor
+        ? projectColorStyle({ rgbColor: data.footerColor })
+        : undefined,
   };
 }
 
-/** Project a REST banded range, keeping the required read-side ID total. */
+/** Project a REST banded range without fabricating an ID for reference-only bands. */
 export function projectBandedRange(data: sheets_v4.Schema$BandedRange): BandedRange {
   return {
-    bandedRangeId: data.bandedRangeId ?? 0,
+    bandedRangeId: data.bandedRangeId ?? undefined,
+    bandedRangeReference: data.bandedRangeReference ?? undefined,
     range: data.range ? projectGridRange(data.range) : undefined,
     rowProperties: data.rowProperties ? projectBandingProperties(data.rowProperties) : undefined,
     columnProperties: data.columnProperties

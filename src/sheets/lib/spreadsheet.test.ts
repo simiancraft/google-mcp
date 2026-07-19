@@ -161,7 +161,15 @@ describe('projectSpreadsheet', () => {
                   secondBandColorStyle: { rgbColor: { blue: 1 } },
                 },
               },
-              {},
+              {
+                bandedRangeReference: 'table/4/banding/1',
+                columnProperties: {
+                  headerColor: { red: 1 },
+                  firstBandColor: { green: 1 },
+                  secondBandColor: { blue: 1 },
+                  footerColor: { red: 0.5, blue: 0.5 },
+                },
+              },
             ],
             rowGroups: [
               {
@@ -247,7 +255,15 @@ describe('projectSpreadsheet', () => {
                 secondBandColorStyle: { rgbColor: { blue: 1 } },
               },
             },
-            { bandedRangeId: 0 },
+            {
+              bandedRangeReference: 'table/4/banding/1',
+              columnProperties: {
+                headerColorStyle: { rgbColor: { red: 1 } },
+                firstBandColorStyle: { rgbColor: { green: 1 } },
+                secondBandColorStyle: { rgbColor: { blue: 1 } },
+                footerColorStyle: { rgbColor: { red: 0.5, blue: 0.5 } },
+              },
+            },
           ],
           rowGroups: [
             {

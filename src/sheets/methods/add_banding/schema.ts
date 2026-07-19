@@ -29,5 +29,5 @@ export const schema = {
       'Banding applied column by column, with both alternating colors required. Provide rowProperties, columnProperties, or both.',
     ),
   }),
-  output: BandedRange,
+  output: BandedRange.required({ bandedRangeId: true }),
 };

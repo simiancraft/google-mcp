@@ -22,10 +22,18 @@ export async function handler(
     },
   });
   const added = reply.addBanding?.bandedRange;
-  if (added?.bandedRangeId == null) {
+  if (!added) {
     throw new Error(
-      'Google returned no banded range with an ID for the add; the banding may not have been applied.',
+      'Google returned no banded range for the add; the banding may not have been applied.',
     );
   }
-  return projectBandedRange(added);
+  // A generated ID of zero can be omitted from a proto3 reply.
+  const bandedRangeId = added.bandedRangeId ?? args.bandedRangeId ?? 0;
+  return {
+    ...projectBandedRange({
+      ...added,
+      bandedRangeId,
+    }),
+    bandedRangeId,
+  };
 }
