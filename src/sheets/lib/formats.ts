@@ -44,6 +44,7 @@ export function toTextFormat(textFormat: TextFormat): sheets_v4.Schema$TextForma
     italic: textFormat.italic,
     strikethrough: textFormat.strikethrough,
     underline: textFormat.underline,
+    link: textFormat.link ? { uri: textFormat.link.uri } : undefined,
   });
 }
 

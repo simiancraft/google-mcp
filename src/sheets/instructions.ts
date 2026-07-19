@@ -13,16 +13,35 @@ export const instructions =
   identityInstructions('Google account') +
   vocabularyInstructions({ restOnly: 'Sheets' }) +
   untrustedContentInstructions() +
-  'Ranges use A1 notation (or R1C1); cell data moves as 2D arrays of string, ' +
+  'Ranges use A1 notation (or R1C1); cell values move as 2D arrays of string, ' +
   'number, boolean, or null values; the values field is absent entirely for ' +
-  'an empty range, and rows may be ragged. Every value write requires ' +
+  'an empty range, and rows may be ragged. Every write through the values ' +
+  'operations requires ' +
   'valueInputOption: RAW stores text as-is; USER_ENTERED parses values as if ' +
   'typed, so a leading = becomes a live formula; write untrusted content ' +
-  'with RAW. append_values searches its range for a table and appends after ' +
-  'it. The spreadsheet projection is metadata-only, and the Sheets API has ' +
+  'with RAW. update_cells types each value explicitly instead: a ' +
+  'stringValue is never parsed and a formulaValue always executes. ' +
+  'Condition values in rules are parsed as typed, so a ' +
+  'value starting with = or + becomes a live formula (ONE_OF_LIST list ' +
+  'items excepted). append_values ' +
+  'searches its range for a table and appends after ' +
+  "it. The spreadsheet projection carries metadata plus each sheet's " +
+  'protected ranges, conditional format rules, and merged ranges (never ' +
+  'grid data), and the Sheets API has ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
-  'edits (tabs, rows and columns, named ranges, formats, borders, charts) ' +
-  'are purpose-named operations wrapping one batchUpdate request each. The ' +
+  'edits (tabs, rows and columns, named ranges, formats, borders, charts, ' +
+  'conditional format rules, data validation, protected ranges, cell ' +
+  'content, merges) are ' +
+  'purpose-named operations wrapping one batchUpdate request each. ' +
+  "update_cells writes the union of the provided cells' fields to every " +
+  'written cell, so a written field a cell omits is cleared in that cell, ' +
+  'and writing to an explicit range clears those fields in the part of the ' +
+  'range the rows do not cover. ' +
+  'The ' +
   'property and format updates derive their masks from the fields provided, ' +
-  'so untouched properties are never reset; update_chart_spec is the ' +
-  'exception, replacing the whole spec, so send the complete chart.';
+  'so untouched properties are never reset; update_chart_spec and ' +
+  'update_conditional_format_rule are the exceptions, replacing the whole ' +
+  'spec or rule, so send the complete object. Conditional format rules have ' +
+  'no ID: they are addressed by sheet and index (their position in ' +
+  "get_spreadsheet's conditionalFormats list), and adds, moves, and " +
+  'deletes renumber the rules around them.';

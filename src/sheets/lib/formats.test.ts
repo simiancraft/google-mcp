@@ -30,6 +30,13 @@ describe('toTextFormat', () => {
   it('carries an empty format', () => {
     expect(toTextFormat({})).toEqual({});
   });
+
+  it('carries a link destination', () => {
+    expect(toTextFormat({ underline: true, link: { uri: 'https://example.test/doc' } })).toEqual({
+      underline: true,
+      link: { uri: 'https://example.test/doc' },
+    });
+  });
 });
 
 describe('toCellFormat', () => {

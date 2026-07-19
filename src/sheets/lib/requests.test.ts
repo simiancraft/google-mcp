@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import type { sheets_v4 } from '@googleapis/sheets';
-import { applyRequest, fieldPaths } from './requests.js';
+import { applyRequest, cellFieldPaths, fieldPaths } from './requests.js';
 
 type Captured = { params?: sheets_v4.Params$Resource$Spreadsheets$Batchupdate };
 
@@ -59,5 +59,36 @@ describe('fieldPaths', () => {
 
   it('returns the empty mask when nothing is provided', () => {
     expect(fieldPaths({ title: undefined })).toBe('');
+  });
+});
+
+describe('cellFieldPaths', () => {
+  it('unions the fields across every cell, expanding format per subkey', () => {
+    expect(
+      cellFieldPaths([
+        { values: [{ note: 'a' }, { userEnteredValue: { numberValue: 1 } }] },
+        { values: [{ userEnteredFormat: { textFormat: { bold: true } } }] },
+      ]),
+    ).toBe('userEnteredValue,note,userEnteredFormat.textFormat.bold');
+  });
+
+  it('unions format paths across cells without widening to the whole format', () => {
+    expect(
+      cellFieldPaths([
+        {
+          values: [
+            { userEnteredFormat: { numberFormat: { type: 'CURRENCY', pattern: '$#,##0.00' } } },
+            { userEnteredFormat: { textFormat: { bold: true, italic: true } } },
+          ],
+        },
+      ]),
+    ).toBe(
+      'userEnteredFormat.numberFormat,userEnteredFormat.textFormat.bold,userEnteredFormat.textFormat.italic',
+    );
+  });
+
+  it('returns empty when no cell provides anything', () => {
+    expect(cellFieldPaths([{ values: [{}] }])).toBe('');
+    expect(cellFieldPaths([])).toBe('');
   });
 });
