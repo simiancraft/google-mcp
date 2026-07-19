@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Dimension } from './Dimension.js';
 
 /**
  * A span of rows or columns on one sheet: a dimension plus zero-based half-open
@@ -8,7 +9,7 @@ import { z } from 'zod';
  */
 export const DimensionRange = z.strictObject({
   sheetId: z.number().int().optional().describe('The sheet this span is on.'),
-  dimension: z.enum(['ROWS', 'COLUMNS']).optional().describe('The dimension of the span.'),
+  dimension: Dimension.optional().describe('The dimension of the span.'),
   startIndex: z
     .number()
     .int()

@@ -25,23 +25,29 @@ export const instructions =
   'value starting with = or + becomes a live formula (ONE_OF_LIST list ' +
   'items excepted). append_values ' +
   'searches its range for a table and appends after ' +
-  "it. The spreadsheet projection carries metadata plus each sheet's " +
-  'protected ranges, conditional format rules, and merged ranges (never ' +
+  'it. find_replace can rewrite formula source when includeFormulas is true, ' +
+  'and formula-bearing copy/cut paste operations execute copied formulas at ' +
+  "their destination. The spreadsheet projection carries metadata plus each sheet's " +
+  'basic filter, filter views, protected ranges, conditional format rules, ' +
+  'and merged ranges (never ' +
   'grid data), and the Sheets API has ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
   'edits (tabs, rows and columns, named ranges, formats, borders, charts, ' +
   'conditional format rules, data validation, protected ranges, cell ' +
-  'content, merges) are ' +
+  'content, merges, sorting, filters, and data transformations) are ' +
   'purpose-named operations wrapping one batchUpdate request each. ' +
   "update_cells writes the union of the provided cells' fields to every " +
   'written cell, so a written field a cell omits is cleared in that cell, ' +
   'and writing to an explicit range clears those fields in the part of the ' +
   'range the rows do not cover. ' +
   'The ' +
-  'property and format updates derive their masks from the fields provided, ' +
-  'so untouched properties are never reset; update_chart_spec and ' +
+  'property, format, and filter-view updates derive their masks from the fields provided, ' +
+  'so untouched properties are never reset, except that a filter view is backed by either ' +
+  'a range or named range and providing one backing detaches the other; update_chart_spec and ' +
   'update_conditional_format_rule are the exceptions, replacing the whole ' +
   'spec or rule, so send the complete object. Conditional format rules have ' +
   'no ID: they are addressed by sheet and index (their position in ' +
   "get_spreadsheet's conditionalFormats list), and adds, moves, and " +
-  'deletes renumber the rules around them.';
+  'deletes renumber the rules around them. Filter views instead have stable ' +
+  'filterViewId identities listed by get_spreadsheet; the basic filter is a ' +
+  'single sheet-level basicFilter.';

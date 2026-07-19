@@ -94,13 +94,33 @@ describe('projectSpreadsheet', () => {
     });
   });
 
-  it("carries each sheet's protected ranges, conditional format rules, and merges", () => {
+  it("carries each sheet's filters, protected ranges, conditional format rules, and merges", () => {
     expect(
       projectSpreadsheet({
         spreadsheetId: 'S1',
         sheets: [
           {
             properties: { sheetId: 0, title: 'A' },
+            basicFilter: {
+              range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+              sortSpecs: [{ dimensionIndex: 1, sortOrder: 'ASCENDING' }],
+              filterSpecs: [{ columnIndex: 1, filterCriteria: { hiddenValues: ['archived'] } }],
+            },
+            filterViews: [
+              {
+                filterViewId: 11,
+                title: 'Open items',
+                range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+                filterSpecs: [
+                  {
+                    columnIndex: 2,
+                    filterCriteria: {
+                      condition: { type: 'TEXT_EQ', values: [{ userEnteredValue: 'open' }] },
+                    },
+                  },
+                ],
+              },
+            ],
             merges: [
               {
                 sheetId: 0,
@@ -141,6 +161,26 @@ describe('projectSpreadsheet', () => {
         {
           sheetId: 0,
           title: 'A',
+          basicFilter: {
+            range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+            sortSpecs: [{ dimensionIndex: 1, sortOrder: 'ASCENDING' }],
+            filterSpecs: [{ columnIndex: 1, filterCriteria: { hiddenValues: ['archived'] } }],
+          },
+          filterViews: [
+            {
+              filterViewId: 11,
+              title: 'Open items',
+              range: { sheetId: 0, startRowIndex: 0, endRowIndex: 20 },
+              filterSpecs: [
+                {
+                  columnIndex: 2,
+                  filterCriteria: {
+                    condition: { type: 'TEXT_EQ', values: [{ userEnteredValue: 'open' }] },
+                  },
+                },
+              ],
+            },
+          ],
           merges: [
             {
               sheetId: 0,

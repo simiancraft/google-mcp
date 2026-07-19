@@ -34,6 +34,8 @@ describe('get_spreadsheet', () => {
               gridProperties: { rowCount: 1000, columnCount: 26 },
             },
             data: [{ rowData: [{ values: [{ formattedValue: 'never projected' }] }] }],
+            basicFilter: { range: { sheetId: 0 }, filterSpecs: [] },
+            filterViews: [{ filterViewId: 6, title: 'Mine', range: { sheetId: 0 } }],
           },
         ],
       }),
@@ -51,6 +53,8 @@ describe('get_spreadsheet', () => {
           index: 0,
           sheetType: 'GRID',
           gridProperties: { rowCount: 1000, columnCount: 26 },
+          basicFilter: { range: { sheetId: 0 }, filterSpecs: [] },
+          filterViews: [{ filterViewId: 6, title: 'Mine', range: { sheetId: 0 } }],
         },
       ],
     });
