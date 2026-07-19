@@ -13,6 +13,7 @@ export const schema = {
     index: z
       .number()
       .int()
+      .min(0)
       .optional()
       .describe(
         'The zero-based position to insert the sheet at; existing sheets shift over. Omitted, the sheet is added at the end.',

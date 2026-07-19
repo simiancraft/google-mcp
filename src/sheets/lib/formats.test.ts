@@ -11,6 +11,13 @@ describe('toColorStyle', () => {
   it('carries a theme color', () => {
     expect(toColorStyle({ themeColor: 'ACCENT1' })).toEqual({ themeColor: 'ACCENT1' });
   });
+
+  it('refuses an empty color and a both-set color, the oneof Google rejects', () => {
+    expect(() => toColorStyle({})).toThrow('exactly one of rgbColor or themeColor');
+    expect(() => toColorStyle({ rgbColor: { red: 1 }, themeColor: 'ACCENT1' })).toThrow(
+      'exactly one of rgbColor or themeColor',
+    );
+  });
 });
 
 describe('toTextFormat', () => {

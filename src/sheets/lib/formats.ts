@@ -14,8 +14,18 @@ import type { TextFormat } from '../entities/TextFormat.js';
  * tests' exact-params assertions are the guard, so extend them with the field.
  */
 
-/** Carry a ColorStyle across the Google boundary. */
+/**
+ * Carry a ColorStyle across the Google boundary. Enforces the entity's
+ * documented exactly-one rule here, once, for every input path (tab colors,
+ * fills, text foregrounds, borders): the REST field is a oneof, and Google
+ * rejects both-set with "oneof field 'kind' is already set" (live-verified).
+ * The rule stays out of the entity itself because the output projection
+ * deliberately degrades an unknown theme color to an empty ColorStyle.
+ */
 export function toColorStyle(colorStyle: ColorStyle): sheets_v4.Schema$ColorStyle {
+  if ((colorStyle.rgbColor === undefined) === (colorStyle.themeColor === undefined)) {
+    throw new Error('Provide exactly one of rgbColor or themeColor in a color.');
+  }
   return forGoogle({
     rgbColor: colorStyle.rgbColor ? forGoogle(colorStyle.rgbColor) : undefined,
     themeColor: colorStyle.themeColor,

@@ -5,11 +5,12 @@ import { GridProperties } from '../../entities/GridProperties.js';
 export const schema = {
   input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the sheet.'),
-    sheetId: z.number().int().describe('The ID of the sheet to update.'),
+    sheetId: z.number().int().min(0).describe('The ID of the sheet to update.'),
     title: z.string().optional().describe('The new name of the sheet.'),
     index: z
       .number()
       .int()
+      .min(0)
       .optional()
       .describe(
         'The new zero-based position of the sheet; other sheets shift around it. Moving later in the list, the index is interpreted after the removal, so to move a sheet one slot right add 2.',
