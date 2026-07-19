@@ -1,3 +1,15 @@
+## [1.16.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.15.0...v1.16.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add named-range updates, metadata writes, slicers, and the full chart families ([4cade15](https://github.com/simiancraft/google-mcp-suite/commit/4cade15394569e2ed01cbe42f5ac77d5538167cc))
+
+### Bug Fixes
+
+* **sheets:** derive the filter-clearing mask once, not twice ([4cf4fda](https://github.com/simiancraft/google-mcp-suite/commit/4cf4fda77e632e6fb43f958fdcde2b50c4503290))
+* **sheets:** let update_slicer_spec clear a filter ([9a942fd](https://github.com/simiancraft/google-mcp-suite/commit/9a942fd8b1b666b6b7a5429b7015c7c94673f779))
+* **sheets:** make the chart curation and metadata contracts exact ([1bbd53c](https://github.com/simiancraft/google-mcp-suite/commit/1bbd53cab9c0959213da0b8ccdeecfa0d33dab63))
+
 ## [1.15.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.14.0...v1.15.0) (2026-07-19)
 
 ### Features
