@@ -94,10 +94,10 @@ describe('update_cells', () => {
           endColumnIndex: 1,
         },
         rows: [{ values: [{ userEnteredFormat: { textFormat: { bold: true } } }] }],
-        fields: 'userEnteredFormat',
+        fields: 'userEnteredFormat.textFormat.bold',
       },
     });
-    expect(result.updatedFields).toBe('userEnteredFormat');
+    expect(result.updatedFields).toBe('userEnteredFormat.textFormat.bold');
   });
 
   it('refuses both start and range, and neither', async () => {

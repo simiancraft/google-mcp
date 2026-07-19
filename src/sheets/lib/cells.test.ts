@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+import { TextFormatRun } from '../entities/TextFormatRun.js';
 import { toCellData, toExtendedValue, toTextFormatRun } from './cells.js';
 
 describe('toExtendedValue', () => {
@@ -21,6 +22,11 @@ describe('toExtendedValue', () => {
 });
 
 describe('toTextFormatRun', () => {
+  it('requires the start index at the schema, per the REST write contract', () => {
+    expect(TextFormatRun.safeParse({ format: { bold: true } }).success).toBe(false);
+    expect(TextFormatRun.safeParse({ startIndex: 0, format: { bold: true } }).success).toBe(true);
+  });
+
   it('carries the start index and format, including a link', () => {
     expect(
       toTextFormatRun({

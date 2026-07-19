@@ -20,12 +20,12 @@ export const TextFormat = z.strictObject({
       uri: z
         .string()
         .describe(
-          'The link destination URI; a persisted link is followed by whoever reads the sheet, so do not pass untrusted URIs.',
+          'The link destination URI; a persisted link is presented to whoever reads the sheet, so do not pass untrusted URIs.',
         ),
     })
     .optional()
     .describe(
-      "The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request, and clears the cell's previously existing links (runs written together each keep their own link).",
+      "The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request, and clears the cell's previously existing links or a cell-level link set in the same request (runs written together each keep their own link).",
     ),
 });
 

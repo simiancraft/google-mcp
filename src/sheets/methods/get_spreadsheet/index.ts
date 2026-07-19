@@ -13,7 +13,7 @@ import { schema } from './schema.js';
  */
 export const get_spreadsheet = sheetsOperation({
   description:
-    "Get a spreadsheet by id: its properties (title, locale, time zone), the properties of every sheet (tab), and each sheet's protected ranges (with IDs; editor lists where the caller has edit access), conditional format rules in index order, and merged ranges; the discovery read for the rule, protection, and merge operations. Cell data is read with the values operations.",
+    "Get a spreadsheet by id: its properties (title, locale, time zone), the properties of every sheet (tab), and each sheet's protected ranges (with IDs; editor lists where the caller has edit access), conditional format rules in index order, and merged ranges; the discovery read for the rule, protection, and merge operations. Cell values are read with the values operations.",
   annotations: {
     readOnlyHint: true,
     destructiveHint: false,

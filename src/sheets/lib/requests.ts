@@ -47,24 +47,37 @@ export function fieldPaths<T extends Record<string, unknown>>(
   return paths.join(',');
 }
 
-/** The canonical mask order for CellData's writable fields. */
-const CELL_FIELDS = ['userEnteredValue', 'note', 'userEnteredFormat', 'textFormatRuns'] as const;
-
 /**
  * Derive an UpdateCellsRequest field mask from the union of fields the
  * provided cells actually carry, `fieldPaths`' sibling for per-cell data.
- * The mask applies to every written cell, so a masked field a cell omits is
- * cleared in that cell; returns '' when no cell provides anything, which
- * callers must refuse to send, like `fieldPaths`.
+ * `userEnteredFormat` expands per subkey (textFormat per sub-subkey, like
+ * `repeat_cell`), so a format field no cell provides is never reset by a
+ * too-wide mask. The mask applies to every written cell, so a masked field
+ * a cell omits is cleared in that cell; returns '' when no cell provides
+ * anything, which callers must refuse to send, like `fieldPaths`.
  */
 export function cellFieldPaths(rows: readonly { values: readonly CellData[] }[]): string {
-  const present = new Set<string>();
+  let value = false;
+  let note = false;
+  let runs = false;
+  const formatPaths = new Set<string>();
   for (const row of rows) {
     for (const cell of row.values) {
-      for (const field of CELL_FIELDS) {
-        if (cell[field] !== undefined) present.add(field);
+      if (cell.userEnteredValue !== undefined) value = true;
+      if (cell.note !== undefined) note = true;
+      if (cell.textFormatRuns !== undefined) runs = true;
+      if (cell.userEnteredFormat !== undefined) {
+        const expanded = fieldPaths(cell.userEnteredFormat, ['textFormat']);
+        if (expanded !== '') {
+          for (const path of expanded.split(',')) formatPaths.add(`userEnteredFormat.${path}`);
+        }
       }
     }
   }
-  return CELL_FIELDS.filter((field) => present.has(field)).join(',');
+  return [
+    ...(value ? ['userEnteredValue'] : []),
+    ...(note ? ['note'] : []),
+    ...formatPaths,
+    ...(runs ? ['textFormatRuns'] : []),
+  ].join(',');
 }

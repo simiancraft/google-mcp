@@ -72,13 +72,15 @@ truncates the grid and discards the cells beyond the new bounds; and
 `add_protected_range` is a destructive add under the rubric's
 standing-side-effect cluster (the `create_filter` precedent): the protection
 keeps restricting every collaborator not granted access. In the cell-content
-row, `merge_cells` discards every value but the upper-left of each merge,
+and merges row, `merge_cells` discards every value but the upper-left of each merge,
 `unmerge_cells` is a removal of the merge structure, and `update_cells`
 clears masked fields in cells that omit them (and the uncovered remainder of
 an explicit range). Other updates and appends are not destructive,
 matching Google's own classification of `update_event` (overwriting values is
 an update, not a removal); `valueInputOption` is required on every write
-because REST rejects writes without it.
+through the values operations because REST rejects those writes without it
+(the batchUpdate-backed operations, `update_cells` included, have no such
+field).
 
 Methods speak the REST vocabulary verbatim (`spreadsheetId`,
 `valueInputOption`, `majorDimension`, `dateTimeRenderOption`); wire names

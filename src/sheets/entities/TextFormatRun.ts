@@ -15,7 +15,7 @@ export const TextFormatRun = z.strictObject({
     .int()
     .min(0)
     .describe(
-      'The zero-based index this run starts at, measured in UTF-16 code units; the first run of a cell starts at 0.',
+      'The zero-based index this run starts at, measured in UTF-16 code units; text before the first run keeps the cell format.',
     ),
   format: TextFormat.describe(
     "The format of this run; fields not provided inherit the cell's format. A link field spanning the whole cell sets a cell-level hyperlink.",

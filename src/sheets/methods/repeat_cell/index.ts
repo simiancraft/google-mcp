@@ -6,7 +6,9 @@ import { schema } from './schema.js';
  * The REST request repeats one `CellData` over a range behind a field mask;
  * here the cell is format-only and the mask is derived from the format fields
  * actually provided (per-subkey for textFormat), so values are never
- * overwritten and an untouched format field is never reset.
+ * overwritten and an untouched format field is never reset. textFormat.link
+ * travels here too: providing it sets a cell-level link across the range,
+ * which clears run-level links, per the link field's documented semantics.
  */
 export const repeat_cell = sheetsOperation({
   description:

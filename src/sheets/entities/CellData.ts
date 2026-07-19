@@ -18,7 +18,7 @@ export const CellData = z.strictObject({
   ),
   note: z.string().optional().describe('A note on the cell.'),
   userEnteredFormat: CellFormat.optional().describe(
-    'The format of the cell; when writing, merged with the existing format per the derived mask.',
+    'The format of the cell; only the format fields provided somewhere in the write are changed, and an untouched format field is never reset.',
   ),
   textFormatRuns: z
     .array(TextFormatRun)

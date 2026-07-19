@@ -37,8 +37,8 @@ const Sheet = SheetProperties.extend({
  * properties and one or more sheets. This projection carries metadata and the
  * sheet-level collections (protected ranges, conditional format rules,
  * merged ranges); grid data (per-cell formatting, validation, notes) is
- * never carried, and cell contents flow through the values operations as
- * plain 2D arrays.
+ * never carried, cell values flow through the values operations as plain 2D
+ * arrays, and update_cells writes structured cell content.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets#Spreadsheet
  * @see https://developers.google.com/workspace/sheets/api/guides/concepts

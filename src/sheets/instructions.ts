@@ -13,7 +13,7 @@ export const instructions =
   identityInstructions('Google account') +
   vocabularyInstructions({ restOnly: 'Sheets' }) +
   untrustedContentInstructions() +
-  'Ranges use A1 notation (or R1C1); cell data moves as 2D arrays of string, ' +
+  'Ranges use A1 notation (or R1C1); cell values move as 2D arrays of string, ' +
   'number, boolean, or null values; the values field is absent entirely for ' +
   'an empty range, and rows may be ragged. Every write through the values ' +
   'operations requires ' +
