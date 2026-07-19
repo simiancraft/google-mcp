@@ -2,14 +2,18 @@ import { sheetsOperation } from '../../operation.js';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
-/** The field mask is derived from the supplied OverlayPosition fields. */
+/**
+ * The field mask is derived from the supplied OverlayPosition fields. Not
+ * idempotent: a newSheet move creates a sheet with a newly chosen ID, so
+ * replaying identical arguments creates another sheet.
+ */
 export const update_embedded_object_position = sheetsOperation({
   description:
     'Move or resize an embedded chart, image, or slicer by object ID, or move it to a new object sheet with an explicit or generated ID; overlay updates change only the provided anchor, offsets, width, or height, and cells beneath the object are untouched.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,
-    idempotentHint: true,
+    idempotentHint: false,
     openWorldHint: false,
   },
   source:

@@ -81,7 +81,8 @@ candlestick, org, histogram, waterfall, treemap, scorecard) and styling
 fields are not carried, and `update_chart_spec` replaces the whole spec, as
 the REST request does. Embedded-object layout is separate:
 `update_embedded_object_position` updates overlay fields behind a derived mask
-and returns the projected new position, while
+and returns the projected new position (not idempotent: a newSheet move
+creates a sheet with a newly chosen ID on every call), while
 `update_embedded_object_border` updates its modern `colorStyle` border.
 
 ⚠️ = destructive (`destructiveHint`): the clears, banding and dimension-group
