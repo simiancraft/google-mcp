@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { cellFieldPaths, toCellData, toExtendedValue, toTextFormatRun } from './cells.js';
+import { toCellData, toExtendedValue, toTextFormatRun } from './cells.js';
 
 describe('toExtendedValue', () => {
   it('carries each kind alone', () => {
@@ -11,9 +11,12 @@ describe('toExtendedValue', () => {
     });
   });
 
-  it('refuses zero kinds and two kinds', () => {
-    expect(() => toExtendedValue({})).toThrow('exactly one of');
-    expect(() => toExtendedValue({ stringValue: '1', numberValue: 1 })).toThrow('exactly one of');
+  it('carries an empty value, the documented way to clear a cell', () => {
+    expect(toExtendedValue({})).toEqual({});
+  });
+
+  it('refuses two kinds', () => {
+    expect(() => toExtendedValue({ stringValue: '1', numberValue: 1 })).toThrow('at most one of');
   });
 });
 
@@ -29,12 +32,6 @@ describe('toTextFormatRun', () => {
       format: { bold: true, link: { uri: 'https://example.test/doc' } },
     });
   });
-
-  it('drops an absent start index', () => {
-    expect(toTextFormatRun({ format: { italic: true } })).toEqual({
-      format: { italic: true },
-    });
-  });
 });
 
 describe('toCellData', () => {
@@ -44,33 +41,17 @@ describe('toCellData', () => {
         userEnteredValue: { stringValue: 'Total' },
         note: 'sum of the payoff column',
         userEnteredFormat: { textFormat: { bold: true } },
-        textFormatRuns: [{ format: { underline: true } }],
+        textFormatRuns: [{ startIndex: 0, format: { underline: true } }],
       }),
     ).toEqual({
       userEnteredValue: { stringValue: 'Total' },
       note: 'sum of the payoff column',
       userEnteredFormat: { textFormat: { bold: true } },
-      textFormatRuns: [{ format: { underline: true } }],
+      textFormatRuns: [{ startIndex: 0, format: { underline: true } }],
     });
   });
 
   it('carries an empty cell as an empty object', () => {
     expect(toCellData({})).toEqual({});
-  });
-});
-
-describe('cellFieldPaths', () => {
-  it('unions the fields across every cell in canonical order', () => {
-    expect(
-      cellFieldPaths([
-        { values: [{ note: 'a' }, { userEnteredValue: { numberValue: 1 } }] },
-        { values: [{ userEnteredFormat: { textFormat: { bold: true } } }] },
-      ]),
-    ).toBe('userEnteredValue,note,userEnteredFormat');
-  });
-
-  it('returns empty when no cell provides anything', () => {
-    expect(cellFieldPaths([{ values: [{}] }])).toBe('');
-    expect(cellFieldPaths([])).toBe('');
   });
 });

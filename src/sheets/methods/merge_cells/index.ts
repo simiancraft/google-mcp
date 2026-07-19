@@ -3,13 +3,13 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 /**
- * Destructive: merging keeps only the upper-left non-empty value of each
- * merge and discards the rest. Existing merges are listed per sheet by
+ * Destructive: merging keeps only the upper-left value of each merge and
+ * discards the rest. Existing merges are listed per sheet by
  * `get_spreadsheet` under `merges`.
  */
 export const merge_cells = sheetsOperation({
   description:
-    'Merge a range of cells into one (MERGE_ALL), one merge per column (MERGE_COLUMNS), or one per row (MERGE_ROWS), for real grouped headers instead of text placed near each other; only the upper-left non-empty value of each merge is kept.',
+    'Merge a range of cells into one (MERGE_ALL), one merge per column (MERGE_COLUMNS), or one merge per row (MERGE_ROWS); only the upper-left value of each merge is kept.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

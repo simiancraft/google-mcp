@@ -1,8 +1,8 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
-import { cellFieldPaths, toCellData } from '../../lib/cells.js';
-import { applyRequest } from '../../lib/requests.js';
+import { toCellData } from '../../lib/cells.js';
+import { applyRequest, cellFieldPaths } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
 export async function handler(

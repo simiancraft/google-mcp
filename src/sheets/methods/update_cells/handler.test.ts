@@ -27,7 +27,9 @@ describe('update_cells', () => {
           values: [
             {
               userEnteredValue: { stringValue: 'Docs' },
-              textFormatRuns: [{ format: { link: { uri: 'https://example.test/doc' } } }],
+              textFormatRuns: [
+                { startIndex: 0, format: { link: { uri: 'https://example.test/doc' } } },
+              ],
             },
             { userEnteredValue: { numberValue: 5.5 }, note: 'rate at month 18' },
           ],
@@ -47,7 +49,9 @@ describe('update_cells', () => {
                   values: [
                     {
                       userEnteredValue: { stringValue: 'Docs' },
-                      textFormatRuns: [{ format: { link: { uri: 'https://example.test/doc' } } }],
+                      textFormatRuns: [
+                        { startIndex: 0, format: { link: { uri: 'https://example.test/doc' } } },
+                      ],
                     },
                     { userEnteredValue: { numberValue: 5.5 }, note: 'rate at month 18' },
                   ],

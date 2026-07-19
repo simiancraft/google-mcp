@@ -21,8 +21,10 @@ carries the four MCP annotation hints; the removals, the discarding writes
 (`merge_cells`, `update_cells`), and `add_protected_range` (a standing
 restriction) are marked destructive (`destructiveHint`).
 
-Cell data moves as plain 2D arrays of `string | number | boolean | null`;
-spreadsheet metadata is a lean projection (grid data, formatting, and themes
+Cell values move as plain 2D arrays of `string | number | boolean | null`
+through the values operations, and `update_cells` writes structured cell
+content (typed values, notes, formats, rich text runs with links);
+spreadsheet metadata is a lean projection (grid data reads and themes
 are deferred, see [`COVERAGE.md`](./COVERAGE.md)). One caution on writes:
 with `valueInputOption: USER_ENTERED`, a leading `=` becomes a live formula,
 so writing untrusted content that way is a formula-injection risk

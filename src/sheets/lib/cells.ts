@@ -13,13 +13,14 @@ import { toCellFormat, toTextFormat } from './formats.js';
 
 /**
  * Carry an ExtendedValue across the Google boundary. Enforces the
- * documented oneof: a cell value is exactly one of the four kinds.
+ * documented oneof: a cell value is at most one of the four kinds, and an
+ * empty value clears the cell's value under the mask.
  */
 export function toExtendedValue(value: ExtendedValue): sheets_v4.Schema$ExtendedValue {
   const provided = [value.stringValue, value.numberValue, value.boolValue, value.formulaValue];
-  if (provided.filter((kind) => kind !== undefined).length !== 1) {
+  if (provided.filter((kind) => kind !== undefined).length > 1) {
     throw new Error(
-      'Provide exactly one of stringValue, numberValue, boolValue, or formulaValue in a cell value.',
+      'Provide at most one of stringValue, numberValue, boolValue, or formulaValue in a cell value.',
     );
   }
   return forGoogle({
@@ -46,25 +47,4 @@ export function toCellData(cell: CellData): sheets_v4.Schema$CellData {
     userEnteredFormat: cell.userEnteredFormat ? toCellFormat(cell.userEnteredFormat) : undefined,
     textFormatRuns: cell.textFormatRuns ? cell.textFormatRuns.map(toTextFormatRun) : undefined,
   });
-}
-
-/** The canonical mask order for CellData's writable fields. */
-const CELL_FIELDS = ['userEnteredValue', 'note', 'userEnteredFormat', 'textFormatRuns'] as const;
-
-/**
- * Derive an UpdateCellsRequest field mask from the union of fields the
- * provided cells actually carry. The mask applies to every written cell, so
- * a masked field a cell omits is cleared in that cell; returns '' when no
- * cell provides anything, which callers must refuse to send.
- */
-export function cellFieldPaths(rows: readonly { values: readonly CellData[] }[]): string {
-  const present = new Set<string>();
-  for (const row of rows) {
-    for (const cell of row.values) {
-      for (const field of CELL_FIELDS) {
-        if (cell[field] !== undefined) present.add(field);
-      }
-    }
-  }
-  return CELL_FIELDS.filter((field) => present.has(field)).join(',');
 }

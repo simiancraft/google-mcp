@@ -1,4 +1,5 @@
 import type { sheets_v4 } from '@googleapis/sheets';
+import type { CellData } from '../entities/CellData.js';
 
 /**
  * Apply one batchUpdate request to a spreadsheet and return its reply.
@@ -44,4 +45,26 @@ export function fieldPaths<T extends Record<string, unknown>>(
     }
   }
   return paths.join(',');
+}
+
+/** The canonical mask order for CellData's writable fields. */
+const CELL_FIELDS = ['userEnteredValue', 'note', 'userEnteredFormat', 'textFormatRuns'] as const;
+
+/**
+ * Derive an UpdateCellsRequest field mask from the union of fields the
+ * provided cells actually carry, `fieldPaths`' sibling for per-cell data.
+ * The mask applies to every written cell, so a masked field a cell omits is
+ * cleared in that cell; returns '' when no cell provides anything, which
+ * callers must refuse to send, like `fieldPaths`.
+ */
+export function cellFieldPaths(rows: readonly { values: readonly CellData[] }[]): string {
+  const present = new Set<string>();
+  for (const row of rows) {
+    for (const cell of row.values) {
+      for (const field of CELL_FIELDS) {
+        if (cell[field] !== undefined) present.add(field);
+      }
+    }
+  }
+  return CELL_FIELDS.filter((field) => present.has(field)).join(',');
 }

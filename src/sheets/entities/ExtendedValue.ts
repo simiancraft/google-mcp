@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
 /**
- * The kinds of value a cell can hold. Provide exactly one of the four
- * fields; the read-only errorValue kind is not carried.
+ * The kinds of value a cell can hold. Provide at most one of the four
+ * fields; an empty value represents a cell with no data, which is how a
+ * masked write clears a cell's value. The read-only errorValue kind is not
+ * carried.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#ExtendedValue
  */

@@ -8,8 +8,8 @@ import { SpreadsheetProperties } from './SpreadsheetProperties.js';
 
 /**
  * One sheet (tab) in the Spreadsheet projection: its properties, flattened,
- * plus the sheet-level reactive collections (protected ranges and
- * conditional format rules). Grid data is still never carried.
+ * plus the sheet-level collections (protected ranges, conditional format
+ * rules, merged ranges). Grid data is still never carried.
  */
 const Sheet = SheetProperties.extend({
   protectedRanges: z
@@ -35,10 +35,10 @@ const Sheet = SheetProperties.extend({
 /**
  * A spreadsheet: the top-level container, identified by `spreadsheetId`, holding
  * properties and one or more sheets. This projection carries metadata and the
- * sheet-level reactive collections (protected ranges, conditional format
- * rules); grid data (per-cell formatting, validation, notes) is never
- * carried, and cell contents flow through the values operations as plain 2D
- * arrays.
+ * sheet-level collections (protected ranges, conditional format rules,
+ * merged ranges); grid data (per-cell formatting, validation, notes) is
+ * never carried, and cell contents flow through the values operations as
+ * plain 2D arrays.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets#Spreadsheet
  * @see https://developers.google.com/workspace/sheets/api/guides/concepts
@@ -51,7 +51,7 @@ export const Spreadsheet = z.object({
     .array(Sheet)
     .optional()
     .describe(
-      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its protected ranges and conditional format rules.',
+      'Each sheet (tab) in the spreadsheet, in tab order: its properties plus its protected ranges, conditional format rules, and merged ranges.',
     ),
   namedRanges: z
     .array(NamedRange)

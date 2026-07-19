@@ -87,7 +87,7 @@ export const methods = {
   // formatting
   repeat_cell,
   update_borders,
-  // cell content
+  // cell content and merges
   update_cells,
   merge_cells,
   unmerge_cells,

@@ -17,11 +17,15 @@ export const TextFormat = z.strictObject({
   underline: z.boolean().optional().describe('True if the text is underlined.'),
   link: z
     .strictObject({
-      uri: z.string().describe('The link identifier.'),
+      uri: z
+        .string()
+        .describe(
+          'The link destination URI; a persisted link is followed by whoever reads the sheet, so do not pass untrusted URIs.',
+        ),
     })
     .optional()
     .describe(
-      'The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request, and clears any other link on the cell.',
+      "The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request, and clears the cell's previously existing links (runs written together each keep their own link).",
     ),
 });
 

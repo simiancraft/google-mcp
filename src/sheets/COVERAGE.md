@@ -24,7 +24,7 @@ tracked in issue #76.
 | spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
 | spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
-| spreadsheets (cell content) | `update_cells` ⚠️, `merge_cells` ⚠️, `unmerge_cells` ⚠️ |
+| spreadsheets (cell content, merges) | `update_cells` ⚠️, `merge_cells` ⚠️, `unmerge_cells` ⚠️ |
 | spreadsheets (conditional format rules) | `add_conditional_format_rule`, `update_conditional_format_rule`, `move_conditional_format_rule`, `delete_conditional_format_rule` ⚠️ |
 | spreadsheets (data validation) | `set_data_validation`, `clear_data_validation` ⚠️ |
 | spreadsheets (protected ranges) | `add_protected_range` ⚠️, `update_protected_range`, `delete_protected_range` ⚠️ |
@@ -102,8 +102,9 @@ enums: rules are addressed by index, so the readout must be total, and
 dropping a rule over an unrecognized upstream value would silently renumber
 every rule after it; the write path stays the closed enum. Grid data
 (per-cell formatting, validation, notes), themes, and the default
-cell format are not carried; cell contents flow through the values operations
-as plain `CellValue` (`string | number | boolean | null`) 2D arrays. The API
+cell format are not carried; cell values flow through the values operations
+as plain `CellValue` (`string | number | boolean | null`) 2D arrays, and
+`update_cells` writes structured cell content. The API
 omits `values` entirely for an empty range, and rows may be ragged; the
 schemas say so.
 
@@ -125,7 +126,8 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   run's link field). Pivot tables are deferred (issue #77); chip runs and
   the data-source fields are not carried; per-cell `dataValidation` travels
   through `set_data_validation` instead; and the read-only fields
-  (effective and formatted values, hyperlink) are grid data (issue #28).
+  (effective value and format, formatted value, hyperlink) are grid data
+  (issue #28).
 - **Data-source condition variants**: `BooleanCondition`'s enum omits
   `TEXT_NOT_EQ` and `DATE_NOT_EQ`, which apply only to filters on data
   source (Connected Sheets) objects, a surface this server does not expose,
