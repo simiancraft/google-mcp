@@ -190,6 +190,7 @@ export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsh
                   conditionalFormats: sheet.conditionalFormats
                     ? sheet.conditionalFormats.map(projectConditionalFormatRule)
                     : undefined,
+                  merges: sheet.merges ? sheet.merges.map(projectGridRange) : undefined,
                 },
               ]
             : [],

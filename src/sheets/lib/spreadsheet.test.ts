@@ -94,13 +94,22 @@ describe('projectSpreadsheet', () => {
     });
   });
 
-  it("carries each sheet's protected ranges and conditional format rules", () => {
+  it("carries each sheet's protected ranges, conditional format rules, and merges", () => {
     expect(
       projectSpreadsheet({
         spreadsheetId: 'S1',
         sheets: [
           {
             properties: { sheetId: 0, title: 'A' },
+            merges: [
+              {
+                sheetId: 0,
+                startRowIndex: 0,
+                endRowIndex: 2,
+                startColumnIndex: 0,
+                endColumnIndex: 3,
+              },
+            ],
             protectedRanges: [
               {
                 protectedRangeId: 7,
@@ -132,6 +141,15 @@ describe('projectSpreadsheet', () => {
         {
           sheetId: 0,
           title: 'A',
+          merges: [
+            {
+              sheetId: 0,
+              startRowIndex: 0,
+              endRowIndex: 2,
+              startColumnIndex: 0,
+              endColumnIndex: 3,
+            },
+          ],
           protectedRanges: [
             {
               protectedRangeId: 7,

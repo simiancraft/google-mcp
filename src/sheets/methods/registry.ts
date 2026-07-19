@@ -28,11 +28,14 @@ import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
 import { get_values } from './get_values/index.js';
 import { insert_dimension } from './insert_dimension/index.js';
+import { merge_cells } from './merge_cells/index.js';
 import { move_conditional_format_rule } from './move_conditional_format_rule/index.js';
 import { repeat_cell } from './repeat_cell/index.js';
 import { search_developer_metadata } from './search_developer_metadata/index.js';
 import { set_data_validation } from './set_data_validation/index.js';
+import { unmerge_cells } from './unmerge_cells/index.js';
 import { update_borders } from './update_borders/index.js';
+import { update_cells } from './update_cells/index.js';
 import { update_chart_spec } from './update_chart_spec/index.js';
 import { update_conditional_format_rule } from './update_conditional_format_rule/index.js';
 import { update_protected_range } from './update_protected_range/index.js';
@@ -84,6 +87,10 @@ export const methods = {
   // formatting
   repeat_cell,
   update_borders,
+  // cell content
+  update_cells,
+  merge_cells,
+  unmerge_cells,
   // conditional format rules
   add_conditional_format_rule,
   update_conditional_format_rule,

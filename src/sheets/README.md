@@ -10,14 +10,16 @@ served by `server()` over an [`auth`](../auth) client.
 
 ## Capabilities
 
-39 operations across spreadsheets, values, developer metadata, sheets, and
+42 operations across spreadsheets, values, developer metadata, sheets, and
 the batchUpdate surface: spreadsheet metadata and properties, single-range
 and batch values, data-filter-addressed values, developer metadata reads,
 sheet management (add, delete, duplicate, copy, properties), dimensions,
 named ranges, formatting (`repeat_cell`, `update_borders`), conditional
-format rules, data validation, protected ranges, and charts. Every operation
-carries the four MCP annotation hints; the removals (and `add_protected_range`,
-a standing restriction) are marked destructive (`destructiveHint`).
+format rules, data validation, protected ranges, cell content and merges
+(`update_cells`, `merge_cells`, `unmerge_cells`), and charts. Every operation
+carries the four MCP annotation hints; the removals, the discarding writes
+(`merge_cells`, `update_cells`), and `add_protected_range` (a standing
+restriction) are marked destructive (`destructiveHint`).
 
 Cell data moves as plain 2D arrays of `string | number | boolean | null`;
 spreadsheet metadata is a lean projection (grid data, formatting, and themes

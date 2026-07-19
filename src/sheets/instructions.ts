@@ -23,12 +23,16 @@ export const instructions =
   'items excepted). append_values ' +
   'searches its range for a table and appends after ' +
   "it. The spreadsheet projection carries metadata plus each sheet's " +
-  'protected ranges and conditional format rules (never grid data), and the ' +
-  'Sheets API has ' +
+  'protected ranges, conditional format rules, and merged ranges (never ' +
+  'grid data), and the ' +
   "no delete; removing a spreadsheet is Drive's files.delete. Structural " +
   'edits (tabs, rows and columns, named ranges, formats, borders, charts, ' +
-  'conditional format rules, data validation, protected ranges) are ' +
-  'purpose-named operations wrapping one batchUpdate request each. The ' +
+  'conditional format rules, data validation, protected ranges, cell ' +
+  'content, merges) are ' +
+  'purpose-named operations wrapping one batchUpdate request each. ' +
+  "update_cells writes the union of the provided cells' fields to every " +
+  'written cell, so a written field a cell omits is cleared in that cell. ' +
+  'The ' +
   'property and format updates derive their masks from the fields provided, ' +
   'so untouched properties are never reset; update_chart_spec and ' +
   'update_conditional_format_rule are the exceptions, replacing the whole ' +

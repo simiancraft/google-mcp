@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ConditionalFormatRuleReadout } from './ConditionalFormatRuleReadout.js';
+import { GridRange } from './GridRange.js';
 import { NamedRange } from './NamedRange.js';
 import { ProtectedRange } from './ProtectedRange.js';
 import { SheetProperties } from './SheetProperties.js';
@@ -22,6 +23,12 @@ const Sheet = SheetProperties.extend({
     .optional()
     .describe(
       'The conditional format rules on this sheet, in rule order; absent when there are none. The array index is the index that update_conditional_format_rule, move_conditional_format_rule, and delete_conditional_format_rule take.',
+    ),
+  merges: z
+    .array(GridRange)
+    .optional()
+    .describe(
+      'The merged ranges on this sheet; absent when there are none. Each merge renders only its upper-left value.',
     ),
 });
 
