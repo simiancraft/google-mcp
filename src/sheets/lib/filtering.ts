@@ -3,7 +3,6 @@ import { forGoogle } from '../../lib/optionality.js';
 import { narrow } from '../../lib/utils/narrow.js';
 import type { BasicFilter, BasicFilterReadout } from '../entities/BasicFilter.js';
 import { BooleanCondition } from '../entities/BooleanCondition.js';
-import { ColorStyle } from '../entities/ColorStyle.js';
 import { ConditionValue } from '../entities/ConditionValue.js';
 import type { FilterCriteria } from '../entities/FilterCriteria.js';
 import type { FilterSpec } from '../entities/FilterSpec.js';

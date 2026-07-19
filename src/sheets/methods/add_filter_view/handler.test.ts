@@ -22,13 +22,13 @@ describe('add_filter_view', () => {
   it('refuses both range and namedRangeId, and neither', async () => {
     const captured: Captured = {};
     await expect(
-      handler(fakeSheets(captured), {
+      handler(fakeSheets(captured, {}), {
         spreadsheetId: 'SS',
         filter: { title: 'Mine', range: { sheetId: 0 }, namedRangeId: 'nr1' },
       }),
     ).rejects.toThrow('exactly one of range or namedRangeId');
     await expect(
-      handler(fakeSheets(captured), { spreadsheetId: 'SS', filter: { title: 'Mine' } }),
+      handler(fakeSheets(captured, {}), { spreadsheetId: 'SS', filter: { title: 'Mine' } }),
     ).rejects.toThrow('exactly one of range or namedRangeId');
     expect(captured.params).toBeUndefined();
   });
