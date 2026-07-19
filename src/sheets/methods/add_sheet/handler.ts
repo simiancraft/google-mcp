@@ -1,7 +1,8 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
-import { applyRequest, toColorStyle } from '../../lib/requests.js';
+import { toColorStyle } from '../../lib/formats.js';
+import { applyRequest } from '../../lib/requests.js';
 import { projectSheetProperties } from '../../lib/spreadsheet.js';
 import type { schema } from './schema.js';
 

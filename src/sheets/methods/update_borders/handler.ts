@@ -1,7 +1,8 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
-import { applyRequest, toBorder } from '../../lib/requests.js';
+import { toBorder } from '../../lib/formats.js';
+import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
 export async function handler(
