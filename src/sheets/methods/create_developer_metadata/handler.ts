@@ -1,6 +1,10 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { projectDeveloperMetadata, toDeveloperMetadata } from '../../lib/metadata.js';
+import {
+  assertSingleBoundedMetadataDimension,
+  projectDeveloperMetadata,
+  toDeveloperMetadata,
+} from '../../lib/metadata.js';
 import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
@@ -9,6 +13,7 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   const { spreadsheetId, ...developerMetadata } = args;
+  assertSingleBoundedMetadataDimension(developerMetadata.location);
   const reply = await applyRequest(sheets, spreadsheetId, {
     createDeveloperMetadata: { developerMetadata: toDeveloperMetadata(developerMetadata) },
   });

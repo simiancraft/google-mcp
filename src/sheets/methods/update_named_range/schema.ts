@@ -8,7 +8,9 @@ export const schema = {
     name: z
       .string()
       .optional()
-      .describe('The new name. Renaming also updates formulas that reference this named range.'),
+      .describe(
+        'The new name. Renaming updates syntactic cell and range references to this named range, but does not rewrite string references such as INDIRECT("name").',
+      ),
     range: GridRange.optional().describe(
       'The new range represented by the name; only the provided range coordinates change.',
     ),

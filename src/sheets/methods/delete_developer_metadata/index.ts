@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  */
 export const delete_developer_metadata = sheetsOperation({
   description:
-    'Irreversibly delete every developer metadata entry matching one dataFilter and return the deleted entries; attached rows, columns, sheets, and cell values are not deleted.',
+    'Irreversibly delete every developer metadata entry matching one dataFilter and return the deleted entries; an empty developerMetadataLookup matches all metadata visible to the requesting project and deletes every visible entry, while attached rows, columns, sheets, and cell values are not deleted.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

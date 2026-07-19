@@ -6,7 +6,7 @@ export const schema = {
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the chart.'),
     chartId: z.number().int().describe('The ID of the chart to update.'),
     spec: ChartSpec.describe(
-      'The complete specification to apply. This request replaces the whole existing spec rather than masking fields, so provide exactly one ordinary-grid chart family and every field that should remain. Data-source-only and deferred data-label fields are lost on update.',
+      'The complete specification to apply. This request replaces the whole existing spec rather than masking fields and clears every existing field this schema cannot express. Provide exactly one ordinary-grid chart family and every expressible field that should remain.',
     ),
   }),
   /** The update reply is empty; we confirm the ids. */

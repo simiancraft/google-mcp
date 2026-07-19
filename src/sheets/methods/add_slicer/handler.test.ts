@@ -126,6 +126,25 @@ describe('add_slicer', () => {
         overlayPosition: { anchorCell: { sheetId: 2, rowIndex: 0, columnIndex: 0 } },
       },
     });
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            addSlicer: {
+              slicer: {
+                spec: {},
+                position: {
+                  overlayPosition: {
+                    anchorCell: { sheetId: 2, rowIndex: 0, columnIndex: 0 },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
     expect(result).toEqual({ slicerId: 0 });
     await expect(
       handler(fakeSheets(captured), {

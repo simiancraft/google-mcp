@@ -80,14 +80,32 @@ order on every call, `cut_paste` has already cleared its source when repeated,
 new matches when the replacement contains the find value, so those operations
 are non-idempotent too. The chart operations carry all nine ordinary-grid
 families: basic, pie, bubble, candlestick, org, histogram, waterfall, treemap,
-and scorecard. The specialty carriers include their documented data, series,
-domain, sizing, aggregation, color, and text options. Waterfall chart data
-labels, total data labels, and connector-line styling are the only
-specialty-family cosmetic tail deferred here. Basic-chart stacking, line
-smoothing, three-dimensional, interpolation, and data-label options remain
-outside its earlier curated carrier. Data-source-only chart fields stay with
-the excluded data-source family. `update_chart_spec` replaces the whole spec,
-as the REST request does. Embedded-object layout is separate:
+and scorecard. The family-specific carrier decisions are exact:
+
+- Basic charts carry chart type, legend position, axis position and title,
+  domain data, series data, target axis and type, and header count. The decided
+  exclusions are `compareMode`; domain `reversed`; axis `format`,
+  `titleTextPosition`, and `viewWindowOptions`; series `colorStyle`,
+  `lineStyle`, `pointStyle`, and `styleOverrides`; series `dataLabel` and
+  `totalDataLabel`; and `stackedType`, `lineSmoothing`, `threeDimensional`, and
+  `interpolateNulls`.
+- Waterfall charts carry domain reversal, series data, modern column colors and
+  labels, custom subtotals, trailing-subtotal visibility, stacking, first-value
+  totals, and connector visibility. The decided exclusions are series
+  `dataLabel`, `connectorLineStyle`, and `totalDataLabel`.
+- Pie, bubble, candlestick, org, histogram, treemap, and scorecard charts carry
+  all of their modern ordinary-grid REST fields. They have no family-specific
+  exclusions. Deprecated `Color` aliases are not separate gaps because their
+  replacement `ColorStyle` fields are carried.
+
+The common `ChartSpec` carrier excludes the data-source-only
+`dataSourceChartProperties`, `filterSpecs`, and `sortSpecs` fields. Its nested
+`ChartData` carrier likewise excludes the data-source-only `groupRule`,
+`aggregateType`, and `columnReference` fields. These are decided exclusions
+with the data-source request family, not untracked chart cosmetics.
+`update_chart_spec` replaces the whole spec, as the REST request does, so every
+existing field outside these carriers is cleared by an update. Embedded-object
+layout is separate:
 `update_embedded_object_position` updates overlay fields behind a derived mask
 and returns the projected new position (not idempotent: a newSheet move
 creates a sheet with a newly chosen ID on every call), while

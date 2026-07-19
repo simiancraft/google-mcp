@@ -4,12 +4,13 @@ import { schema } from './schema.js';
 
 /**
  * The mask is derived from the provided name and range coordinates. Renaming
- * updates formulas that reference the named range; retargeting changes the
- * cells those formulas read without rewriting their source.
+ * updates syntactic cell and range references to the named range, but string
+ * references such as INDIRECT("name") are not rewritten. Retargeting changes
+ * the cells those syntactic references read without rewriting their source.
  */
 export const update_named_range = sheetsOperation({
   description:
-    'Rename or retarget a named range by ID behind a derived field mask; renaming updates every formula that references the name, while retargeting changes the cells those formulas calculate from.',
+    'Rename or retarget a named range by ID behind a derived field mask; renaming updates syntactic cell and range references to the name but does not rewrite string references such as INDIRECT("name"), while retargeting changes the cells those syntactic references calculate from.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

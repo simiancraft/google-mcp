@@ -6,7 +6,7 @@ export const schema = {
   input: z.strictObject({
     spreadsheetId: z.string().describe('The ID of the spreadsheet containing the metadata.'),
     dataFilter: DataFilter.describe(
-      'The criteria selecting metadata to delete; every matching entry is deleted.',
+      'The irreversible criteria selecting metadata to delete; every matching entry is deleted. An empty developerMetadataLookup matches all developer metadata visible to the requesting project, so that empty lookup deletes every visible entry.',
     ),
   }),
   output: z.object({

@@ -82,5 +82,17 @@ describe('delete_developer_metadata', () => {
         dataFilter: { developerMetadataLookup: { metadataId: 99 } },
       }),
     ).toEqual({ deletedDeveloperMetadata: [] });
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            deleteDeveloperMetadata: {
+              dataFilter: { developerMetadataLookup: { metadataId: 99 } },
+            },
+          },
+        ],
+      },
+    });
   });
 });

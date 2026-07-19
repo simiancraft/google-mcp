@@ -93,6 +93,20 @@ describe('update_developer_metadata', () => {
       dataFilters: [{ developerMetadataLookup: { metadataId: 9 } }],
       metadataValue: 'new',
     });
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            updateDeveloperMetadata: {
+              dataFilters: [{ developerMetadataLookup: { metadataId: 9 } }],
+              developerMetadata: { metadataValue: 'new' },
+              fields: 'metadataValue',
+            },
+          },
+        ],
+      },
+    });
     expect(result).toEqual({ developerMetadata: [] });
     await expect(
       handler(fakeSheets(captured), {
@@ -100,5 +114,19 @@ describe('update_developer_metadata', () => {
         dataFilters: [{ developerMetadataLookup: { metadataId: 9 } }],
       }),
     ).rejects.toThrow('Provide at least one developer metadata field');
+  });
+
+  it('refuses an unbounded or multi-dimension metadata location', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        dataFilters: [{ developerMetadataLookup: { metadataId: 9 } }],
+        location: {
+          dimensionRange: { sheetId: 2, dimension: 'COLUMNS', startIndex: 1 },
+        },
+      }),
+    ).rejects.toThrow('Provide a single bounded row or column');
+    expect(captured.params).toBeUndefined();
   });
 });

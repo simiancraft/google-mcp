@@ -24,7 +24,7 @@ export const DeveloperMetadataInput = z.strictObject({
   metadataKey: z.string().describe('The metadata key; developer metadata must have a key.'),
   metadataValue: z.string().optional().describe("Data associated with the metadata's key."),
   location: WritableLocation.describe(
-    'The association location. Provide exactly one of spreadsheet: true, sheetId, or dimensionRange.',
+    'The association location. Provide exactly one of spreadsheet: true, sheetId, or dimensionRange. A dimensionRange must specify ROWS or COLUMNS with bounded startIndex and endIndex spanning exactly one row or column.',
   ),
   visibility: z
     .enum(['DOCUMENT', 'PROJECT'])

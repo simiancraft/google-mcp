@@ -17,7 +17,8 @@ const ChartTextFormat = TextFormat.omit({ strikethrough: true, underline: true, 
 /**
  * What a chart shows: common chart presentation plus exactly one chart-family
  * spec. Carries every ordinary-grid chart family; data-source chart fields are
- * outside this surface.
+ * outside this surface. The maximized and backgroundColorStyle fields do not
+ * apply to org charts.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/charts#ChartSpec
  */
@@ -40,8 +41,10 @@ export const ChartSpec = z.strictObject({
   maximized: z
     .boolean()
     .optional()
-    .describe('True to fill the rendered area with minimum padding.'),
-  backgroundColorStyle: ColorStyle.optional().describe('The background color of the chart.'),
+    .describe('True to fill the rendered area with minimum padding; does not apply to org charts.'),
+  backgroundColorStyle: ColorStyle.optional().describe(
+    'The background color of the chart; does not apply to org charts.',
+  ),
   hiddenDimensionStrategy: z
     .enum(['SKIP_HIDDEN_ROWS_AND_COLUMNS', 'SKIP_HIDDEN_ROWS', 'SKIP_HIDDEN_COLUMNS', 'SHOW_ALL'])
     .optional()

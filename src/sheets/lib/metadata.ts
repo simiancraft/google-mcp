@@ -13,6 +13,22 @@ export interface DeveloperMetadataWrite {
   visibility?: 'DOCUMENT' | 'PROJECT' | undefined;
 }
 
+/** Enforce the REST write constraint on a metadata dimension location. */
+export function assertSingleBoundedMetadataDimension(
+  location: DeveloperMetadataLocation | undefined,
+): void {
+  const range = location?.dimensionRange;
+  if (
+    range !== undefined &&
+    ((range.dimension !== 'ROWS' && range.dimension !== 'COLUMNS') ||
+      range.startIndex === undefined ||
+      range.endIndex === undefined ||
+      range.endIndex !== range.startIndex + 1)
+  ) {
+    throw new Error('Provide a single bounded row or column in location.dimensionRange.');
+  }
+}
+
 /** Carry writable developer metadata fields across the Google boundary. */
 export function toDeveloperMetadata(
   metadata: DeveloperMetadataWrite,

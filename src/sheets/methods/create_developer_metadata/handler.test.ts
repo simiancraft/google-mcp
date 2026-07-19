@@ -100,6 +100,22 @@ describe('create_developer_metadata', () => {
         visibility: 'PROJECT',
       },
     );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            createDeveloperMetadata: {
+              developerMetadata: {
+                metadataKey: 'whole',
+                location: { spreadsheet: true },
+                visibility: 'PROJECT',
+              },
+            },
+          },
+        ],
+      },
+    });
     expect(result.metadataId).toBe(0);
     await expect(
       handler(fakeSheets(captured), {
@@ -111,7 +127,52 @@ describe('create_developer_metadata', () => {
     ).rejects.toThrow('Google returned no developer metadata');
   });
 
-  it('refuses a location with more than one association target', async () => {
+  it('creates sheet-scoped metadata with the exact location shape', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, {
+        createDeveloperMetadata: {
+          developerMetadata: {
+            metadataId: 43,
+            metadataKey: 'sheet',
+            location: { locationType: 'SHEET', sheetId: 2 },
+            visibility: 'DOCUMENT',
+          },
+        },
+      }),
+      {
+        spreadsheetId: 'SS',
+        metadataKey: 'sheet',
+        location: { sheetId: 2 },
+        visibility: 'DOCUMENT',
+      },
+    );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            createDeveloperMetadata: {
+              developerMetadata: {
+                metadataKey: 'sheet',
+                location: { sheetId: 2 },
+                visibility: 'DOCUMENT',
+              },
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({
+      metadataId: 43,
+      metadataKey: 'sheet',
+      location: { locationType: 'SHEET', sheetId: 2 },
+      visibility: 'DOCUMENT',
+    });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('refuses an invalid association target or dimension span', async () => {
     const captured: Captured = {};
     await expect(
       handler(fakeSheets(captured), {
@@ -121,6 +182,16 @@ describe('create_developer_metadata', () => {
         visibility: 'DOCUMENT',
       }),
     ).rejects.toThrow('exactly one of spreadsheet, sheetId, or dimensionRange');
+    await expect(
+      handler(fakeSheets(captured), {
+        spreadsheetId: 'SS',
+        metadataKey: 'bad-span',
+        location: {
+          dimensionRange: { sheetId: 2, dimension: 'ROWS', startIndex: 6, endIndex: 8 },
+        },
+        visibility: 'DOCUMENT',
+      }),
+    ).rejects.toThrow('Provide a single bounded row or column');
     expect(captured.params).toBeUndefined();
   });
 });
