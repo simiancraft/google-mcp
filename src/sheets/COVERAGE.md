@@ -80,7 +80,11 @@ matching Google's own classification of `update_event` (overwriting values is
 an update, not a removal); `valueInputOption` is required on every write
 through the values operations because REST rejects those writes without it
 (the batchUpdate-backed operations, `update_cells` included, have no such
-field).
+field). Every operation here is closed-world (`openWorldHint: false`)
+including the formula-bearing writes: a written formula can reach external
+endpoints when the sheet later evaluates it (IMPORTDATA and friends, per
+the formula hazards on those fields), but the hint tracks the operation's
+own reach, uniformly with the values operations.
 
 Methods speak the REST vocabulary verbatim (`spreadsheetId`,
 `valueInputOption`, `majorDimension`, `dateTimeRenderOption`); wire names
@@ -125,7 +129,7 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   within updateCells's CellData) is tracked in issue #77.
 - **CellData beyond cell content**: `update_cells` carries a curated
   `CellData` (value, note, format, text format runs, and hyperlinks via a
-  run's link field). Pivot tables are deferred (issue #77); chip runs and
+  run's link field or the cell-level textFormat.link). Pivot tables are deferred (issue #77); chip runs and
   the data-source fields are not carried; per-cell `dataValidation` travels
   through `set_data_validation` instead; and the read-only fields
   (effective value and format, formatted value, hyperlink) are grid data

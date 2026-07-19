@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  * rules (in order; the array position is the rule index), and merged
  * ranges. Grid data
  * (per-cell formatting, validation, notes) is not exposed (issue #28). Cell
- * contents are read with the values operations.
+ * values are read with the values operations.
  */
 export const get_spreadsheet = sheetsOperation({
   description:

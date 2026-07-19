@@ -25,7 +25,7 @@ export const TextFormat = z.strictObject({
     })
     .optional()
     .describe(
-      "The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request, and clears the cell's previously existing links or a cell-level link set in the same request (runs written together each keep their own link).",
+      "The link destination of the text; setting it colors and underlines the text like a link unless those fields are set in the same request. At the cell level (userEnteredFormat.textFormat) it sets the cell-level link; in a text format run it clears the cell's previously existing links or a cell-level link set in the same request (runs written together each keep their own link).",
     ),
 });
 

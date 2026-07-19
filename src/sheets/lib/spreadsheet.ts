@@ -159,9 +159,9 @@ export function projectConditionalFormatRule(
 
 /**
  * Project a REST spreadsheet onto the Spreadsheet shape: each `Sheet`
- * flattens to its properties plus its sheet-level reactive collections
- * (protected ranges, conditional format rules), grid data is never carried,
- * and nulls clean to undefined.
+ * flattens to its properties plus its sheet-level collections (protected
+ * ranges, conditional format rules, merged ranges), grid data is never
+ * carried, and nulls clean to undefined.
  */
 export function projectSpreadsheet(data: sheets_v4.Schema$Spreadsheet): Spreadsheet {
   return {
