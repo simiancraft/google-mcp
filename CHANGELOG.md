@@ -1,3 +1,14 @@
+## [1.15.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.14.0...v1.15.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add the layout and dimension operations ([bc9a4b5](https://github.com/simiancraft/google-mcp-suite/commit/bc9a4b5f11e6db0c794353c48aa72051b14c3e6b))
+
+### Bug Fixes
+
+* **sheets:** harden the layout operations after review ([f01058e](https://github.com/simiancraft/google-mcp-suite/commit/f01058e91dec72cf9220b8b47fce30fd9cf0e9f7))
+* **sheets:** update_embedded_object_position is not idempotent ([83c9ee0](https://github.com/simiancraft/google-mcp-suite/commit/83c9ee06ae5aa75b09cc96511ec6f44da1238050))
+
 ## [1.14.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.13.0...v1.14.0) (2026-07-19)
 
 ### Features
