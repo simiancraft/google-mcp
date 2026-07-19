@@ -16,7 +16,7 @@ tracked in issue #76.
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
 
-## Methods: REST reference (`methods/`, 30 operations)
+## Methods: REST reference (`methods/`, 39 operations)
 
 | Resource | Implemented |
 |----------|-------------|
@@ -24,23 +24,37 @@ tracked in issue #76.
 | spreadsheets (dimensions) | `insert_dimension`, `delete_dimension` ⚠️, `auto_resize_dimensions` |
 | spreadsheets (named ranges) | `add_named_range`, `delete_named_range` ⚠️ |
 | spreadsheets (formatting) | `repeat_cell`, `update_borders` |
+| spreadsheets (conditional format rules) | `add_conditional_format_rule`, `update_conditional_format_rule`, `move_conditional_format_rule`, `delete_conditional_format_rule` ⚠️ |
+| spreadsheets (data validation) | `set_data_validation`, `clear_data_validation` ⚠️ |
+| spreadsheets (protected ranges) | `add_protected_range`, `update_protected_range`, `delete_protected_range` ⚠️ |
 | spreadsheets (charts) | `add_chart`, `update_chart_spec`, `delete_embedded_object` ⚠️ |
 | spreadsheets.values | `get_values`, `update_values`, `append_values`, `clear_values` ⚠️, `batch_get_values`, `batch_update_values`, `batch_clear_values` ⚠️, `batch_get_values_by_data_filter`, `batch_update_values_by_data_filter`, `batch_clear_values_by_data_filter` ⚠️ |
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` ⚠️ |
 
 The batchUpdate-backed operations (`update_spreadsheet_properties` plus the
-sheet management, dimension, named-range, formatting, and chart rows)
+sheet management, dimension, named-range, formatting, conditional-format,
+data-validation, protected-range, and chart rows)
 are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (the
 reference page's request anchors, counted 2026-07-18; issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
-to that request type's anchor on the batchUpdate reference page. The
+to that request type's anchor on the batchUpdate reference page. Two pages
+split into more than one operation where the halves' annotations differ, the
+same split Drive's `files/update` page gets: `SetDataValidationRequest` is
+`set_data_validation` (rule required) and `clear_data_validation` (the
+no-rule form, a removal), and `UpdateConditionalFormatRuleRequest`'s oneof
+is `update_conditional_format_rule` (replace) and
+`move_conditional_format_rule` (reorder, which also needs `sheetId`). The
 mask-deriving updates (`update_spreadsheet_properties`,
-`update_sheet_properties`, and `repeat_cell`) build their REST field mask
+`update_sheet_properties`, `update_protected_range`, and `repeat_cell`)
+build their REST field mask
 from the properties actually provided, so an untouched property is never
-reset by a too-wide mask, and an empty update is refused rather than sent. `delete_dimension` is the one removal that is not
-idempotent: its range is index-addressed, so repeating the call deletes
-whatever shifted into the range. The chart operations carry a curated
+reset by a too-wide mask, and an empty update is refused rather than sent.
+The index-addressed operations are not
+idempotent: `delete_dimension` repeats onto whatever shifted into its range,
+and conditional format rules have no ID, so
+`move_conditional_format_rule` and `delete_conditional_format_rule` repeat
+onto whatever rule shifted into their index. The chart operations carry a curated
 `ChartSpec` (the basic family and pie); the specialty chart types (bubble,
 candlestick, org, histogram, waterfall, treemap, scorecard) and styling
 fields are not carried, and `update_chart_spec` replaces the whole spec, as
@@ -82,9 +96,15 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   body is a union of 69 request types (sheet management, formatting, charts,
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
-  purpose-named operations above (issue #27), and the long tail (filters,
-  protected ranges, banding, merges, conditional formats, data validation)
-  stays unexposed.
+  purpose-named operations above (issue #27), and the remaining tail
+  (filters, banding, merges, and the other data and layout requests) is
+  tracked in issue #77.
+- **Data-source condition variants**: `BooleanCondition`'s enum omits
+  `TEXT_NOT_EQ`, `DATE_NOT_EQ`, and `FILTER_EXPRESSION`, which apply only to
+  filters on data source (Connected Sheets) objects, a surface this server
+  does not expose. `ProtectedRange`'s `tableId` backing is likewise not
+  carried (tables are not part of this surface), and `protectedRangeId` /
+  `requestingUserCanEdit` are output-only because REST marks them read-only.
 - **`spreadsheets.getByDataFilter`** and the `includeGridData` /
   `excludeTablesInBandedRanges` parameters of `spreadsheets.get`: these exist
   to scope **grid data**, which the Spreadsheet projection excludes; without

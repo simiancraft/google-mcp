@@ -1,7 +1,9 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { AnyOperation } from '../../lib/operation.js';
 import { add_chart } from './add_chart/index.js';
+import { add_conditional_format_rule } from './add_conditional_format_rule/index.js';
 import { add_named_range } from './add_named_range/index.js';
+import { add_protected_range } from './add_protected_range/index.js';
 import { add_sheet } from './add_sheet/index.js';
 import { append_values } from './append_values/index.js';
 import { auto_resize_dimensions } from './auto_resize_dimensions/index.js';
@@ -11,22 +13,29 @@ import { batch_get_values } from './batch_get_values/index.js';
 import { batch_get_values_by_data_filter } from './batch_get_values_by_data_filter/index.js';
 import { batch_update_values } from './batch_update_values/index.js';
 import { batch_update_values_by_data_filter } from './batch_update_values_by_data_filter/index.js';
+import { clear_data_validation } from './clear_data_validation/index.js';
 import { clear_values } from './clear_values/index.js';
 import { copy_sheet } from './copy_sheet/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
+import { delete_conditional_format_rule } from './delete_conditional_format_rule/index.js';
 import { delete_dimension } from './delete_dimension/index.js';
 import { delete_embedded_object } from './delete_embedded_object/index.js';
 import { delete_named_range } from './delete_named_range/index.js';
+import { delete_protected_range } from './delete_protected_range/index.js';
 import { delete_sheet } from './delete_sheet/index.js';
 import { duplicate_sheet } from './duplicate_sheet/index.js';
 import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
 import { get_values } from './get_values/index.js';
 import { insert_dimension } from './insert_dimension/index.js';
+import { move_conditional_format_rule } from './move_conditional_format_rule/index.js';
 import { repeat_cell } from './repeat_cell/index.js';
 import { search_developer_metadata } from './search_developer_metadata/index.js';
+import { set_data_validation } from './set_data_validation/index.js';
 import { update_borders } from './update_borders/index.js';
 import { update_chart_spec } from './update_chart_spec/index.js';
+import { update_conditional_format_rule } from './update_conditional_format_rule/index.js';
+import { update_protected_range } from './update_protected_range/index.js';
 import { update_sheet_properties } from './update_sheet_properties/index.js';
 import { update_spreadsheet_properties } from './update_spreadsheet_properties/index.js';
 import { update_values } from './update_values/index.js';
@@ -75,6 +84,18 @@ export const methods = {
   // formatting
   repeat_cell,
   update_borders,
+  // conditional format rules
+  add_conditional_format_rule,
+  update_conditional_format_rule,
+  move_conditional_format_rule,
+  delete_conditional_format_rule,
+  // data validation
+  set_data_validation,
+  clear_data_validation,
+  // protected ranges
+  add_protected_range,
+  update_protected_range,
+  delete_protected_range,
   // charts
   add_chart,
   update_chart_spec,
