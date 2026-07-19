@@ -31,14 +31,14 @@ export function identityInstructions(accountNoun: string): string {
  * it describes (`toolDefinitions` emits the link and the hints). Two shapes,
  * matching Google's two publication shapes: a wing with a hosted MCP toolset
  * names both vocabularies (optionally with per-wing parameter examples);
- * `restOnly` names the service Google publishes no toolset for.
+ * `restOnly` names a service whose server is REST-sourced throughout.
  */
 export function vocabularyInstructions(
   origin?: { tools: string; methods: string } | { restOnly: string },
 ): string {
   if (origin && 'restOnly' in origin) {
     return (
-      `Google publishes no MCP toolset for ${origin.restOnly}, so every operation ` +
+      `This ${origin.restOnly} server mirrors no Google MCP toolset: every operation ` +
       'transcribes the REST reference; each tools/list entry links its source ' +
       `page under _meta['${SOURCE_META_KEY}'] and carries the four MCP behavior hints. `
     );

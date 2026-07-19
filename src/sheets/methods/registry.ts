@@ -34,8 +34,9 @@ import { update_values } from './update_values/index.js';
 /**
  * REST-sourced operations, from
  * `developers.google.com/workspace/sheets/api/reference/rest`. Google
- * publishes no MCP toolset for Sheets, so there is no `tools/` folder and
- * this registry is the service's whole wire surface. Removals (the clears)
+ * published no MCP toolset for Sheets when this service shipped (a developer
+ * preview exists now; reconciling is issue #76), so there is no `tools/`
+ * folder and this registry is the service's whole wire surface. Removals (the clears)
  * carry `destructiveHint`; see EXTENDING.md's annotation rubric.
  */
 export const methods = {

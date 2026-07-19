@@ -8,8 +8,10 @@ MCP URL 404'd, so there is no `tools/` folder and the REST-sourced `methods/`
 registry is the whole wire surface. Google has since published a Sheets MCP
 toolset in developer preview (`sheetsmcp.googleapis.com`: `get_values`,
 `get_spreadsheet`, `update_spreadsheet`, `update_values`, `update_formulas`,
-`insert_dimension`); reconciling this service with that toolset once it
-stabilizes is tracked in issue #76.
+`insert_dimension`; per
+https://developers.google.com/workspace/sheets/api/reference/mcp, fetched
+2026-07-18); reconciling this service with that toolset once it stabilizes is
+tracked in issue #76.
 
 - REST reference: `https://developers.google.com/workspace/sheets/api/reference/rest`
 - Discovery: `https://sheets.googleapis.com/$discovery/rest?version=v4`
@@ -27,9 +29,10 @@ stabilizes is tracked in issue #76.
 | spreadsheets.developerMetadata | `get_developer_metadata`, `search_developer_metadata` |
 | spreadsheets.sheets | `copy_sheet`, `add_sheet`, `delete_sheet` ⚠️, `duplicate_sheet`, `update_sheet_properties` ⚠️ |
 
-The batchUpdate-backed operations (the sheet management, dimension,
-named-range, formatting, and chart rows)
-are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (issue
+The batchUpdate-backed operations (`update_spreadsheet_properties` plus the
+sheet management, dimension, named-range, formatting, and chart rows)
+are a curated subset of `spreadsheets.batchUpdate`'s 69 request types (the
+reference page's request anchors, counted 2026-07-18; issue
 #27): each is one purpose-named operation wrapping exactly one request, cited
 to that request type's anchor on the batchUpdate reference page. The
 mask-deriving updates (`update_spreadsheet_properties`,

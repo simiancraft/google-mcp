@@ -4,7 +4,8 @@ import { schema } from './schema.js';
 
 /**
  * Deleting a sheet discards its cells with it, and the Sheets API has no
- * trash: the only recovery is Drive revision history.
+ * trash: the only recovery is Drive revision history. The last-sheet refusal
+ * is live-verified: "You can't remove all the sheets in a document."
  */
 export const delete_sheet = sheetsOperation({
   description:

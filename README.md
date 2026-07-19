@@ -139,7 +139,7 @@ src/
   doctor/    # google-mcp-doctor: provisioning + auth-health CLI
   gmail/     # the Gmail server (reference/canary); new services mirror its shape
   calendar/  # the Calendar server; same shape
-  sheets/    # the Sheets server; same shape, methods-only (no Google MCP toolset)
+  sheets/    # the Sheets server; same shape, methods-only (REST-sourced)
   docs/      # the Docs server; same shape, methods-only
   drive/     # the Drive server; same shape (MCP toolset + REST methods)
 ```
@@ -191,7 +191,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full task list, [AGENTS.md](./A
 | **Docs** | ✅ Implemented | [9 operations](./src/docs/CAPABILITIES.md): document reads and creation, curated text editing and styling |
 | **Drive** | ✅ Implemented | [35 operations](./src/drive/CAPABILITIES.md): files, search, content, comments, revisions, shared drives |
 
-Gmail is the reference (canary) implementation; Calendar is its first replication; Sheets and Docs are methods-only (Google publishes no MCP toolset for them); Drive carries both wings; each new service mirrors the same shape.
+Gmail is the reference (canary) implementation; Calendar is its first replication; Sheets and Docs are methods-only (REST-sourced; Google's MCP toolsets for them arrived later, as previews); Drive carries both wings; each new service mirrors the same shape.
 
 ---
 
