@@ -6,7 +6,7 @@ import type { NamedRange } from '../entities/NamedRange.js';
 import { SheetProperties } from '../entities/SheetProperties.js';
 import type { Spreadsheet } from '../entities/Spreadsheet.js';
 import { SpreadsheetProperties } from '../entities/SpreadsheetProperties.js';
-import { projectBasicFilter, projectFilterView } from './filters-write.js';
+import { projectBasicFilter, projectFilterView } from './filtering.js';
 import { projectGridRange, projectProtectedRange } from './rules.js';
 
 /** Project a REST color style onto the ColorStyle shape, dropping unknown theme colors. */

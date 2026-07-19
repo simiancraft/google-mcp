@@ -66,8 +66,11 @@ describe('auto_fill', () => {
       spreadsheetId: 'SS',
       range: { sheetId: 1, startRowIndex: 0, endRowIndex: 10 },
     });
-    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
-      autoFill: { range: { sheetId: 1, startRowIndex: 0, endRowIndex: 10 } },
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [{ autoFill: { range: { sheetId: 1, startRowIndex: 0, endRowIndex: 10 } } }],
+      },
     });
     await expect(handler(fakeSheets(captured), { spreadsheetId: 'SS' })).rejects.toThrow(
       'exactly one of range or sourceAndDestination',

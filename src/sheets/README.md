@@ -20,9 +20,16 @@ format rules, data validation, protected ranges, cell content and merges
 filter views, find/replace, deduplication, whitespace trimming, text-to-columns,
 autofill, copy/cut paste, cell-range insertion/deletion, randomization, and
 charts. Every operation
-carries the four MCP annotation hints; the removals, the discarding writes
-(`merge_cells`, `update_cells`), and `add_protected_range` (a standing
-restriction) are marked destructive (`destructiveHint`).
+carries the four MCP annotation hints. The destructive set is the standing
+restriction `add_protected_range`; the content-discarding writes
+`auto_fill`, `copy_paste`, `cut_paste`, `delete_duplicates`, `merge_cells`,
+`text_to_columns`, `trim_whitespace`, and `update_cells`; the grid-shrinking
+`update_sheet_properties`; and the removals/clears `batch_clear_values`,
+`batch_clear_values_by_data_filter`, `clear_basic_filter`,
+`clear_data_validation`, `clear_values`, `delete_conditional_format_rule`,
+`delete_dimension`, `delete_embedded_object`, `delete_filter_view`,
+`delete_named_range`, `delete_protected_range`, `delete_range`, `delete_sheet`,
+and `unmerge_cells` (`destructiveHint`).
 
 Cell values move as plain 2D arrays of `string | number | boolean | null`
 through the values operations, and `update_cells` writes structured cell
@@ -32,8 +39,9 @@ are deferred, see [`COVERAGE.md`](./COVERAGE.md)). One caution on writes:
 with `valueInputOption: USER_ENTERED`, a leading `=` becomes a live formula,
 so writing untrusted content that way is a formula-injection risk
 (`IMPORTRANGE` and friends can exfiltrate sheet data when the spreadsheet is
-next opened); use `RAW` for content you do not control. Formula-bearing
-find/replace and paste operations carry the same warning on their wire fields.
+next opened); use `RAW` for content you do not control. The served instructions
+cover formula-bearing find/replace and paste behavior; `find_replace` keeps its
+field-level execution note on `includeFormulas`.
 The full, always-current
 operation list is [`CAPABILITIES.md`](./CAPABILITIES.md), regenerated from the
 registry with `bun run capabilities`. An MCP client discovers the live

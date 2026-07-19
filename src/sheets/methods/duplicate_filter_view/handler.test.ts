@@ -25,7 +25,7 @@ describe('duplicate_filter_view', () => {
       fakeSheets(captured, {
         replies: [{ duplicateFilterView: { filter: { filterViewId: 9, title: 'Copy' } } }],
       }),
-      { spreadsheetId: 'SS', filterViewId: 4 },
+      { spreadsheetId: 'SS', filterId: 4 },
     );
     expect(captured.params).toEqual({
       spreadsheetId: 'SS',
@@ -36,8 +36,8 @@ describe('duplicate_filter_view', () => {
   });
 
   it('refuses a missing duplicate reply', async () => {
-    await expect(
-      handler(fakeSheets({}, {}), { spreadsheetId: 'SS', filterViewId: 4 }),
-    ).rejects.toThrow('no filter view');
+    await expect(handler(fakeSheets({}, {}), { spreadsheetId: 'SS', filterId: 4 })).rejects.toThrow(
+      'no filter view',
+    );
   });
 });

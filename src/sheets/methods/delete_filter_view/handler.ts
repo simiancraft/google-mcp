@@ -8,7 +8,7 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   await applyRequest(sheets, args.spreadsheetId, {
-    deleteFilterView: { filterId: args.filterViewId },
+    deleteFilterView: { filterId: args.filterId },
   });
   return { spreadsheetId: args.spreadsheetId };
 }

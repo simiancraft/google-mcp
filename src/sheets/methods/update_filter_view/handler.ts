@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { toFilterView } from '../../lib/filters-write.js';
+import { toFilterView } from '../../lib/filtering.js';
 import { applyRequest, fieldPaths } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 

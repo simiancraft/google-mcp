@@ -1,6 +1,6 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
-import { projectFilterView } from '../../lib/filters-write.js';
+import { projectFilterView } from '../../lib/filtering.js';
 import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 
@@ -9,7 +9,7 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   const reply = await applyRequest(sheets, args.spreadsheetId, {
-    duplicateFilterView: { filterId: args.filterViewId },
+    duplicateFilterView: { filterId: args.filterId },
   });
   const duplicated = reply.duplicateFilterView?.filter;
   if (!duplicated) {

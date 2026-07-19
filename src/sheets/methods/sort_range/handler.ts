@@ -1,7 +1,7 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
-import { toSortSpec } from '../../lib/filters-write.js';
+import { toSortSpec } from '../../lib/filtering.js';
 import { applyRequest } from '../../lib/requests.js';
 import type { schema } from './schema.js';
 

@@ -49,10 +49,17 @@ describe('text_to_columns', () => {
       source: { sheetId: 1, startColumnIndex: 0, endColumnIndex: 1 },
       delimiterType: 'COMMA',
     });
-    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
-      textToColumns: {
-        source: { sheetId: 1, startColumnIndex: 0, endColumnIndex: 1 },
-        delimiterType: 'COMMA',
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            textToColumns: {
+              source: { sheetId: 1, startColumnIndex: 0, endColumnIndex: 1 },
+              delimiterType: 'COMMA',
+            },
+          },
+        ],
       },
     });
     await expect(

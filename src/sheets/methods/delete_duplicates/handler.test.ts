@@ -51,8 +51,9 @@ describe('delete_duplicates', () => {
     expect(
       await handler(fakeSheets(captured, {}), { spreadsheetId: 'SS', range: { sheetId: 1 } }),
     ).toEqual({ spreadsheetId: 'SS', duplicatesRemovedCount: 0 });
-    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
-      deleteDuplicates: { range: { sheetId: 1 } },
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: { requests: [{ deleteDuplicates: { range: { sheetId: 1 } } }] },
     });
     await expect(
       handler(fakeSheets(captured, {}), {

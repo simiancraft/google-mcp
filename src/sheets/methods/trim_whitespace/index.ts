@@ -4,7 +4,7 @@ import { schema } from './schema.js';
 
 export const trim_whitespace = sheetsOperation({
   description:
-    'Trim spaces, tabs, and newlines from cells in a range and return the number of cells changed.',
+    'Remove leading and trailing whitespace from cells in a range, collapse each internal whitespace run to one space, and return the number of cells changed.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

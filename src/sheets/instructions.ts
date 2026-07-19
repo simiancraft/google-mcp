@@ -42,7 +42,8 @@ export const instructions =
   'range the rows do not cover. ' +
   'The ' +
   'property, format, and filter-view updates derive their masks from the fields provided, ' +
-  'so untouched properties are never reset; update_chart_spec and ' +
+  'so untouched properties are never reset, except that a filter view is backed by either ' +
+  'a range or named range and providing one backing detaches the other; update_chart_spec and ' +
   'update_conditional_format_rule are the exceptions, replacing the whole ' +
   'spec or rule, so send the complete object. Conditional format rules have ' +
   'no ID: they are addressed by sheet and index (their position in ' +

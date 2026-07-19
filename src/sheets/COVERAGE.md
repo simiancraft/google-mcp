@@ -57,6 +57,8 @@ from the properties actually provided, so an untouched property is never
 reset by a too-wide mask, and an empty update is refused rather than sent;
 `update_filter_view` expands its structured range mask per provided subkey,
 while its sort and filter specification arrays replace their complete lists.
+A filter view has exactly one backing, however, so providing `range` or
+`namedRangeId` detaches the other backing even though it was not provided.
 `update_cells` derives its mask as the union of the fields its cells carry;
 the REST request applies that mask to every written cell, so a masked field
 a cell omits is cleared in that cell, which is why the operation is marked
@@ -98,8 +100,9 @@ the formula hazards on those fields), but the hint tracks the operation's
 own reach, uniformly with the values operations.
 
 The data-operation annotation judgments follow the same rubric explicitly.
-`sort_range` and `randomize_range` only reorder complete rows and discard no
-content, so they are non-destructive. `find_replace` overwrites matching text
+`sort_range` and `randomize_range` reorder the row slices inside their
+GridRanges (which may be column-bounded) and discard no content, so they are
+non-destructive. `find_replace` overwrites matching text
 with the replacement the caller supplied, like `update_values`, so it is also
 non-destructive. `delete_duplicates` removes rows; `trim_whitespace` discards
 characters; `text_to_columns` can overwrite cells beside its one-column
@@ -110,8 +113,11 @@ and overwrites its destination, so those six operations are destructive.
 destructive. Setting or updating filters changes visibility/sort state without
 discarding content; clearing the basic filter and deleting a filter view are
 the removal halves and are destructive.
+`get_values` is the read-back verification path for these content-transforming
+operations because their batchUpdate replies return counts or metadata, not
+the resulting cell data.
 
-Methods speak the REST vocabulary verbatim (`spreadsheetId`,
+Methods speak the REST vocabulary verbatim (`spreadsheetId`, `filterId`,
 `valueInputOption`, `majorDimension`, `dateTimeRenderOption`); wire names
 follow the suite's method naming (verb + resource noun):
 `spreadsheets.values.batchGetByDataFilter` is
@@ -124,7 +130,8 @@ follow the suite's method naming (verb + resource noun):
 timeZone, autoRecalc), and each sheet flattened to its properties (sheetId,
 title, index, sheetType, gridProperties' four counts, hidden, tab color)
 plus its sheet-level reactive collections: `basicFilter`, `filterViews` (each
-carrying the stable `filterViewId` the view operations take), `protectedRanges` (each carrying
+carrying the stable `filterViewId` used directly by `update_filter_view` and as
+the `filterId` for duplicate/delete), `protectedRanges` (each carrying
 the ID the update and delete operations take) and `conditionalFormats` (in
 rule order; the array position is the index the rule operations take) and
 `merges` (the merged ranges), plus
@@ -134,8 +141,9 @@ enums: rules are addressed by index, so the readout must be total, and
 dropping a rule over an unrecognized upstream value would silently renumber
 every rule after it; the write path stays the closed enum. Filter-view readout
 is likewise total at the collection level: every upstream view projects with
-its ID even when its table or Connected Sheets backing is outside the write
-surface. Plain `spreadsheets.get` returns `basicFilter` and `filterViews`
+its required ID, and a table-backed view is retained while only its `tableId`
+backing detail is omitted. Connected Sheets sort and filter carrier details
+remain outside the write surface. Plain `spreadsheets.get` returns `basicFilter` and `filterViews`
 directly on each Sheet resource; no grid-data flag is required. Grid data
 (per-cell formatting, validation, notes), themes, and the default
 cell format are not carried; cell values flow through the values operations
@@ -153,10 +161,13 @@ The Sheets API also has **no delete**: removing a spreadsheet is Drive's
   body is a union of 69 request types (sheet management, formatting, charts,
   filters, ...). Transcribing the union does not fit the
   documentation-driven pattern; instead a curated subset ships as the
-  purpose-named operations above (issue #27), and the remaining tail
-  (dimension properties, groups, and banding; slicers and the extended chart
-  types; pivot tables
-  within updateCells's CellData) is tracked in issue #77.
+  purpose-named operations above (issue #27). The remaining batchUpdate tail—
+  dimension-property updates, dimension moves/appends, and dimension groups;
+  banding;
+  embedded-object position and border; named-range update; developer metadata
+  writes; slicers; extended chart types; and the data-source and table request
+  families excluded by decision—is tracked in issue #77. Pivot tables within
+  updateCells's CellData are tracked there as well.
 - **CellData beyond cell content**: `update_cells` carries a curated
   `CellData` (value, note, format, text format runs, and hyperlinks via a
   run's link field or the cell-level textFormat.link). Pivot tables are deferred (issue #77); chip runs and

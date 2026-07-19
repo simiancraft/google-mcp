@@ -3,7 +3,7 @@ import { handler } from './handler.js';
 import { schema } from './schema.js';
 
 export const delete_filter_view = sheetsOperation({
-  description: 'Delete a filter view by its stable filterViewId.',
+  description: "Delete a filter view by filterId (the view's stable filterViewId).",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

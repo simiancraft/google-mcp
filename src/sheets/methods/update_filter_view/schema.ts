@@ -9,13 +9,13 @@ export const schema = {
     filterViewId: z.number().int().min(0).describe('The ID of the filter view to update.'),
     title: z.string().optional().describe('A new name for the filter view.'),
     range: GridRange.optional().describe(
-      'A new range for the filter view. Provide at most one of range or namedRangeId.',
+      'A new range for the filter view. Provide at most one of range or namedRangeId; providing range detaches any named-range backing.',
     ),
     namedRangeId: z
       .string()
       .optional()
       .describe(
-        'A named range to back the filter view. Provide at most one of range or namedRangeId.',
+        'A named range to back the filter view. Provide at most one of range or namedRangeId; providing namedRangeId detaches any grid-range backing.',
       ),
     sortSpecs: z
       .array(SortSpec.required({ dimensionIndex: true, sortOrder: true }))

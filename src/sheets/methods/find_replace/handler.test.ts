@@ -92,8 +92,11 @@ describe('find_replace', () => {
       sheetsChanged: 0,
       occurrencesChanged: 0,
     });
-    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
-      findReplace: { find: 'x', replacement: 'y', sheetId: 0 },
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [{ findReplace: { find: 'x', replacement: 'y', sheetId: 0 } }],
+      },
     });
     await handler(fakeSheets(captured, {}), {
       spreadsheetId: 'SS',
@@ -101,8 +104,11 @@ describe('find_replace', () => {
       replacement: 'y',
       allSheets: true,
     });
-    expect(captured.params?.requestBody?.requests?.[0]).toEqual({
-      findReplace: { find: 'x', replacement: 'y', allSheets: true },
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [{ findReplace: { find: 'x', replacement: 'y', allSheets: true } }],
+      },
     });
   });
 

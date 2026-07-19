@@ -19,26 +19,26 @@ function fakeSheets(
 }
 
 describe('add_filter_view', () => {
-  it('adds and projects a view, falling back to a provided zero ID', async () => {
+  it('adds an omitted-ID view and projects the generated ID', async () => {
     const captured: Captured = {};
     const result = await handler(
       fakeSheets(captured, {
-        replies: [{ addFilterView: { filter: { title: 'Mine', range: { sheetId: 1 } } } }],
+        replies: [
+          { addFilterView: { filter: { filterViewId: 12, title: 'Mine', range: { sheetId: 1 } } } },
+        ],
       }),
       {
         spreadsheetId: 'SS',
-        filter: { filterViewId: 0, title: 'Mine', range: { sheetId: 1 } },
+        filter: { title: 'Mine', range: { sheetId: 1 } },
       },
     );
     expect(captured.params).toEqual({
       spreadsheetId: 'SS',
       requestBody: {
-        requests: [
-          { addFilterView: { filter: { filterViewId: 0, title: 'Mine', range: { sheetId: 1 } } } },
-        ],
+        requests: [{ addFilterView: { filter: { title: 'Mine', range: { sheetId: 1 } } } }],
       },
     });
-    expect(result).toEqual({ filterViewId: 0, title: 'Mine', range: { sheetId: 1 } });
+    expect(result).toEqual({ filterViewId: 12, title: 'Mine', range: { sheetId: 1 } });
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 

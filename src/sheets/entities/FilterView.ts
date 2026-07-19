@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { FilterSpec } from './FilterSpec.js';
 import { GridRange } from './GridRange.js';
-import { SortSpec } from './SortSpec.js';
+import { SortSpec, SortSpecReadout } from './SortSpec.js';
 
 /**
- * A named filter view whose filterViewId is its stable identity. Table-backed
- * views and the deprecated criteria map are not carried.
+ * A named filter view whose filterViewId is its stable identity. Read
+ * projections retain table-backed views but omit their tableId backing detail;
+ * the deprecated criteria map is normalized into filterSpecs.
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/sheets#FilterView
  */
@@ -32,3 +33,14 @@ export const FilterView = z.strictObject({
 });
 
 export type FilterView = z.infer<typeof FilterView>;
+
+/** Read-side FilterView shape with required identity and total sort readout. */
+export const FilterViewReadout = FilterView.extend({
+  filterViewId: z.number().int().min(0).describe('The ID of the filter view.'),
+  sortSpecs: z
+    .array(SortSpecReadout)
+    .optional()
+    .describe('The sort order per column; later specifications break ties from earlier ones.'),
+});
+
+export type FilterViewReadout = z.infer<typeof FilterViewReadout>;

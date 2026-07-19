@@ -8,7 +8,7 @@ export const schema = {
     replacement: z
       .string()
       .describe(
-        'The replacement text. With includeFormulas, this can rewrite formula source; a resulting formula can execute and reach external endpoints, so do not insert untrusted formula fragments.',
+        'The replacement text. With searchByRegex true, it uses Java regular-expression replacement syntax; reference capture groups as $1.',
       ),
     matchCase: z.boolean().optional().describe('True for a case-sensitive search.'),
     matchEntireCell: z.boolean().optional().describe('True to match only complete cell contents.'),
@@ -16,13 +16,13 @@ export const schema = {
       .boolean()
       .optional()
       .describe(
-        'True to treat find as a regular expression and replacement as a replacement pattern.',
+        'True to treat find as a Java regular expression and replacement as a Java replacement string, with capture groups referenced as $1.',
       ),
     includeFormulas: z
       .boolean()
       .optional()
       .describe(
-        'True to search and rewrite formula source as well as displayed values; changed formulas execute in the sheet and can reach external endpoints.',
+        'True to include formula source; replacements then edit formula source, and changed formulas execute in the sheet.',
       ),
     range: GridRange.optional().describe(
       'The range to search. Provide exactly one of range, sheetId, or allSheets.',
@@ -36,7 +36,9 @@ export const schema = {
     allSheets: z
       .literal(true)
       .optional()
-      .describe('True to search all sheets. Provide exactly one of range, sheetId, or allSheets.'),
+      .describe(
+        'True to replace every match in every sheet. Provide exactly one of range, sheetId, or allSheets.',
+      ),
   }),
   output: z.object({
     spreadsheetId: z.string().describe('The ID of the spreadsheet that was updated.'),

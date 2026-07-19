@@ -1,14 +1,14 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import { forGoogle } from '../../lib/optionality.js';
 import { narrow } from '../../lib/utils/narrow.js';
-import type { BasicFilter } from '../entities/BasicFilter.js';
+import type { BasicFilter, BasicFilterReadout } from '../entities/BasicFilter.js';
 import { BooleanCondition } from '../entities/BooleanCondition.js';
 import { ColorStyle } from '../entities/ColorStyle.js';
 import { ConditionValue } from '../entities/ConditionValue.js';
 import type { FilterCriteria } from '../entities/FilterCriteria.js';
 import type { FilterSpec } from '../entities/FilterSpec.js';
-import type { FilterView } from '../entities/FilterView.js';
-import type { SortSpec } from '../entities/SortSpec.js';
+import type { FilterView, FilterViewReadout } from '../entities/FilterView.js';
+import type { SortSpec, SortSpecReadout } from '../entities/SortSpec.js';
 import { toColorStyle } from './formats.js';
 import { projectGridRange, toBooleanCondition } from './rules.js';
 
@@ -95,15 +95,13 @@ function projectColorStyle(data: sheets_v4.Schema$ColorStyle): ColorStyle {
   };
 }
 
-/** Project a REST SortSpec without dropping an unknown upstream sort order. */
-export function projectSortSpec(data: sheets_v4.Schema$SortSpec): SortSpec | undefined {
-  if (data.dataSourceColumnReference) return undefined;
-  const sortOrder = narrow(data.sortOrder, ['ASCENDING', 'DESCENDING'] as const);
-  if (!sortOrder) return undefined;
+/** Project every REST SortSpec, keeping upstream sort-order vocabulary open. */
+export function projectSortSpec(data: sheets_v4.Schema$SortSpec): SortSpecReadout {
   return {
-    // proto3 may omit the zero-valued first-column index.
-    dimensionIndex: data.dimensionIndex ?? 0,
-    sortOrder,
+    // A Connected Sheets sort identifies its dimension by data-source column;
+    // otherwise proto3 may omit the zero-valued first-column index.
+    dimensionIndex: data.dataSourceColumnReference ? undefined : (data.dimensionIndex ?? 0),
+    sortOrder: data.sortOrder ?? undefined,
   };
 }
 
@@ -170,32 +168,22 @@ function projectFilterSpecs(
  * Project a REST FilterView. Every view is retained because filterViewId is
  * the identity consumed by update, duplicate, and delete operations.
  */
-export function projectFilterView(data: sheets_v4.Schema$FilterView): FilterView {
+export function projectFilterView(data: sheets_v4.Schema$FilterView): FilterViewReadout {
   return {
     filterViewId: data.filterViewId ?? 0,
     title: data.title ?? undefined,
     range: data.range ? projectGridRange(data.range) : undefined,
     namedRangeId: data.namedRangeId ?? undefined,
-    sortSpecs: data.sortSpecs
-      ? data.sortSpecs.flatMap((spec) => {
-          const projected = projectSortSpec(spec);
-          return projected ? [projected] : [];
-        })
-      : undefined,
+    sortSpecs: data.sortSpecs ? data.sortSpecs.map(projectSortSpec) : undefined,
     filterSpecs: projectFilterSpecs(data.filterSpecs, data.criteria),
   };
 }
 
 /** Project a REST BasicFilter from a plain spreadsheets.get Sheet resource. */
-export function projectBasicFilter(data: sheets_v4.Schema$BasicFilter): BasicFilter {
+export function projectBasicFilter(data: sheets_v4.Schema$BasicFilter): BasicFilterReadout {
   return {
     range: data.range ? projectGridRange(data.range) : undefined,
-    sortSpecs: data.sortSpecs
-      ? data.sortSpecs.flatMap((spec) => {
-          const projected = projectSortSpec(spec);
-          return projected ? [projected] : [];
-        })
-      : undefined,
+    sortSpecs: data.sortSpecs ? data.sortSpecs.map(projectSortSpec) : undefined,
     filterSpecs: projectFilterSpecs(data.filterSpecs, data.criteria),
   };
 }

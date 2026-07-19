@@ -35,8 +35,16 @@ describe('trim_whitespace', () => {
     });
     expect(result).toEqual({ spreadsheetId: 'SS', cellsChangedCount: 5 });
     expect(() => schema.output.parse(result)).not.toThrow();
+    const missingReplyCaptured: Captured = {};
     expect(
-      await handler(fakeSheets({}, {}), { spreadsheetId: 'SS', range: { sheetId: 2 } }),
+      await handler(fakeSheets(missingReplyCaptured, {}), {
+        spreadsheetId: 'SS',
+        range: { sheetId: 2 },
+      }),
     ).toEqual({ spreadsheetId: 'SS', cellsChangedCount: 0 });
+    expect(missingReplyCaptured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: { requests: [{ trimWhitespace: { range: { sheetId: 2 } } }] },
+    });
   });
 });

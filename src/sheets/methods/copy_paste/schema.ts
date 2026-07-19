@@ -10,9 +10,7 @@ export const schema = {
     destination: GridRange.describe(
       'The destination range. A repeated-size destination tiles the source; a smaller destination does not clip it, so copied data can extend beyond this range and overwrite cells.',
     ),
-    pasteType: PasteType.describe(
-      'The kind of data to paste. PASTE_FORMULA and formula-bearing paste types execute copied formulas at the destination, where they may reach external endpoints.',
-    ),
+    pasteType: PasteType.describe('The kind of data to paste.'),
     pasteOrientation: PasteOrientation.describe(
       'Whether to paste normally or transpose rows and columns.',
     ),

@@ -8,7 +8,7 @@ import {
   toBasicFilter,
   toFilterCriteria,
   toFilterView,
-} from './filters-write.js';
+} from './filtering.js';
 
 describe('filter write carriers', () => {
   it('carries every basic-filter field and condition level', () => {
@@ -49,6 +49,7 @@ describe('filter write carriers', () => {
         filterViewId: 4,
         title: 'Open',
         namedRangeId: 'NR',
+        sortSpecs: [{ dimensionIndex: 2, sortOrder: 'DESCENDING' }],
         filterSpecs: [
           {
             columnIndex: 0,
@@ -60,6 +61,7 @@ describe('filter write carriers', () => {
       filterViewId: 4,
       title: 'Open',
       namedRangeId: 'NR',
+      sortSpecs: [{ dimensionIndex: 2, sortOrder: 'DESCENDING' }],
       filterSpecs: [
         {
           columnIndex: 0,
@@ -150,7 +152,7 @@ describe('filter read projections', () => {
     ).toEqual({
       filterViewId: 0,
       namedRangeId: 'NR',
-      sortSpecs: [],
+      sortSpecs: [{ dimensionIndex: 0, sortOrder: 'FUTURE_ORDER' }],
       filterSpecs: [
         {
           columnIndex: 3,
@@ -173,13 +175,17 @@ describe('filter read projections', () => {
       dimensionIndex: 0,
       sortOrder: 'DESCENDING',
     });
-    expect(projectSortSpec({ sortOrder: 'FUTURE_ORDER' })).toBeUndefined();
+    expect(projectSortSpec({ sortOrder: 'FUTURE_ORDER' })).toEqual({
+      dimensionIndex: 0,
+      sortOrder: 'FUTURE_ORDER',
+    });
+    expect(projectSortSpec({ dimensionIndex: 2 })).toEqual({ dimensionIndex: 2 });
     expect(
       projectSortSpec({
         sortOrder: 'ASCENDING',
         dataSourceColumnReference: { name: 'connected' },
       }),
-    ).toBeUndefined();
+    ).toEqual({ sortOrder: 'ASCENDING' });
     expect(projectFilterSpec({ dataSourceColumnReference: { name: 'connected' } })).toBeUndefined();
   });
 });

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { FilterSpec } from './FilterSpec.js';
 import { GridRange } from './GridRange.js';
-import { SortSpec } from './SortSpec.js';
+import { SortSpec, SortSpecReadout } from './SortSpec.js';
 
 /**
  * The default filter associated with a sheet. This curated shape carries
@@ -20,3 +20,13 @@ export const BasicFilter = z.strictObject({
 });
 
 export type BasicFilter = z.infer<typeof BasicFilter>;
+
+/** Read-side BasicFilter shape with a total sort-specification list. */
+export const BasicFilterReadout = BasicFilter.extend({
+  sortSpecs: z
+    .array(SortSpecReadout)
+    .optional()
+    .describe('The sort order per column; later specifications break ties from earlier ones.'),
+});
+
+export type BasicFilterReadout = z.infer<typeof BasicFilterReadout>;

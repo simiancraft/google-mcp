@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { BasicFilter } from './BasicFilter.js';
+import { BasicFilterReadout } from './BasicFilter.js';
 import { ConditionalFormatRuleReadout } from './ConditionalFormatRuleReadout.js';
-import { FilterView } from './FilterView.js';
+import { FilterViewReadout } from './FilterView.js';
 import { GridRange } from './GridRange.js';
 import { NamedRange } from './NamedRange.js';
 import { ProtectedRange } from './ProtectedRange.js';
@@ -14,14 +14,14 @@ import { SpreadsheetProperties } from './SpreadsheetProperties.js';
  * format rules, merged ranges). Grid data is still never carried.
  */
 const Sheet = SheetProperties.extend({
-  basicFilter: BasicFilter.optional().describe(
+  basicFilter: BasicFilterReadout.optional().describe(
     'The basic filter on this sheet, if one exists; its range, sort specifications, and per-column filter specifications.',
   ),
   filterViews: z
-    .array(FilterView)
+    .array(FilterViewReadout)
     .optional()
     .describe(
-      'The filter views on this sheet; absent when there are none. Each carries the filterViewId that update_filter_view, duplicate_filter_view, and delete_filter_view take.',
+      'The filter views on this sheet; absent when there are none. Each carries the filterViewId used as update_filter_view.filterViewId and as duplicate_filter_view/delete_filter_view.filterId.',
     ),
   protectedRanges: z
     .array(ProtectedRange)
