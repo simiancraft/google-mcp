@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { NamedRange } from './NamedRange.js';
 import { SheetProperties } from './SheetProperties.js';
 import { SpreadsheetProperties } from './SpreadsheetProperties.js';
 
@@ -20,6 +21,10 @@ export const Spreadsheet = z.object({
     .array(SheetProperties)
     .optional()
     .describe('The properties of each sheet (tab) in the spreadsheet, in tab order.'),
+  namedRanges: z
+    .array(NamedRange)
+    .optional()
+    .describe('The named ranges defined in the spreadsheet; absent when there are none.'),
 });
 
 export type Spreadsheet = z.infer<typeof Spreadsheet>;

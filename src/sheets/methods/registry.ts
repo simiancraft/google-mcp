@@ -1,6 +1,10 @@
 import type { sheets_v4 } from '@googleapis/sheets';
 import type { AnyOperation } from '../../lib/operation.js';
+import { add_chart } from './add_chart/index.js';
+import { add_named_range } from './add_named_range/index.js';
+import { add_sheet } from './add_sheet/index.js';
 import { append_values } from './append_values/index.js';
+import { auto_resize_dimensions } from './auto_resize_dimensions/index.js';
 import { batch_clear_values } from './batch_clear_values/index.js';
 import { batch_clear_values_by_data_filter } from './batch_clear_values_by_data_filter/index.js';
 import { batch_get_values } from './batch_get_values/index.js';
@@ -10,23 +14,36 @@ import { batch_update_values_by_data_filter } from './batch_update_values_by_dat
 import { clear_values } from './clear_values/index.js';
 import { copy_sheet } from './copy_sheet/index.js';
 import { create_spreadsheet } from './create_spreadsheet/index.js';
+import { delete_dimension } from './delete_dimension/index.js';
+import { delete_embedded_object } from './delete_embedded_object/index.js';
+import { delete_named_range } from './delete_named_range/index.js';
+import { delete_sheet } from './delete_sheet/index.js';
+import { duplicate_sheet } from './duplicate_sheet/index.js';
 import { get_developer_metadata } from './get_developer_metadata/index.js';
 import { get_spreadsheet } from './get_spreadsheet/index.js';
 import { get_values } from './get_values/index.js';
+import { insert_dimension } from './insert_dimension/index.js';
+import { repeat_cell } from './repeat_cell/index.js';
 import { search_developer_metadata } from './search_developer_metadata/index.js';
+import { update_borders } from './update_borders/index.js';
+import { update_chart_spec } from './update_chart_spec/index.js';
+import { update_sheet_properties } from './update_sheet_properties/index.js';
+import { update_spreadsheet_properties } from './update_spreadsheet_properties/index.js';
 import { update_values } from './update_values/index.js';
 
 /**
  * REST-sourced operations, from
  * `developers.google.com/workspace/sheets/api/reference/rest`. Google
- * publishes no MCP toolset for Sheets, so there is no `tools/` folder and
- * this registry is the service's whole wire surface. Removals (the clears)
+ * published no MCP toolset for Sheets when this service shipped (a developer
+ * preview exists now; reconciling is issue #76), so there is no `tools/`
+ * folder and this registry is the service's whole wire surface. Removals (the clears)
  * carry `destructiveHint`; see EXTENDING.md's annotation rubric.
  */
 export const methods = {
   // spreadsheets
   get_spreadsheet,
   create_spreadsheet,
+  update_spreadsheet_properties,
   // values
   get_values,
   update_values,
@@ -44,4 +61,22 @@ export const methods = {
   search_developer_metadata,
   // sheets
   copy_sheet,
+  add_sheet,
+  delete_sheet,
+  duplicate_sheet,
+  update_sheet_properties,
+  // dimensions
+  insert_dimension,
+  delete_dimension,
+  auto_resize_dimensions,
+  // named ranges
+  add_named_range,
+  delete_named_range,
+  // formatting
+  repeat_cell,
+  update_borders,
+  // charts
+  add_chart,
+  update_chart_spec,
+  delete_embedded_object,
 } satisfies Record<string, AnyOperation<sheets_v4.Sheets>>;

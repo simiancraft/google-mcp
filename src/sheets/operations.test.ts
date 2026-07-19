@@ -10,7 +10,7 @@ describe('sheets operations', () => {
     instructions,
     groups: [{ kind: 'REST Method', operations: methods }],
     methodSourcePrefix: 'https://developers.google.com/workspace/sheets/api/reference/rest/v4/',
-    counts: { methods: 15 },
+    counts: { methods: 30 },
     readOnly: [
       'batch_get_values',
       'batch_get_values_by_data_filter',
@@ -19,7 +19,16 @@ describe('sheets operations', () => {
       'get_values',
       'search_developer_metadata',
     ],
-    destructive: ['batch_clear_values', 'batch_clear_values_by_data_filter', 'clear_values'],
+    destructive: [
+      'batch_clear_values',
+      'batch_clear_values_by_data_filter',
+      'clear_values',
+      'delete_dimension',
+      'delete_embedded_object',
+      'delete_named_range',
+      'delete_sheet',
+      'update_sheet_properties',
+    ],
     openWorld: [],
   });
 });

@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import { ColorStyle } from './ColorStyle.js';
 import { GridProperties } from './GridProperties.js';
 
 /**
  * One sheet (tab) of a spreadsheet, by its properties: identity, title,
- * position, type, and grid dimensions. A projection of the REST
- * `SheetProperties` (tab colors, right-to-left, and data-source properties are
- * not carried).
+ * position, type, grid dimensions, and tab color. A projection of the REST
+ * `SheetProperties` (right-to-left and data-source properties are not
+ * carried).
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets#SheetProperties
  */
@@ -33,6 +34,7 @@ export const SheetProperties = z.object({
     .boolean()
     .optional()
     .describe("True if the sheet is hidden in the UI, false if it's visible."),
+  tabColorStyle: ColorStyle.optional().describe('The color of the sheet tab in the UI.'),
 });
 
 export type SheetProperties = z.infer<typeof SheetProperties>;
