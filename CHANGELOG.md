@@ -1,3 +1,9 @@
+## [1.17.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.16.0...v1.17.0) (2026-07-24)
+
+### Features
+
+* **gmail:** add savePath to download_attachment for disk writes ([1dda2f4](https://github.com/simiancraft/google-mcp-suite/commit/1dda2f491fd74dfddcd0ae96b3f3719318b8beed))
+
 ## [1.16.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.15.0...v1.16.0) (2026-07-19)
 
 ### Features
