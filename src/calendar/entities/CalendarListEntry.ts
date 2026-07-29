@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EFFECTIVE_ROLES, listRoles } from '../lib/roles.js';
 import { Reminder } from './Reminder.js';
 
 /**
@@ -32,7 +33,7 @@ export const CalendarListEntry = z.object({
     .string()
     .optional()
     .describe(
-      "The user's effective access role on this calendar. One of: freeBusyReader, reader, writerWithoutPrivateAccess, writer, owner.",
+      `The user's effective access role on this calendar. One of: ${listRoles(EFFECTIVE_ROLES)}.`,
     ),
   colorId: z
     .string()

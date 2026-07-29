@@ -7,10 +7,13 @@ Developer Preview) and the **discovery document** (every REST method).
 - MCP reference: `https://developers.google.com/workspace/calendar/api/v3/reference/mcp`
 - Discovery: `https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest`
 
-## Tools: the MCP toolset (`tools/`, 8 of 8)
+## Tools: the MCP toolset (`tools/`, 8 of 9)
 
-Every tool on the MCP reference is implemented (`tools/`). Each operation's
-`index.ts` cites its page.
+Eight of the nine tools on the MCP reference are implemented (`tools/`). Each
+operation's `index.ts` cites its page. `search_events` is the gap: Google added
+it to the toolset after this wing shipped, and it is a semantic-search contract
+rather than a transcription of a REST method, so it is deferred to its own
+issue rather than approximated with `list_events` text matching.
 
 `list_events`, `get_event`, `list_calendars`, `suggest_time`, `create_event`,
 `update_event`, `delete_event` ⚠️, `respond_to_event`.
