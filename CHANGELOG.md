@@ -1,3 +1,9 @@
+## [1.18.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.18.0...v1.18.1) (2026-07-29)
+
+### Bug Fixes
+
+* **calendar:** finish the ACL role rollout and require the idempotent pin ([#93](https://github.com/simiancraft/google-mcp-suite/issues/93)) ([4bde0d5](https://github.com/simiancraft/google-mcp-suite/commit/4bde0d52b3cd76fd4b96bcfb6595da98a066f4c1)), closes [#88](https://github.com/simiancraft/google-mcp-suite/issues/88) [#19](https://github.com/simiancraft/google-mcp-suite/issues/19) [#96](https://github.com/simiancraft/google-mcp-suite/issues/96)
+
 ## [1.18.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.17.0...v1.18.0) (2026-07-29)
 
 ### Features
