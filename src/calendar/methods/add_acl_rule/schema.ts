@@ -6,7 +6,7 @@ import { AclScope } from '../../entities/AclScope.js';
 export const schema = {
   input: z.strictObject({
     role: AclRole.describe(
-      "The role to grant: none, freeBusyReader (free/busy only), reader (event details, private events hidden), writer (read and write), or owner (writer plus the ability to change other users' access).",
+      "The role to grant: none, freeBusyReader (free/busy only), reader (event details, private events hidden), writerWithoutPrivateAccess (read and write, private event details hidden), writer (read and write, private event details visible), or owner (writer plus the ability to change other users' access).",
     ),
     scope: AclScope.describe('Who the role is granted to.'),
     calendarId: z

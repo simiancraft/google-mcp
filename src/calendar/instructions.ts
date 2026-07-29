@@ -26,4 +26,6 @@ export const instructions =
   'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule; a ' +
   'rule ID derives from its scope, granting owner lets the grantee change ' +
   "the calendar's own sharing, and sendNotifications defaults to true, so a " +
-  'grant emails the scope unless it is passed as false.';
+  'write sends sharing notifications unless it is passed as false. A scope ' +
+  'of type default is the public, and carries no value; the other types ' +
+  'require one.';

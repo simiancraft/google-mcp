@@ -57,6 +57,36 @@ describe('add_acl_rule', () => {
     });
   });
 
+  it('grants writerWithoutPrivateAccess, a role the bundled client types omit', async () => {
+    const captured: Captured = {};
+    await handler(fakeCalendar(captured, { id: 'group:eng@example.com' }), {
+      role: 'writerWithoutPrivateAccess',
+      scope: { type: 'group', value: 'eng@example.com' },
+      sendNotifications: false,
+    });
+    expect(captured.params).toEqual({
+      calendarId: 'primary',
+      sendNotifications: false,
+      requestBody: {
+        role: 'writerWithoutPrivateAccess',
+        scope: { type: 'group', value: 'eng@example.com' },
+      },
+    });
+  });
+
+  it('rejects a public scope carrying a value, which Google would silently ignore', () => {
+    expect(() =>
+      schema.input.parse({
+        role: 'reader',
+        scope: { type: 'default', value: 'someone@example.com' },
+      }),
+    ).toThrow();
+  });
+
+  it('rejects a named scope with no value', () => {
+    expect(() => schema.input.parse({ role: 'reader', scope: { type: 'user' } })).toThrow();
+  });
+
   it('omits the scope value for the public scope, which takes none', async () => {
     const captured: Captured = {};
     await handler(fakeCalendar(captured, { id: 'default' }), {

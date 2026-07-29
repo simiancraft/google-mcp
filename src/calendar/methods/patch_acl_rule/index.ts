@@ -8,16 +8,20 @@ import { schema } from './schema.js';
  * replacement, see update_acl_rule.
  *
  * Destructive and open-world for the same reasons as update_acl_rule: it
- * changes who can reach a calendar, can escalate a scope to `owner`, and
- * emails the grantee unless sendNotifications is false.
+ * changes who can reach a calendar, and can escalate a scope to `owner`.
+ *
+ * Not idempotent, also for update_acl_rule's reason: `sendNotifications`
+ * defaults to true at Google, so replaying identical arguments can send a
+ * second email, and `src/lib/server.ts` reads `idempotentHint` as permission
+ * to silently retry after a credential refresh.
  */
 export const patch_acl_rule = calendarOperation({
   description:
-    "Update a rule on a calendar's access control list, changing the role granted to a scope; unset fields are left unchanged. Emails the grantee unless sendNotifications is false.",
+    "Update a rule on a calendar's access control list, changing the role granted to a scope; unset fields are left unchanged. Sends the grantee a sharing notification unless sendNotifications is false.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
-    idempotentHint: true,
+    idempotentHint: false,
     openWorldHint: true,
   },
   source: 'https://developers.google.com/workspace/calendar/api/v3/reference/acl/patch',

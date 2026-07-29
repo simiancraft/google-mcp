@@ -8,16 +8,25 @@ over an [`auth`](../auth) client.
 
 ## Capabilities
 
-25 operations across events, calendars, the user's calendar list, availability,
-and settings: read (`list_events`, `get_event`, `list_event_instances`), write
-(`create_event`, `update_event`, `patch_event`, `quick_add_event`,
-`move_event`, `respond_to_event`), scheduling (`suggest_time`,
-`query_free_busy`), calendar management (`list_calendars`, the calendars and
-calendar-list-entry methods), and account lookups (`get_colors`,
-`list_settings`, `get_setting`). Every operation carries the four MCP
-annotation hints; the removals (`delete_event`, `delete_calendar`,
-`clear_calendar`, `remove_calendar_entry`) are marked destructive
-(`destructiveHint`).
+31 operations across events, calendars, the user's calendar list, sharing,
+availability, and settings: read (`list_events`, `get_event`,
+`list_event_instances`), write (`create_event`, `update_event`, `patch_event`,
+`quick_add_event`, `move_event`, `respond_to_event`), scheduling
+(`suggest_time`, `query_free_busy`), calendar management (`list_calendars`, the
+calendars and calendar-list-entry methods), sharing (`list_acl_rules`,
+`get_acl_rule`, `add_acl_rule`, `update_acl_rule`, `patch_acl_rule`,
+`delete_acl_rule`), and account lookups (`get_colors`, `list_settings`,
+`get_setting`).
+
+Every operation carries the four MCP annotation hints. Marked destructive
+(`destructiveHint`) are the removals (`delete_event`, `delete_calendar`,
+`clear_calendar`, `remove_calendar_entry`, `delete_acl_rule`) and the three
+remaining sharing writes (`add_acl_rule`, `update_acl_rule`,
+`patch_acl_rule`), which are not removals but standing grants of access. Those
+same three sharing writes are the surface's only open-world operations
+(`openWorldHint`), and its only non-idempotent ones, because
+`sendNotifications` defaults to true at Google and so a write, or a replay of
+one, mails the grantee.
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`; what is implemented

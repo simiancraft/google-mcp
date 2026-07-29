@@ -10,7 +10,9 @@ export const schema = {
       .describe(
         'The identifier of the rule to replace, as returned by list_acl_rules (for example "user:someone@example.com").',
       ),
-    role: AclRole.describe('The role the rule grants after the replacement.'),
+    role: AclRole.optional().describe(
+      'The role the rule grants after the replacement. Optional: the discovery document marks role required for acl.insert only, not for acl.update.',
+    ),
     scope: AclScope.describe(
       'Who the role is granted to. A rule id derives from its scope, so this must agree with ruleId.',
     ),

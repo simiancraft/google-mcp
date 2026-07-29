@@ -10,10 +10,11 @@ import { AclScope } from './AclScope.js';
  * Google spells the rule's own identifier `id` on the resource, while the
  * path parameter that addresses it is `ruleId`; both spellings are kept as
  * their source uses them. The identifier is derived from the scope
- * (`user:someone@example.com`), so a scope has at most one rule and
- * re-granting the same scope replaces rather than accumulates.
+ * (`user:someone@example.com`, `domain:example.com`, or the bare `default`),
+ * so it can be constructed when the scope is already known rather than
+ * looked up.
  *
- * @see https://developers.google.com/workspace/calendar/api/v3/reference/acl
+ * @see https://developers.google.com/workspace/calendar/api/concepts/sharing
  */
 export const AclRule = z.object({
   id: z.string().describe('Identifier of the access control rule.'),

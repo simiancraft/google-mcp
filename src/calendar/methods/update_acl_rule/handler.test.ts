@@ -40,6 +40,19 @@ describe('update_acl_rule', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
+  it('omits role, which the discovery document requires for insert only', async () => {
+    const captured: Captured = {};
+    await handler(fakeCalendar(captured, { id: 'user:someone@example.com' }), {
+      ruleId: 'user:someone@example.com',
+      scope: { type: 'user', value: 'someone@example.com' },
+    });
+    expect(captured.params).toEqual({
+      calendarId: 'primary',
+      ruleId: 'user:someone@example.com',
+      requestBody: { scope: { type: 'user', value: 'someone@example.com' } },
+    });
+  });
+
   it('downgrades a grant silently when sendNotifications is false', async () => {
     const captured: Captured = {};
     await handler(fakeCalendar(captured, { id: 'domain:example.com' }), {

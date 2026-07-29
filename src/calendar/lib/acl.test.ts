@@ -29,6 +29,32 @@ describe('projectAclRule', () => {
     expect(result).toEqual({ id: '', role: undefined, scope: undefined });
   });
 
+  it('projects writerWithoutPrivateAccess, which the bundled client types omit', () => {
+    const result = projectAclRule({
+      id: 'user:someone@example.com',
+      role: 'writerWithoutPrivateAccess',
+      scope: { type: 'user', value: 'someone@example.com' },
+    });
+    expect(result.role).toBe('writerWithoutPrivateAccess');
+    expect(() => AclRule.parse(result)).not.toThrow();
+  });
+
+  it('drops a value Google echoes back on the public scope', () => {
+    const result = projectAclRule({
+      id: 'default',
+      role: 'reader',
+      scope: { type: 'default', value: 'ignored@example.com' },
+    });
+    expect(result.scope).toEqual({ type: 'default' });
+    expect(() => AclRule.parse(result)).not.toThrow();
+  });
+
+  it('drops a named scope that arrives without a value, rather than emitting one that fails its schema', () => {
+    const result = projectAclRule({ id: 'user:', role: 'reader', scope: { type: 'user' } });
+    expect(result.scope).toBeUndefined();
+    expect(() => AclRule.parse(result)).not.toThrow();
+  });
+
   it('drops an unknown role rather than passing it through', () => {
     const result = projectAclRule({
       id: 'user:someone@example.com',
