@@ -1,0 +1,39 @@
+name: link check
+
+# Scheduled-only: catches link rot in README / NOTICE / SECURITY without
+# blocking PRs on transient upstream flakes. Failed runs send a GitHub
+# notification to the repo owner.
+
+on:
+  schedule:
+    - cron: '0 12 1 * *' # 1st of the month, 12:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: link-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lychee:
+    name: Check markdown links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Link check (lychee)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          # Skip hosts that reject link checkers rather than 404:
+          # shields.io / codecov.io rate-limit per IP under a cold CI cache;
+          # npmjs.com answers bots with 403; the Cloud console bounces
+          # unauthenticated requests in a 302 loop.
+          args: >-
+            --verbose
+            --no-progress
+            --max-retries 2
+            --exclude '^https?://(img\.shields\.io|codecov\.io|www\.npmjs\.com|console\.cloud\.google\.com)'
+            './**/*.md'
+          fail: true
