@@ -31,7 +31,7 @@ import { schema } from './schema.js';
  */
 export const update_acl_rule = calendarOperation({
   description:
-    "Replace a rule on a calendar's access control list, setting the role granted to a scope. Granting or raising access sends the grantee a sharing notification unless sendNotifications is false; lowering or removing access never notifies.",
+    "Replace a rule on a calendar's access control list, setting the role granted to a scope. Sharing notifications are enabled by default; pass sendNotifications false to suppress them. Access removal never notifies.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

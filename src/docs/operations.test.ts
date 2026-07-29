@@ -14,5 +14,6 @@ describe('docs operations', () => {
     readOnly: ['get_document'],
     destructive: ['delete_content_range', 'delete_paragraph_bullets', 'replace_all_text'],
     openWorld: [],
+    nonIdempotent: ['create_document', 'delete_content_range', 'insert_text', 'replace_all_text'],
   });
 });

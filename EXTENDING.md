@@ -162,7 +162,11 @@ carries it.
 
 **The surface pins.** Each wing's `operations.test.ts` asserts, and every
 registry change updates: the tool and method counts; all four hints present
-on every operation; the exact read-only, destructive, and open-world sets;
+on every operation; the exact read-only, destructive, open-world, and
+non-idempotent sets (all four hints carry an exact set, and the
+non-idempotent one is load-bearing at runtime: `server.ts` reads
+`idempotentHint` as permission to silently replay an operation after a
+credential refresh);
 strict inputs at every depth (the recursive `additionalProperties: false`
 walk); the citation shape per provenance (a tool cites its own
 `mcp/tools_list/<name>` page, a method a REST reference page); the

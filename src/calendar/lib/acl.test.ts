@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'bun:test';
 import { AclRule } from '../entities/AclRule.js';
+import { AclScope, AclScopeType } from '../entities/AclScope.js';
 import { projectAclRule } from './acl.js';
+
+describe('AclScope', () => {
+  // The union is what inputs accept and AclScopeType is what the projection
+  // narrows outputs against. If they drift, a scope type is accepted on the
+  // way in and silently dropped on the way out.
+  it('accepts exactly the scope types the projection narrows against', () => {
+    const branches = AclScope.options.flatMap((branch) => {
+      const type = branch.shape.type;
+      return 'options' in type ? [...type.options] : [type.value];
+    });
+    expect([...branches].sort()).toEqual([...AclScopeType.options].sort());
+  });
+});
 
 describe('projectAclRule', () => {
   it('projects a rule, dropping the REST-only fields', () => {
