@@ -27,8 +27,7 @@ import { schema } from './schema.js';
  * the environment.
  * The hint describes the riskiest accepted input, and `src/lib/server.ts`
  * reads `idempotentHint` as permission to silently retry after a credential
- * refresh. Lowering a role sends nothing, since Google does not notify on
- * access removal.
+ * refresh. Access removal sends no sharing notifications.
  */
 export const update_acl_rule = calendarOperation({
   description:

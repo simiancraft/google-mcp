@@ -103,8 +103,11 @@ Rules that held up under execution:
   test fails the gate locally exactly as it would in CI.
 - **A surface-count test pins the registries.** `src/<svc>/operations.test.ts`
   asserts the tool count, the method count, and the exact read-only,
-  destructive, and open-world annotation sets, and is updated in the same
-  commit as each registry change.
+  destructive, open-world, and non-idempotent annotation sets, and is updated
+  in the same commit as each registry change. All four hints carry an exact
+  set; the non-idempotent one is load-bearing at runtime, since `server.ts`
+  reads `idempotentHint` as permission to silently replay an operation after a
+  credential refresh.
 - **Transcribe, do not remember.** Each `schema.ts` cites its source page and
   is written against the fetched page or discovery JSON, not from prior
   knowledge.

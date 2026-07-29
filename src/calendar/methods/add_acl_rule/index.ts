@@ -9,7 +9,8 @@ import { schema } from './schema.js';
  * until something revokes it, so it is not merely additive, and `owner` hands
  * the scope control of this calendar's sharing.
  *
- * Open-world because `sendNotifications` defaults to true at Google, so a
+ * Open-world on the precedent of the sends (`gmail/send_message`,
+ * `gmail/send_draft`), because `sendNotifications` defaults to true at Google, so a
  * grant notifies the scope, which may reach outside the organization
  * entirely. Pass `sendNotifications: false` to grant silently.
  *

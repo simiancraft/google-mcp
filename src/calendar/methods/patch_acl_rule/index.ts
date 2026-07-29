@@ -17,8 +17,8 @@ import { schema } from './schema.js';
  * true at Google, so replaying identical arguments can emit another round
  * of sharing notifications,
  * and `src/lib/server.ts` reads `idempotentHint` as permission to silently
- * retry after a credential refresh. Lowering a role sends nothing, since
- * Google does not notify on access removal.
+ * retry after a credential refresh. Access removal sends no sharing
+ * notifications.
  */
 export const patch_acl_rule = calendarOperation({
   description:

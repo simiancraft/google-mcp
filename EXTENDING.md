@@ -87,10 +87,10 @@ stub client. Keep them split.
    input shape, assert the projection, and `schema.output.parse(result)`.
 7. **Register** it in `tools/registry.ts`.
 8. **Update the surface pins and regenerate the doc.** `operations.test.ts`
-   pins the counts and the read-only/destructive/open-world sets (update them
-   in the same commit), and an equality test pins CAPABILITIES.md to the
-   registries, so the suite stays red until `bun run capabilities`
-   regenerates it.
+   pins the counts and the exact read-only, destructive, open-world, and
+   non-idempotent sets (update them in the same commit), and an equality test
+   pins CAPABILITIES.md to the registries, so the suite stays red until
+   `bun run capabilities` regenerates it.
 9. `bun run check`, then verify live against a real account (see
    [Live verification](#live-verification)).
 
