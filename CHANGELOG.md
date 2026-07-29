@@ -1,3 +1,9 @@
+## [1.18.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.17.0...v1.18.0) (2026-07-29)
+
+### Features
+
+* **calendar:** add access control methods for calendar sharing ([#88](https://github.com/simiancraft/google-mcp-suite/issues/88)) ([fc07dce](https://github.com/simiancraft/google-mcp-suite/commit/fc07dcef2b4a27b81418feaec5cce68a27f5bd4d)), closes [#19](https://github.com/simiancraft/google-mcp-suite/issues/19) [#19](https://github.com/simiancraft/google-mcp-suite/issues/19)
+
 ## [1.17.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.16.0...v1.17.0) (2026-07-24)
 
 ### Features
