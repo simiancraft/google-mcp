@@ -74,11 +74,16 @@ exposes the REST fields the `update_event` tool cannot touch (recurrence,
 status, transparency, the full attendee shape, `extendedProperties`, and the
 `guestsCan*` permissions).
 
+The `acl.*` methods (`list_acl_rules` through `delete_acl_rule`) cover
+sharing. `acl.watch` is excluded; it belongs to the watch-channels issue
+below. They are the only operations on this surface that carry
+`openWorldHint`, because `sendNotifications` defaults to true at Google and
+emails the grantee.
+
 ## Deferred
 
 Tracked as issues, not missing by accident:
 
-- **Access control** (acl.*: calendar sharing): issue #19.
 - **Watch channels** (events.watch, calendarList.watch, settings.watch,
   channels.stop): issue #20.
 - **Niche / specialized** (events.import, incremental sync via

@@ -21,4 +21,9 @@ export const instructions =
   'attendees can email guests, controlled by notificationLevel on tools and ' +
   'sendUpdates on methods. suggest_time refuses to answer, rather than ' +
   "proposing slots that may conflict, when any requested calendar's " +
-  'free/busy is unreadable.';
+  'free/busy is unreadable. The access control rules that constitute ' +
+  'calendar sharing are read with list_acl_rules and changed with ' +
+  'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule; a ' +
+  'rule ID derives from its scope, granting owner lets the grantee change ' +
+  "the calendar's own sharing, and sendNotifications defaults to true, so a " +
+  'grant emails the scope unless it is passed as false.';
