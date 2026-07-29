@@ -33,10 +33,11 @@ describe('SERVICES registration', () => {
     const implemented = SERVICES.filter((s) => s.implemented)
       .map((s) => `google-mcp-${s.name}`)
       .sort();
-    // doctor and the suite dispatcher (the bin named after the package) are bins
-    // but not services; they have no probe.
+    // doctor, the HTTP server, and the suite dispatcher (the bin named after the
+    // package) are bins but not services; they have no probe.
+    const nonServiceBins = new Set(['google-mcp-doctor', 'google-mcp-serve', pkg.name]);
     const bins = Object.keys(pkg.bin)
-      .filter((bin) => bin !== 'google-mcp-doctor' && bin !== pkg.name)
+      .filter((bin) => !nonServiceBins.has(bin))
       .sort();
     expect(implemented).toEqual(bins);
   });

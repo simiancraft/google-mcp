@@ -77,6 +77,16 @@ export function tokenPath(account: string, config: Config = loadConfig()): strin
   return config.tokenOverride ?? path.join(config.tokensDir, `${account}.json`);
 }
 
+/**
+ * True when `account` is a safe path segment (letters, digits, and . _ % + @ -,
+ * with no `..` traversal): the same rule `resolveAccount` enforces, exposed as a
+ * boolean for the HTTP surface, which validates the `<account>` URL segment
+ * before it ever reaches a token path.
+ */
+export function isValidAccount(account: string): boolean {
+  return accountSchema.safeParse(account).success;
+}
+
 /** The account to act as (explicit arg wins over env), validated as a safe path segment. */
 export function resolveAccount(account?: string, config: Config = loadConfig()): string {
   const resolved = account ?? config.account;

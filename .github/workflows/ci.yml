@@ -68,6 +68,7 @@ jobs:
       issues: write
       pull-requests: write
       id-token: write
+      packages: write # push the Docker image to GHCR
     steps:
       # Mint a short-lived App token so @semantic-release/git can push the
       # chore(release) commit + tag back to main. The App is in main's
@@ -101,6 +102,27 @@ jobs:
       - name: Build
         run: bun run build
 
+      # Docker image build + push to GHCR (scripts/docker-release.sh, driven by
+      # @semantic-release/exec with the computed version).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Docker Hub publish is disabled for now. To re-enable, uncomment this
+      # step (add DOCKERHUB_USERNAME / DOCKERHUB_TOKEN secrets) and the matching
+      # block in scripts/docker-release.sh.
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -108,4 +130,6 @@ jobs:
           # Sigstore attestation for the published tarball. id-token: write
           # is already set in the job permissions.
           NPM_CONFIG_PROVENANCE: true
+          # Target image for scripts/docker-release.sh (GHCR, lowercased owner/repo).
+          GHCR_IMAGE: ghcr.io/${{ github.repository }}
         run: npx semantic-release
