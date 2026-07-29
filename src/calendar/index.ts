@@ -16,7 +16,7 @@ await server({
   name: 'calendar',
   title: 'Google Calendar (google-mcp-suite)',
   description:
-    'Per-account Google Calendar MCP server: events, calendars, free/busy, and meeting-time suggestions.',
+    'Per-account Google Calendar MCP server: events, calendars, sharing, free/busy, and meeting-time suggestions.',
   instructions,
   operations: mergeOperations(tools, methods),
   client: async (account) => calendar({ version: 'v3', auth: await authorizedClient(account) }),

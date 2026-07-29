@@ -21,7 +21,7 @@ import { schema } from './schema.js';
  */
 export const add_acl_rule = calendarOperation({
   description:
-    'Share a calendar by adding a rule to its access control list, granting a role (none, freeBusyReader, reader, writerWithoutPrivateAccess, writer, or owner) to a scope (a user, a group, a domain, or the public). Sharing notifications are enabled by default; pass sendNotifications false to suppress them.',
+    "Share a calendar by adding a rule to its access control list, granting a role (none, freeBusyReader, reader, writerWithoutPrivateAccess, writer, or owner) to a scope (a user, a group, a domain, or the public). If the scope already has a rule, this replaces that rule's role rather than creating a duplicate. Sharing notifications are enabled by default; pass sendNotifications false to suppress them.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
