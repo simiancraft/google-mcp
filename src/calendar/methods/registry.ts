@@ -36,7 +36,7 @@ import { update_calendar_entry } from './update_calendar_entry/index.js';
  * `sheets/add_protected_range` precedents) and can escalate a scope to
  * `owner`. Those three that take `sendNotifications` are also the only
  * open-world operations on this surface, since Google defaults it to true
- * and emails the grantee.
+ * and notifies the scope.
  */
 export const methods = {
   // events

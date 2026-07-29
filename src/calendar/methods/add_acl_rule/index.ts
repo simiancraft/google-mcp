@@ -7,10 +7,10 @@ import { schema } from './schema.js';
  * standing-side-effect cluster (the `create_filter` and
  * `sheets/add_protected_range` precedents): the grant keeps conferring access
  * until something revokes it, so it is not merely additive, and `owner` hands
- * the grantee control of this calendar's sharing.
+ * the scope control of this calendar's sharing.
  *
  * Open-world because `sendNotifications` defaults to true at Google, so a
- * grant emails the scope, which may be an address outside the organization
+ * grant notifies the scope, which may reach outside the organization
  * entirely. Pass `sendNotifications: false` to grant silently.
  *
  * A rule's id derives from its scope, so granting a scope that already has a

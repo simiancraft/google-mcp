@@ -25,7 +25,7 @@ export const instructions =
   'calendar sharing are read with list_acl_rules and changed with ' +
   'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule, of ' +
   'which the first three take sendNotifications; a ' +
-  'rule ID derives from its scope, granting owner lets the grantee change ' +
+  'rule ID derives from its scope, granting owner lets that scope change ' +
   "the calendar's own sharing, and sendNotifications defaults to true, so a " +
   'write sends sharing notifications unless it is passed as false, though ' +
   'never on access removal. A scope of type default is the public scope and ' +

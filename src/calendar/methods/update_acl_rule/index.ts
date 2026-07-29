@@ -23,7 +23,8 @@ import { schema } from './schema.js';
  * Open-world and NOT idempotent on the precedent of the sends
  * (`gmail/send_message`, `gmail/send_draft`), because `sendNotifications`
  * defaults to true at Google: a replay with identical arguments can send the
- * grantee a second email, which is an additional effect on the environment.
+ * another round of sharing notifications, which is an additional effect on
+ * the environment.
  * The hint describes the riskiest accepted input, and `src/lib/server.ts`
  * reads `idempotentHint` as permission to silently retry after a credential
  * refresh. Lowering a role sends nothing, since Google does not notify on

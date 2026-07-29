@@ -14,7 +14,8 @@ import { schema } from './schema.js';
  *
  * Open-world and not idempotent on the precedent of the sends
  * (`gmail/send_message`, `gmail/send_draft`): `sendNotifications` defaults to
- * true at Google, so replaying identical arguments can send a second email,
+ * true at Google, so replaying identical arguments can emit another round
+ * of sharing notifications,
  * and `src/lib/server.ts` reads `idempotentHint` as permission to silently
  * retry after a credential refresh. Lowering a role sends nothing, since
  * Google does not notify on access removal.
