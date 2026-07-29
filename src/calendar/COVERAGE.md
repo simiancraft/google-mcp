@@ -103,25 +103,33 @@ status, transparency, the full attendee shape, `extendedProperties`, and the
 
 ## ACL sharing
 
-The `acl` resource is covered in full except `acl.watch`, which belongs to the
+Every `acl` method is implemented except `acl.watch`, which belongs to the
 watch-channels issue below: `list_acl_rules`, `get_acl_rule`, `add_acl_rule`,
-`update_acl_rule`, `patch_acl_rule`, and `delete_acl_rule`. A calendar's rules
-are what its sharing consists of, each pairing an `AclRole` with an `AclScope`.
+`update_acl_rule`, `patch_acl_rule`, and `delete_acl_rule`. The `syncToken` and
+`nextSyncToken` fields on `acl.list` are deferred with the other incremental
+sync surfaces, issue #21. A calendar's rules are what its sharing consists of,
+each pairing an `AclRole` with an `AclScope`.
 
-Three details are worth knowing before calling them:
+Four details are worth knowing before calling them, each checked against the
+live API rather than inferred from the reference:
 
-- **Reading the rules needs writer access.** A `freeBusyReader` or `reader`
-  grant on a calendar is not enough to list its ACL, so `list_acl_rules`
-  against someone else's calendar commonly 403s even when its events are
-  readable.
+- **Reading the rules needs `writer` or `owner`.** Only those roles carry read
+  access to a calendar's ACLs, so `list_acl_rules` against someone else's
+  calendar commonly 403s even when its events are readable.
 - **A rule's id derives from its scope** (`user:someone@example.com`,
   `domain:example.com`, or the bare `default`), so it can be constructed
-  rather than looked up.
-- **`AclScope` enforces the type/value pairing** that Google documents but does
-  not reject: `default` is the public scope and carries no value, and the named
-  types require one. Google ignores a value sent with `default`, so without the
-  check a mistyped scope type would silently publish a calendar to everyone
-  while looking targeted.
+  rather than looked up. Inserting a scope that already has a rule replaces
+  that rule's role and does not conflict.
+- **`AclScope` enforces the type/value pairing, because Google does not.**
+  Sending `{"type": "default", "value": "someone@example.com"}` to `acl.insert`
+  is accepted: the address is discarded, the scope comes back as
+  `__public_principal__`, and the calendar is now public. A caller that meant
+  to share with one person and mistyped the scope type would publish the
+  calendar instead, so the union rejects that combination before it is sent.
+- **`ruleId` and a body `scope` must agree**, and Google enforces it: an
+  `acl.update` addressing `user:someone@example.com` while carrying a
+  `default` scope is rejected with "Provided acl id is invalid." No local
+  check duplicates that; the remote boundary already refuses it.
 
 `AclRole` is sourced from the discovery document rather than the bundled
 `@googleapis/calendar` types, which omit `writerWithoutPrivateAccess`.

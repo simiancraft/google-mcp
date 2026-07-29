@@ -12,10 +12,9 @@ export async function handler(
     forGoogle({
       calendarId: args.calendarId ?? 'primary',
       sendNotifications: args.sendNotifications,
-      requestBody: {
-        role: args.role,
-        scope: forGoogle({ type: args.scope.type, value: args.scope.value }),
-      },
+      // The scope union guarantees the type/value pairing Google accepts but
+      // does not enforce, so it crosses the boundary as it stands.
+      requestBody: { role: args.role, scope: args.scope },
     }),
   );
   return projectAclRule(data);

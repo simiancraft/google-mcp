@@ -16,6 +16,7 @@ export const schema = {
     maxResults: z
       .number()
       .int()
+      .min(1)
       .max(250)
       .optional()
       .describe('Maximum number of rules returned on one result page (default 100, max 250).'),

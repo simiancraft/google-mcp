@@ -43,5 +43,13 @@ describe('calendar operations', () => {
       'update_acl_rule',
     ],
     openWorld: ['add_acl_rule', 'patch_acl_rule', 'update_acl_rule'],
+    nonIdempotent: [
+      'add_acl_rule',
+      'create_calendar',
+      'create_event',
+      'patch_acl_rule',
+      'quick_add_event',
+      'update_acl_rule',
+    ],
   });
 });

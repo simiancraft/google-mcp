@@ -22,11 +22,14 @@ Every operation carries the four MCP annotation hints. Marked destructive
 (`destructiveHint`) are the removals (`delete_event`, `delete_calendar`,
 `clear_calendar`, `remove_calendar_entry`, `delete_acl_rule`) and the three
 remaining sharing writes (`add_acl_rule`, `update_acl_rule`,
-`patch_acl_rule`), which are not removals but standing grants of access. Those
-same three sharing writes are the surface's only open-world operations
-(`openWorldHint`), and its only non-idempotent ones, because
-`sendNotifications` defaults to true at Google and so a write, or a replay of
-one, mails the grantee.
+`patch_acl_rule`), which are not removals but standing grants of access.
+
+Those same three sharing writes are the surface's only open-world operations
+(`openWorldHint`), and are also non-idempotent, alongside the creates
+(`create_event`, `create_calendar`, `quick_add_event`). The reason is
+`sendNotifications`, which Google defaults to true: granting or raising access
+mails the grantee, and a replay mails them again. Lowering access does not,
+since Google sends no notification on access removal.
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`; what is implemented

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import type { calendar_v3 } from '@googleapis/calendar';
+import { z } from 'zod';
 import { handler } from './handler.js';
 import { schema } from './schema.js';
 
@@ -85,6 +86,19 @@ describe('add_acl_rule', () => {
 
   it('rejects a named scope with no value', () => {
     expect(() => schema.input.parse({ role: 'reader', scope: { type: 'user' } })).toThrow();
+  });
+
+  // The wire schema is what an MCP client reads to build a call, so it has to
+  // advertise the same scope combinations the server accepts. A refinement
+  // would validate at runtime and still publish the wider shape.
+  it('advertises the scope pairing on the wire, not just at runtime', () => {
+    const wire = z.toJSONSchema(schema.input) as unknown as {
+      properties: { scope: { oneOf: { required: string[]; additionalProperties: boolean }[] } };
+    };
+    const branches = wire.properties.scope.oneOf;
+    expect(branches).toHaveLength(2);
+    expect(branches.map((b) => [...b.required].sort())).toEqual([['type'], ['type', 'value']]);
+    for (const branch of branches) expect(branch.additionalProperties).toBe(false);
   });
 
   it('omits the scope value for the public scope, which takes none', async () => {

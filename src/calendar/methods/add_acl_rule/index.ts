@@ -14,7 +14,10 @@ import { schema } from './schema.js';
  * entirely. Pass `sendNotifications: false` to grant silently.
  *
  * A rule's id derives from its scope, so granting a scope that already has a
- * rule replaces that rule's role rather than adding a second one.
+ * rule replaces that rule's role rather than adding a second one, and does not
+ * conflict. Verified against the live API rather than inferred: a second
+ * insert for the same scope returned the same rule id with the new role, and
+ * the calendar was left with one rule for that scope.
  */
 export const add_acl_rule = calendarOperation({
   description:

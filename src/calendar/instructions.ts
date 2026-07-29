@@ -23,9 +23,10 @@ export const instructions =
   "proposing slots that may conflict, when any requested calendar's " +
   'free/busy is unreadable. The access control rules that constitute ' +
   'calendar sharing are read with list_acl_rules and changed with ' +
-  'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule; a ' +
+  'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule, of ' +
+  'which the first three take sendNotifications; a ' +
   'rule ID derives from its scope, granting owner lets the grantee change ' +
   "the calendar's own sharing, and sendNotifications defaults to true, so a " +
-  'write sends sharing notifications unless it is passed as false. A scope ' +
-  'of type default is the public, and carries no value; the other types ' +
-  'require one.';
+  'write sends sharing notifications unless it is passed as false, though ' +
+  'never on access removal. A scope of type default is the public scope and ' +
+  'carries no value; the other types require one.';

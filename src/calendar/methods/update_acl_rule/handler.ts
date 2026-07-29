@@ -13,10 +13,7 @@ export async function handler(
       calendarId: args.calendarId ?? 'primary',
       ruleId: args.ruleId,
       sendNotifications: args.sendNotifications,
-      requestBody: forGoogle({
-        role: args.role,
-        scope: forGoogle({ type: args.scope.type, value: args.scope.value }),
-      }),
+      requestBody: forGoogle({ role: args.role, scope: args.scope }),
     }),
   );
   return projectAclRule(data);
