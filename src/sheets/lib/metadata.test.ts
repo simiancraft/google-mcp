@@ -1,5 +1,25 @@
 import { describe, expect, it } from 'bun:test';
-import { projectDeveloperMetadata } from './metadata.js';
+import { projectDeveloperMetadata, toDeveloperMetadata } from './metadata.js';
+
+describe('toDeveloperMetadata', () => {
+  it('carries every writable field', () => {
+    expect(
+      toDeveloperMetadata({
+        metadataId: 42,
+        metadataKey: 'region',
+        metadataValue: 'us-east',
+        location: { sheetId: 3 },
+        visibility: 'DOCUMENT',
+      }),
+    ).toEqual({
+      metadataId: 42,
+      metadataKey: 'region',
+      metadataValue: 'us-east',
+      location: { sheetId: 3 },
+      visibility: 'DOCUMENT',
+    });
+  });
+});
 
 describe('projectDeveloperMetadata', () => {
   it('projects a full metadata entry', () => {

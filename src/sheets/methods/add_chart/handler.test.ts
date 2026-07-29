@@ -1,0 +1,213 @@
+import { describe, expect, it } from 'bun:test';
+import type { sheets_v4 } from '@googleapis/sheets';
+import type { z } from 'zod';
+import { handler } from './handler.js';
+import { schema } from './schema.js';
+
+type Captured = { params?: sheets_v4.Params$Resource$Spreadsheets$Batchupdate };
+
+function fakeSheets(
+  captured: Captured,
+  data: sheets_v4.Schema$BatchUpdateSpreadsheetResponse,
+): sheets_v4.Sheets {
+  return {
+    spreadsheets: {
+      batchUpdate: async (params: sheets_v4.Params$Resource$Spreadsheets$Batchupdate) => {
+        captured.params = params;
+        return { data };
+      },
+    },
+  } as unknown as sheets_v4.Sheets;
+}
+
+const columnSpec: z.infer<typeof schema.input>['spec'] = {
+  title: 'Revenue',
+  basicChart: {
+    chartType: 'COLUMN',
+    series: [
+      {
+        series: {
+          sourceRange: { sources: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }] },
+        },
+      },
+    ],
+  },
+};
+
+const carriedColumnSpec: sheets_v4.Schema$ChartSpec = {
+  title: 'Revenue',
+  basicChart: {
+    chartType: 'COLUMN',
+    series: [
+      {
+        series: {
+          sourceRange: { sources: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }] },
+        },
+      },
+    ],
+  },
+};
+
+describe('add_chart', () => {
+  it('adds an overlay chart and returns its id', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, { replies: [{ addChart: { chart: { chartId: 9 } } }] }),
+      {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { overlayPosition: { anchorCell: { sheetId: 2, rowIndex: 0, columnIndex: 4 } } },
+      },
+    );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            addChart: {
+              chart: {
+                spec: {
+                  title: 'Revenue',
+                  basicChart: {
+                    chartType: 'COLUMN',
+                    series: [
+                      {
+                        series: {
+                          sourceRange: {
+                            sources: [{ sheetId: 0, startColumnIndex: 1, endColumnIndex: 2 }],
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+                position: {
+                  overlayPosition: { anchorCell: { sheetId: 2, rowIndex: 0, columnIndex: 4 } },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({ chartId: 9 });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('adds a new-sheet chart and returns the sheet it landed on', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, {
+        replies: [{ addChart: { chart: { chartId: 4, position: { sheetId: 77 } } } }],
+      }),
+      { spreadsheetId: 'SS', spec: columnSpec, position: { newSheet: true } },
+    );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            addChart: {
+              chart: { spec: carriedColumnSpec, position: { newSheet: true } },
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({ chartId: 4, sheetId: 77 });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('adds a chart on an object sheet with an explicit new sheet ID', async () => {
+    const captured: Captured = {};
+    const result = await handler(
+      fakeSheets(captured, {
+        replies: [{ addChart: { chart: { chartId: 5, position: { sheetId: 78 } } } }],
+      }),
+      { spreadsheetId: 'SS', spec: columnSpec, position: { sheetId: 78 } },
+    );
+    expect(captured.params).toEqual({
+      spreadsheetId: 'SS',
+      requestBody: {
+        requests: [
+          {
+            addChart: {
+              chart: { spec: carriedColumnSpec, position: { sheetId: 78 } },
+            },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({ chartId: 5, sheetId: 78 });
+    expect(() => schema.output.parse(result)).not.toThrow();
+  });
+
+  it('refuses to fabricate a chart ID from a bare reply', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { newSheet: true },
+      }),
+    ).rejects.toThrow('no chart ID');
+  });
+
+  it('refuses a spec with no chart or both charts', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: { title: 'Empty' },
+        position: { newSheet: true },
+      }),
+    ).rejects.toThrow('exactly one of spec.basicChart, spec.pieChart');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: { ...columnSpec, pieChart: {} },
+        position: { newSheet: true },
+      }),
+    ).rejects.toThrow('exactly one of spec.basicChart, spec.pieChart');
+    expect(captured.params).toBeUndefined();
+  });
+
+  it('refuses a position that is empty or doubled; the schema rejects newSheet: false', async () => {
+    const captured: Captured = {};
+    await expect(
+      handler(fakeSheets(captured, {}), { spreadsheetId: 'SS', spec: columnSpec, position: {} }),
+    ).rejects.toThrow('exactly one of position.overlayPosition, position.sheetId');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { sheetId: 9, newSheet: true },
+      }),
+    ).rejects.toThrow('exactly one of position.overlayPosition, position.sheetId');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { overlayPosition: {} },
+      }),
+    ).rejects.toThrow('Provide position.overlayPosition.anchorCell');
+    await expect(
+      handler(fakeSheets(captured, {}), {
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: {
+          newSheet: true,
+          overlayPosition: { anchorCell: { sheetId: 0, rowIndex: 0, columnIndex: 0 } },
+        },
+      }),
+    ).rejects.toThrow('exactly one of position.overlayPosition, position.sheetId');
+    expect(
+      schema.input.safeParse({
+        spreadsheetId: 'SS',
+        spec: columnSpec,
+        position: { newSheet: false },
+      }).success,
+    ).toBe(false);
+    expect(captured.params).toBeUndefined();
+  });
+});

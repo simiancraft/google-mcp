@@ -1,3 +1,96 @@
+## [1.18.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.17.0...v1.18.0) (2026-07-29)
+
+### Features
+
+* **calendar:** add access control methods for calendar sharing ([#88](https://github.com/simiancraft/google-mcp-suite/issues/88)) ([fc07dce](https://github.com/simiancraft/google-mcp-suite/commit/fc07dcef2b4a27b81418feaec5cce68a27f5bd4d)), closes [#19](https://github.com/simiancraft/google-mcp-suite/issues/19) [#19](https://github.com/simiancraft/google-mcp-suite/issues/19)
+
+## [1.17.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.16.0...v1.17.0) (2026-07-24)
+
+### Features
+
+* **gmail:** add savePath to download_attachment for disk writes ([1dda2f4](https://github.com/simiancraft/google-mcp-suite/commit/1dda2f491fd74dfddcd0ae96b3f3719318b8beed))
+
+## [1.16.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.15.0...v1.16.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add named-range updates, metadata writes, slicers, and the full chart families ([4cade15](https://github.com/simiancraft/google-mcp-suite/commit/4cade15394569e2ed01cbe42f5ac77d5538167cc))
+
+### Bug Fixes
+
+* **sheets:** derive the filter-clearing mask once, not twice ([4cf4fda](https://github.com/simiancraft/google-mcp-suite/commit/4cf4fda77e632e6fb43f958fdcde2b50c4503290))
+* **sheets:** let update_slicer_spec clear a filter ([9a942fd](https://github.com/simiancraft/google-mcp-suite/commit/9a942fd8b1b666b6b7a5429b7015c7c94673f779))
+* **sheets:** make the chart curation and metadata contracts exact ([1bbd53c](https://github.com/simiancraft/google-mcp-suite/commit/1bbd53cab9c0959213da0b8ccdeecfa0d33dab63))
+
+## [1.15.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.14.0...v1.15.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add the layout and dimension operations ([bc9a4b5](https://github.com/simiancraft/google-mcp-suite/commit/bc9a4b5f11e6db0c794353c48aa72051b14c3e6b))
+
+### Bug Fixes
+
+* **sheets:** harden the layout operations after review ([f01058e](https://github.com/simiancraft/google-mcp-suite/commit/f01058e91dec72cf9220b8b47fce30fd9cf0e9f7))
+* **sheets:** update_embedded_object_position is not idempotent ([83c9ee0](https://github.com/simiancraft/google-mcp-suite/commit/83c9ee06ae5aa75b09cc96511ec6f44da1238050))
+
+## [1.14.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.13.0...v1.14.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add the data operations: sort, filters, and grid editing ([9ed5265](https://github.com/simiancraft/google-mcp-suite/commit/9ed52653e12f4ed297c5372e194352eb1212ae19))
+
+### Bug Fixes
+
+* **sheets:** finish the data-operations convergence pass ([4cb2ecc](https://github.com/simiancraft/google-mcp-suite/commit/4cb2ecc928660338c9a215f0dec21e7c568e54bb))
+* **sheets:** harden the data operations after review ([49dfa54](https://github.com/simiancraft/google-mcp-suite/commit/49dfa54fb234f1cf7081cceb4cc4d7641170df5c))
+* **sheets:** repair the convergence-pass build ([4b36aab](https://github.com/simiancraft/google-mcp-suite/commit/4b36aab4d9e8b62e27e92ae23d442369ce9fb84f))
+
+## [1.13.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.12.0...v1.13.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add cell content writes: update_cells, merge_cells, unmerge_cells ([54fd148](https://github.com/simiancraft/google-mcp-suite/commit/54fd148ecec7127f9d56609a885cce9bf02c6dea))
+* **sheets:** add conditional format rules, data validation, and protected ranges ([f98eba7](https://github.com/simiancraft/google-mcp-suite/commit/f98eba7ab8c04166aec264902597671a3b391b82))
+
+### Bug Fixes
+
+* **sheets:** close the review loop on the reactive layer readout and docs ([b29886b](https://github.com/simiancraft/google-mcp-suite/commit/b29886bf898ccdd822ee48412623df4a1a777c35))
+* **sheets:** correct the cell-content contracts after review ([ad02dd4](https://github.com/simiancraft/google-mcp-suite/commit/ad02dd490c18f4c072403038dd00aa11b1ad6942))
+* **sheets:** expand the update_cells format mask per subkey ([0969278](https://github.com/simiancraft/google-mcp-suite/commit/0969278c42db18029cad99187254cddb056cb641))
+* **sheets:** finish the reactive-layer convergence pass ([9cadfcf](https://github.com/simiancraft/google-mcp-suite/commit/9cadfcfab813789c8bd669e20824450cdcb56d93))
+* **sheets:** harden the reactive layer after review ([25c3e79](https://github.com/simiancraft/google-mcp-suite/commit/25c3e7930dc14693d1053872893c950612d5ffc1))
+
+### Documentation
+
+* **sheets:** drop the run-spanning cell-link claim from TextFormatRun ([1e47bfa](https://github.com/simiancraft/google-mcp-suite/commit/1e47bfab8db93cb19c7cf0de68629a80adef9fcd))
+* **sheets:** settle the cell-content terminology and link semantics ([68d8417](https://github.com/simiancraft/google-mcp-suite/commit/68d8417d8239f02a2b63dbd85956ab883b7dc077))
+
+## [1.12.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.2...v1.12.0) (2026-07-19)
+
+### Features
+
+* **sheets:** add chart methods via batchUpdate ([c36a696](https://github.com/simiancraft/google-mcp-suite/commit/c36a6966d1a67ea240a016fb3a93995782eb24e2)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add dimension methods via batchUpdate ([c341b89](https://github.com/simiancraft/google-mcp-suite/commit/c341b89190c1b012e859972bbd3bdb70e6210292)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add formatting methods via batchUpdate ([113578e](https://github.com/simiancraft/google-mcp-suite/commit/113578e7dcffa66d55edd728e745a1e0040baf7b)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add named-range methods via batchUpdate ([640692d](https://github.com/simiancraft/google-mcp-suite/commit/640692deeaeab02e1e137881cbfee3a308fad52d)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+* **sheets:** add sheet management via curated batchUpdate requests ([072fb85](https://github.com/simiancraft/google-mcp-suite/commit/072fb8542628c21c44f15e88f33afb0be4ef9d02)), closes [#27](https://github.com/simiancraft/google-mcp-suite/issues/27)
+
+### Bug Fixes
+
+* **sheets:** enforce the ColorStyle oneof at the carrier ([0715fb9](https://github.com/simiancraft/google-mcp-suite/commit/0715fb9bf32e833a3f03d541e4a3f9fa04a80a42))
+* **sheets:** reclassify grid resize as destructive, tighten input domains ([5dbc896](https://github.com/simiancraft/google-mcp-suite/commit/5dbc896e402feccf7d65f4c34644738e0c545896)), closes [#76](https://github.com/simiancraft/google-mcp-suite/issues/76)
+* **sheets:** tighten validation and correct describes per review ([ab25cce](https://github.com/simiancraft/google-mcp-suite/commit/ab25cce8140ffafed6db3858ce9c31238a9d1277))
+
+### Refactoring
+
+* **sheets:** split format carriers out of lib/requests ([250435e](https://github.com/simiancraft/google-mcp-suite/commit/250435e7a64aa45100075624ad00fe1313e9dc2d))
+
+### Documentation
+
+* finish the toolset-staleness sweep, source the behavioral claims ([649793f](https://github.com/simiancraft/google-mcp-suite/commit/649793f9226ed87c3d9682124db546f49531ac12))
+* **readme:** date the no-MCP-toolset claim for Sheets and Docs ([b244913](https://github.com/simiancraft/google-mcp-suite/commit/b244913e521e70817171278e97b52c65006a6313)), closes [#76](https://github.com/simiancraft/google-mcp-suite/issues/76)
+* update front-door operation counts and pin them to the registries ([1f7cdf4](https://github.com/simiancraft/google-mcp-suite/commit/1f7cdf40229bc68872a20707d1912124c2ac547c))
+
 ## [1.11.2](https://github.com/simiancraft/google-mcp-suite/compare/v1.11.1...v1.11.2) (2026-07-02)
 
 ### Bug Fixes

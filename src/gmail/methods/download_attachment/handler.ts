@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
 import { assertWithinDownloadCap } from '../../../lib/limits.js';
@@ -16,9 +18,25 @@ export async function handler(
   // maximum sits at the boundary, so this is symmetry, not a new policy.
   const size = data.size ?? 0;
   assertWithinDownloadCap(size, { subject: 'Attachment', action: 'base64 transfers' });
+  const base64url = data.data ?? '';
+
+  // Disk path: decode and write the bytes, returning the path instead of a
+  // large base64 string, so a caller can persist an attachment without
+  // buffering it through the conversation as text.
+  if (args.savePath !== undefined) {
+    const bytes = Buffer.from(base64url, 'base64url');
+    await mkdir(dirname(args.savePath), { recursive: true });
+    await writeFile(args.savePath, bytes);
+    return {
+      attachmentId: args.attachmentId,
+      size: bytes.byteLength,
+      path: args.savePath,
+    };
+  }
+
   return {
     attachmentId: args.attachmentId,
     size,
-    data: data.data ?? '',
+    data: base64url,
   };
 }

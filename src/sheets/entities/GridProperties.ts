@@ -7,17 +7,24 @@ import { z } from 'zod';
  *
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.sheets#GridProperties
  */
-export const GridProperties = z.object({
-  rowCount: z.number().int().optional().describe('The number of rows in the grid.'),
-  columnCount: z.number().int().optional().describe('The number of columns in the grid.'),
+export const GridProperties = z.strictObject({
+  rowCount: z.number().int().positive().optional().describe('The number of rows in the grid.'),
+  columnCount: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('The number of columns in the grid.'),
   frozenRowCount: z
     .number()
     .int()
+    .min(0)
     .optional()
     .describe('The number of rows that are frozen in the grid.'),
   frozenColumnCount: z
     .number()
     .int()
+    .min(0)
     .optional()
     .describe('The number of columns that are frozen in the grid.'),
 });

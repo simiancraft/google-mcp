@@ -22,7 +22,7 @@
 | [`trash_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/trash) ⚠️ | REST Method | Move a message to the trash. |
 | [`untrash_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/untrash) | REST Method | Remove a message from the trash. |
 | [`delete_message`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/delete) ⚠️ | REST Method | Permanently delete a message (bypasses the trash). |
-| [`download_attachment`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get) | REST Method | Download a message attachment (base64url-encoded bytes). |
+| [`download_attachment`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages.attachments/get) | REST Method | Download a message attachment. Returns base64url-encoded bytes inline, or writes them to disk and returns the path when savePath is set. |
 | [`batch_modify_messages`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchModify) ⚠️ | REST Method | Add and/or remove labels across many messages at once. |
 | [`batch_delete_messages`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchDelete) ⚠️ | REST Method | Permanently delete many messages at once (bypasses the trash). |
 | [`get_draft`](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/get) | REST Method | Get a draft by id. |
