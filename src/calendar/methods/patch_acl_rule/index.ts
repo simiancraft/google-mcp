@@ -14,14 +14,15 @@ import { schema } from './schema.js';
  *
  * Open-world and not idempotent on the precedent of the sends
  * (`gmail/send_message`, `gmail/send_draft`): `sendNotifications` defaults to
- * true at Google, so replaying identical arguments can send a second email,
+ * true at Google, so replaying identical arguments can emit another round
+ * of sharing notifications,
  * and `src/lib/server.ts` reads `idempotentHint` as permission to silently
- * retry after a credential refresh. Lowering a role sends nothing, since
- * Google does not notify on access removal.
+ * retry after a credential refresh. Access removal sends no sharing
+ * notifications.
  */
 export const patch_acl_rule = calendarOperation({
   description:
-    "Update a rule on a calendar's access control list, changing the role granted to a scope; unset fields are left unchanged. Granting or raising access sends the grantee a sharing notification unless sendNotifications is false; lowering or removing access never notifies.",
+    "Update a rule on a calendar's access control list, changing the role granted to a scope; unset fields are left unchanged. Sharing notifications are enabled by default; pass sendNotifications false to suppress them. Access removal never notifies.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

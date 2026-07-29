@@ -14,7 +14,7 @@ import { schema } from './schema.js';
  */
 export const delete_acl_rule = calendarOperation({
   description:
-    "Revoke a rule from a calendar's access control list, removing that scope's access to the calendar. The grantee is not notified.",
+    "Revoke a rule from a calendar's access control list, removing that scope's access to the calendar. Access removal does not send sharing notifications.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,

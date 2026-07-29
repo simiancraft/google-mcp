@@ -24,7 +24,7 @@ export const schema = {
       .boolean()
       .optional()
       .describe(
-        'Whether to email the grantee about the sharing change. Google defaults this to true, so leaving it unset sends mail to the scope; pass false to change access silently. There is never a notification on access removal.',
+        'Whether to send sharing notifications about the change. Google enables them by default, so leaving this unset leaves sharing notifications enabled; pass false to change access silently. Access removal never notifies.',
       ),
   }),
   output: AclRule,

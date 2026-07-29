@@ -46,5 +46,6 @@ describe('gmail operations', () => {
       'unlabel_thread',
     ],
     openWorld: ['send_draft', 'send_message'],
+    nonIdempotent: ['create_draft', 'create_filter', 'create_label', 'send_draft', 'send_message'],
   });
 });

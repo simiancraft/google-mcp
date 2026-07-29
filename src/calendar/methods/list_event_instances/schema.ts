@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Event } from '../../entities/Event.js';
 import { Reminder } from '../../entities/Reminder.js';
+import { listRoles } from '../../lib/roles.js';
 
 export const schema = {
   input: z.strictObject({
@@ -58,9 +59,7 @@ export const schema = {
     accessRole: z
       .string()
       .optional()
-      .describe(
-        "The user's access role for this calendar. One of: none, freeBusyReader, reader, writer, owner.",
-      ),
+      .describe(`The user's access role for this calendar. One of: ${listRoles()}.`),
     defaultReminders: z
       .array(Reminder)
       .optional()

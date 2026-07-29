@@ -28,12 +28,12 @@ type CommonPins<Client> = {
   openWorld: string[];
   /**
    * The exact set of operations that are NOT idempotent, pinned the way the
-   * other three hints are. Optional so wings adopt it as they go; supplying it
-   * is strictly better, because `server.ts` reads `idempotentHint` as
-   * permission to silently replay an operation after a credential refresh, so
-   * a wrong value here is a resend, not a documentation slip.
+   * other three hints are. This one earns the pin twice over: `server.ts`
+   * reads `idempotentHint` as permission to silently replay an operation
+   * after a credential refresh, so a wrong value here is a resend rather
+   * than a documentation slip.
    */
-  nonIdempotent?: string[];
+  nonIdempotent: string[];
 };
 
 /**
@@ -78,7 +78,8 @@ export function nonStrictObjectPaths(node: unknown, path: string): string[] {
  * completeness, strict inputs on the wire, instructions citing the real
  * `_meta` key and only real operation names, source citations with
  * service-exact prefixes, the explicit four-hint quad, the exact
- * read-only/destructive/open-world sets, and CAPABILITIES.md equality.
+ * read-only/destructive/open-world/non-idempotent sets, and CAPABILITIES.md
+ * equality.
  * Call inside the wing's `describe` block.
  */
 export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
@@ -155,16 +156,13 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
     expect(named('readOnlyHint')).toEqual([...pins.readOnly].sort());
   });
 
-  const nonIdempotent = pins.nonIdempotent;
-  if (nonIdempotent !== undefined) {
-    it('marks exactly the non-idempotent operations', () => {
-      const actual = Object.entries(operations)
-        .filter(([, op]) => !op.annotations.idempotentHint)
-        .map(([name]) => name)
-        .sort();
-      expect(actual).toEqual([...nonIdempotent].sort());
-    });
-  }
+  it('marks exactly the non-idempotent operations', () => {
+    const actual = Object.entries(operations)
+      .filter(([, op]) => !op.annotations.idempotentHint)
+      .map(([name]) => name)
+      .sort();
+    expect(actual).toEqual([...pins.nonIdempotent].sort());
+  });
 
   it('marks exactly the destructive operations', () => {
     expect(named('destructiveHint')).toEqual([...pins.destructive].sort());

@@ -21,12 +21,12 @@ export const instructions =
   'attendees can email guests, controlled by notificationLevel on tools and ' +
   'sendUpdates on methods. suggest_time refuses to answer, rather than ' +
   "proposing slots that may conflict, when any requested calendar's " +
-  'free/busy is unreadable. The access control rules that constitute ' +
-  'calendar sharing are read with list_acl_rules and changed with ' +
-  'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule, of ' +
-  'which the first three take sendNotifications; a ' +
-  'rule ID derives from its scope, granting owner lets the grantee change ' +
-  "the calendar's own sharing, and sendNotifications defaults to true, so a " +
-  'write sends sharing notifications unless it is passed as false, though ' +
-  'never on access removal. A scope of type default is the public scope and ' +
-  'carries no value; the other types require one.';
+  'free/busy is unreadable. Calendar sharing is a list of access control ' +
+  'rules, read with list_acl_rules and get_acl_rule and changed with ' +
+  'add_acl_rule, update_acl_rule, patch_acl_rule, and delete_acl_rule. ' +
+  'A rule ID derives from its scope, and granting owner lets that scope ' +
+  "change the calendar's own sharing. The three writes other than " +
+  'delete_acl_rule take sendNotifications, which Google enables by default, ' +
+  'so sharing notifications remain enabled unless it is passed as false; ' +
+  'access removal never notifies. A scope of type default is the public ' +
+  'scope and carries no value, while the other types require one.';

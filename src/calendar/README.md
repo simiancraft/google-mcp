@@ -27,9 +27,8 @@ remaining sharing writes (`add_acl_rule`, `update_acl_rule`,
 Those same three sharing writes are the surface's only open-world operations
 (`openWorldHint`), and are also non-idempotent, alongside the creates
 (`create_event`, `create_calendar`, `quick_add_event`). The reason is
-`sendNotifications`, which Google defaults to true: granting or raising access
-mails the grantee, and a replay mails them again. Lowering access does not,
-since Google sends no notification on access removal.
+`sendNotifications`: Google enables sharing notifications by default, so a
+write may notify and a replay may notify again. Access removal never notifies.
 
 The full, always-current list is [`CAPABILITIES.md`](./CAPABILITIES.md),
 regenerated from the registries with `bun run capabilities`; what is implemented
