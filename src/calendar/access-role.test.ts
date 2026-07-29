@@ -2,6 +2,8 @@ import { describe, expect, it } from 'bun:test';
 import { AclRole } from './entities/AclRole.js';
 import { CalendarListEntry } from './entities/CalendarListEntry.js';
 import { projectCalendarListEntry } from './lib/calendar.js';
+import { add_acl_rule } from './methods/add_acl_rule/index.js';
+import { schema as addAclRule } from './methods/add_acl_rule/schema.js';
 import { schema as listEventInstances } from './methods/list_event_instances/schema.js';
 
 /**
@@ -37,6 +39,22 @@ describe('calendar access-role vocabulary', () => {
   it('describes the event-instances role with every role', () => {
     const documented = roleList(listEventInstances.output.shape.accessRole.description);
     expect(documented).toEqual([...AclRole.options]);
+  });
+
+  // add_acl_rule states the vocabulary twice more, and both are agent-facing:
+  // the operation description an MCP client reads when choosing a tool, and
+  // the role field's own description. Neither is derived from AclRole either.
+  it('names every role in the grant operation description', () => {
+    for (const role of AclRole.options) {
+      expect(add_acl_rule.description).toContain(role);
+    }
+  });
+
+  it('names every role in the grant role field description', () => {
+    const described = addAclRule.input.shape.role.description ?? '';
+    for (const role of AclRole.options) {
+      expect(described).toContain(role);
+    }
   });
 
   it('preserves writerWithoutPrivateAccess through the calendar-list projection', () => {

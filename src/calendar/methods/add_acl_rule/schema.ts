@@ -6,7 +6,7 @@ import { AclScope } from '../../entities/AclScope.js';
 export const schema = {
   input: z.strictObject({
     role: AclRole.describe(
-      "The role to grant: none, freeBusyReader (free/busy only), reader (event details, private events hidden), writerWithoutPrivateAccess (read and write, private event details hidden), writer (read and write, private event details visible), or owner (writer plus the ability to change other users' access).",
+      "The role to grant: none, freeBusyReader (free/busy only), reader (event details, private events hidden), writerWithoutPrivateAccess (read and write only the events that are not private, seeing private ones as busy blocks), writer (read and write everything, including private event details, plus read access to the calendar's own sharing), or owner (writer plus the ability to change other users' access).",
     ),
     scope: AclScope.describe('Who the role is granted to.'),
     calendarId: z
@@ -17,7 +17,7 @@ export const schema = {
       .boolean()
       .optional()
       .describe(
-        'Whether to send sharing notifications about the change. Google enables them by default, so leaving this unset notifies; pass false to grant access silently.',
+        'Whether to send sharing notifications about the change. Google enables them by default, so leaving this unset leaves sharing notifications enabled; pass false to grant access silently.',
       ),
   }),
   output: AclRule,

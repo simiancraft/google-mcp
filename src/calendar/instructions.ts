@@ -27,6 +27,6 @@ export const instructions =
   'which the first three take sendNotifications; a ' +
   'rule ID derives from its scope, granting owner lets that scope change ' +
   "the calendar's own sharing, and sendNotifications defaults to true, so a " +
-  'write sends sharing notifications unless it is passed as false, though ' +
+  'sharing notifications remain enabled unless it is passed as false, though ' +
   'never on access removal. A scope of type default is the public scope and ' +
   'carries no value; the other types require one.';

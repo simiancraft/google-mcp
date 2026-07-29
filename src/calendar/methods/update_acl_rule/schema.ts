@@ -24,7 +24,7 @@ export const schema = {
       .boolean()
       .optional()
       .describe(
-        'Whether to send sharing notifications about the change. Google enables them by default, so leaving this unset notifies; pass false to change access silently. Access removal never notifies.',
+        'Whether to send sharing notifications about the change. Google enables them by default, so leaving this unset leaves sharing notifications enabled; pass false to change access silently. Access removal never notifies.',
       ),
   }),
   output: AclRule,
