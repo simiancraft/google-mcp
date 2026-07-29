@@ -11,8 +11,8 @@ import { schema } from './schema.js';
  *
  * Open-world on the precedent of the sends (`gmail/send_message`,
  * `gmail/send_draft`), because `sendNotifications` defaults to true at Google, so a
- * grant notifies the scope, which may reach outside the organization
- * entirely. Pass `sendNotifications: false` to grant silently.
+ * grant can send sharing notifications, potentially outside the
+ * organization entirely. Pass `sendNotifications: false` to grant silently.
  *
  * A rule's id derives from its scope, so granting a scope that already has a
  * rule replaces that rule's role rather than adding a second one, and does not

@@ -46,8 +46,8 @@ calendar's own sharing.
 
 🌐 = open-world (`openWorldHint`), and, on this surface, non-idempotent for the
 same reason. These three take `sendNotifications`, which Google defaults to
-true, so the write notifies the scope, which may reach outside the
-organization, and a replay notifies again. That puts them in the sends cluster rather
+true, so these writes can send sharing notifications, potentially outside the
+organization, and a replay can send another round. That puts them in the sends cluster rather
 than its updates cluster. `delete_acl_rule` takes no such parameter, because
 Google never notifies on access removal.
 
