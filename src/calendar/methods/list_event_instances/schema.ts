@@ -59,7 +59,7 @@ export const schema = {
       .string()
       .optional()
       .describe(
-        "The user's access role for this calendar. One of: none, freeBusyReader, reader, writer, owner.",
+        "The user's access role for this calendar. One of: none, freeBusyReader, reader, writerWithoutPrivateAccess, writer, owner.",
       ),
     defaultReminders: z
       .array(Reminder)

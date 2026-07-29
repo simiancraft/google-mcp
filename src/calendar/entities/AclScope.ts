@@ -1,13 +1,24 @@
 import { z } from 'zod';
 
 /**
- * The kinds of principal a sharing rule can name.
+ * The scope types that name a principal, and so require a value. The union's
+ * named branch is built from this rather than repeating the list, so a new
+ * scope type cannot be accepted on input while the output projection silently
+ * drops it.
+ */
+export const NamedAclScopeType = z.enum(['user', 'group', 'domain']);
+
+export type NamedAclScopeType = z.infer<typeof NamedAclScopeType>;
+
+/**
+ * The kinds of principal a sharing rule can name, the public scope included.
  *
  * Exported separately from AclScope because AclScope is a union and so has no
  * single `shape` to read the type list from; the projection narrows against
  * this (EXTENDING.md, "Enum policy": the allowed list derives from the entity).
+ * Derived from NamedAclScopeType so the two stay one vocabulary.
  */
-export const AclScopeType = z.enum(['default', 'user', 'group', 'domain']);
+export const AclScopeType = z.enum(['default', ...NamedAclScopeType.options]);
 
 export type AclScopeType = z.infer<typeof AclScopeType>;
 
@@ -41,9 +52,9 @@ export const AclScope = z.discriminatedUnion('type', [
       .describe('The public scope: access is granted to any user, authenticated or not.'),
   }),
   z.strictObject({
-    type: z
-      .enum(['user', 'group', 'domain'])
-      .describe('The type of the scope: a single user, a group, or a whole domain.'),
+    type: NamedAclScopeType.describe(
+      'The type of the scope: a single user, a group, or a whole domain.',
+    ),
     value: z
       .string()
       .describe(

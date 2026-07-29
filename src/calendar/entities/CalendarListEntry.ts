@@ -32,7 +32,7 @@ export const CalendarListEntry = z.object({
     .string()
     .optional()
     .describe(
-      "The user's effective access role on this calendar. One of: freeBusyReader, reader, writer, owner.",
+      "The user's effective access role on this calendar. One of: freeBusyReader, reader, writerWithoutPrivateAccess, writer, owner.",
     ),
   colorId: z
     .string()

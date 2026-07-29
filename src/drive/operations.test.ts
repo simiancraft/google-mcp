@@ -43,5 +43,12 @@ describe('drive operations', () => {
       'trash_file',
     ],
     openWorld: ['copy_file', 'create_file'],
+    nonIdempotent: [
+      'copy_file',
+      'create_comment',
+      'create_file',
+      'create_reply',
+      'create_shared_drive',
+    ],
   });
 });
