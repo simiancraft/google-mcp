@@ -26,6 +26,14 @@ type CommonPins<Client> = {
   readOnly: string[];
   destructive: string[];
   openWorld: string[];
+  /**
+   * The exact set of operations that are NOT idempotent, pinned the way the
+   * other three hints are. Optional so wings adopt it as they go; supplying it
+   * is strictly better, because `server.ts` reads `idempotentHint` as
+   * permission to silently replay an operation after a credential refresh, so
+   * a wrong value here is a resend, not a documentation slip.
+   */
+  nonIdempotent?: string[];
 };
 
 /**
@@ -146,6 +154,17 @@ export function pinOperationSurface<Client>(pins: SurfacePins<Client>): void {
   it('marks exactly the read-only operations', () => {
     expect(named('readOnlyHint')).toEqual([...pins.readOnly].sort());
   });
+
+  const nonIdempotent = pins.nonIdempotent;
+  if (nonIdempotent !== undefined) {
+    it('marks exactly the non-idempotent operations', () => {
+      const actual = Object.entries(operations)
+        .filter(([, op]) => !op.annotations.idempotentHint)
+        .map(([name]) => name)
+        .sort();
+      expect(actual).toEqual([...nonIdempotent].sort());
+    });
+  }
 
   it('marks exactly the destructive operations', () => {
     expect(named('destructiveHint')).toEqual([...pins.destructive].sort());
