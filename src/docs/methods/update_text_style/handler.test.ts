@@ -61,6 +61,37 @@ describe('update_text_style', () => {
     expect(() => schema.output.parse(result)).not.toThrow();
   });
 
+  it('passes colors and font family through with the mask (no conversion needed)', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D4',
+      range: { startIndex: 3, endIndex: 9 },
+      textStyle: {
+        foregroundColor: { color: { rgbColor: { red: 0.8, green: 0.2, blue: 0.1 } } },
+        backgroundColor: {},
+        weightedFontFamily: { fontFamily: 'Roboto', weight: 700 },
+      },
+    });
+    expect(captured.params?.requestBody?.requests?.[0]?.updateTextStyle).toEqual({
+      range: { startIndex: 3, endIndex: 9 },
+      textStyle: {
+        foregroundColor: { color: { rgbColor: { red: 0.8, green: 0.2, blue: 0.1 } } },
+        backgroundColor: {},
+        weightedFontFamily: { fontFamily: 'Roboto', weight: 700 },
+      },
+      fields: 'foregroundColor,backgroundColor,weightedFontFamily',
+    });
+  });
+
+  it('rejects a font weight that is not a multiple of 100 in range', () => {
+    const parsed = schema.input.safeParse({
+      documentId: 'D5',
+      range: { startIndex: 1, endIndex: 2 },
+      textStyle: { weightedFontFamily: { fontFamily: 'Roboto', weight: 450 } },
+    });
+    expect(parsed.success).toBe(false);
+  });
+
   it('keeps explicit false in the mask (turning a style off)', async () => {
     const captured: Captured = {};
     await handler(fakeDocs(captured, {}), {

@@ -9,7 +9,7 @@ import { schema } from './schema.js';
  */
 export const update_text_style = docsOperation({
   description:
-    'Set character styling (bold, italic, underline, strikethrough, small caps, baseline offset, font size, link) on a range of text; only the provided fields change.',
+    'Set character styling (bold, italic, underline, strikethrough, small caps, baseline offset, font size, font family and weight, foreground and background color, link) on a range of text; only the provided fields change.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,
