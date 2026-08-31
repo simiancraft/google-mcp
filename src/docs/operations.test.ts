@@ -10,14 +10,16 @@ describe('docs operations', () => {
     instructions,
     groups: [{ kind: 'REST Method', operations: methods }],
     methodSourcePrefix: 'https://developers.google.com/workspace/docs/api/reference/rest/v1/',
-    counts: { methods: 17 },
+    counts: { methods: 23 },
     readOnly: ['get_document'],
     destructive: [
       'delete_content_range',
       'delete_paragraph_bullets',
       'delete_table_column',
       'delete_table_row',
+      'merge_table_cells',
       'replace_all_text',
+      'unmerge_table_cells',
     ],
     openWorld: [],
     nonIdempotent: [

@@ -12,10 +12,16 @@ import { insert_table } from './insert_table/index.js';
 import { insert_table_column } from './insert_table_column/index.js';
 import { insert_table_row } from './insert_table_row/index.js';
 import { insert_text } from './insert_text/index.js';
+import { merge_table_cells } from './merge_table_cells/index.js';
+import { pin_table_header_rows } from './pin_table_header_rows/index.js';
 import { replace_all_text } from './replace_all_text/index.js';
+import { unmerge_table_cells } from './unmerge_table_cells/index.js';
 import { update_document_style } from './update_document_style/index.js';
 import { update_paragraph_style } from './update_paragraph_style/index.js';
 import { update_section_style } from './update_section_style/index.js';
+import { update_table_cell_style } from './update_table_cell_style/index.js';
+import { update_table_column_properties } from './update_table_column_properties/index.js';
+import { update_table_row_style } from './update_table_row_style/index.js';
 import { update_text_style } from './update_text_style/index.js';
 
 /**
@@ -49,4 +55,10 @@ export const methods = {
   insert_table_column,
   delete_table_row,
   delete_table_column,
+  update_table_row_style,
+  update_table_column_properties,
+  update_table_cell_style,
+  merge_table_cells,
+  unmerge_table_cells,
+  pin_table_header_rows,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;
