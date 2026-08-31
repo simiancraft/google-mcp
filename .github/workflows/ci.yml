@@ -41,7 +41,11 @@ jobs:
         run: bun run typecheck
 
       - name: Test (with coverage)
-        run: bun test --coverage --coverage-reporter=lcov --coverage-reporter=text
+        # lcov only: the text reporter's per-file table has outgrown what bun
+        # can write to the Actions log without dying (WriteFailed mid-table);
+        # the coverageThreshold pin in bunfig.toml enforces 100% either way,
+        # and Codecov renders the per-file view from the lcov file.
+        run: bun test --coverage --coverage-reporter=lcov
 
       - name: Upload coverage to Codecov
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository

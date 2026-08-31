@@ -1,5 +1,6 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
+import { forGoogle } from '../../../lib/optionality.js';
 import { applyUpdate } from '../../lib/batch.js';
 import type { schema } from './schema.js';
 
@@ -11,8 +12,18 @@ export async function handler(
     docs,
     args.documentId,
     args.index === undefined
-      ? { insertText: { endOfSegmentLocation: {}, text: args.text } }
-      : { insertText: { location: { index: args.index }, text: args.text } },
+      ? {
+          insertText: {
+            endOfSegmentLocation: forGoogle({ segmentId: args.segmentId }),
+            text: args.text,
+          },
+        }
+      : {
+          insertText: {
+            location: forGoogle({ index: args.index, segmentId: args.segmentId }),
+            text: args.text,
+          },
+        },
   );
   return { documentId, revisionId };
 }

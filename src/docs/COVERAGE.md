@@ -10,20 +10,28 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/docs/api/reference/rest`
 - Discovery: `https://docs.googleapis.com/$discovery/rest?version=v1`
 
-## Methods: REST reference (`methods/`, 9)
+## Methods: REST reference (`methods/`, 35)
 
 The API has 3 methods; the third, `documents.batchUpdate`, is a union of 40
-request types and **is the entire editing surface**, so unlike Sheets it cannot
-be deferred whole. The shipped posture: curated request types as first-class
-operations, each wrapping `batchUpdate` with exactly one request
-(`lib/batch.ts` is the shared wrapper): the text-editing trio plus the
-styling four.
+request types (per the Discovery doc; the reference page previews comment and
+suggestion requests beyond it) and **is the entire editing surface**, so
+unlike Sheets it cannot be deferred whole. The shipped posture: curated
+request types as first-class operations, each wrapping `batchUpdate` with
+exactly one request (`lib/batch.ts` is the shared wrapper): the text-editing
+trio, the styling four, the document-and-section-layout three, the table
+eleven, the named-range three, the header-and-footer four, and the
+break-footnote-and-object five.
 
 | Resource | Implemented |
 |----------|-------------|
 | documents | `get_document`, `create_document` |
 | documents.batchUpdate (text editing) | `insert_text`, `replace_all_text` ⚠️, `delete_content_range` ⚠️ |
 | documents.batchUpdate (styling) | `update_text_style`, `update_paragraph_style`, `create_paragraph_bullets`, `delete_paragraph_bullets` ⚠️ |
+| documents.batchUpdate (document and section layout) | `update_document_style`, `insert_section_break`, `update_section_style` |
+| documents.batchUpdate (tables) | `insert_table`, `insert_table_row`, `insert_table_column`, `delete_table_row` ⚠️, `delete_table_column` ⚠️, `update_table_row_style`, `update_table_column_properties`, `update_table_cell_style`, `merge_table_cells` ⚠️, `unmerge_table_cells` ⚠️, `pin_table_header_rows` |
+| documents.batchUpdate (named ranges) | `create_named_range`, `delete_named_range` ⚠️, `replace_named_range_content` ⚠️ |
+| documents.batchUpdate (headers and footers) | `create_header`, `create_footer`, `delete_header` ⚠️, `delete_footer` ⚠️ |
+| documents.batchUpdate (page breaks, footnotes, and objects) | `insert_page_break`, `create_footnote`, `insert_inline_image`, `replace_image` ⚠️, `delete_positioned_object` ⚠️ |
 
 ⚠️ = destructive (`destructiveHint`): replaced and deleted text is gone (the
 API has no undo), and `delete_paragraph_bullets` is a removal (the unlabel
@@ -31,10 +39,22 @@ precedent; the text itself is preserved). The text-editing writes are not
 idempotent: a repeated `replace_all_text` grows the document whenever the
 replacement reintroduces the match (replace `a` with `aa`), a repeated
 `delete_content_range` deletes different content (indices shift), and
-repeated inserts and creates duplicate. The styling operations are
-idempotent: re-applying the same style, preset, or removal is a no-op, and
-the update masks are derived from the provided keys so only those fields
-change.
+repeated inserts and creates duplicate (`insert_section_break` adds another
+break, and its preceding newline, each time; the table inserts add another
+table, row, or column each time). The table deletes follow the
+`delete_content_range` precedent — destructive and not idempotent, since the
+same cell location addresses a different row or column after each deletion —
+and the merge pair is destructive with the API's own idempotence:
+`merge_table_cells` concatenates cell text into the head cell, and
+`unmerge_table_cells` leaves already-unmerged cells untouched. The styling
+and layout updates (`update_text_style`, `update_paragraph_style`,
+`update_document_style`, `update_section_style`, `update_table_row_style`,
+`update_table_column_properties`, `update_table_cell_style`,
+`pin_table_header_rows`) are idempotent: re-applying the same style, preset,
+or removal is a no-op, and the update masks are derived from the provided
+keys so only those fields change. Point-valued style fields take plain
+numbers of points (PT is the API's only unit); the PT Dimension nesting is
+built at the request boundary.
 
 ## The Document projection
 
@@ -44,8 +64,14 @@ structural elements as `{ startIndex, endIndex, type, text }`, where indices
 are zero-based UTF-16 code units (end-exclusive), paragraphs flatten to their
 concatenated run text (non-text elements appear as one U+FFFC placeholder per
 UTF-16 unit they occupy, so text length always equals the index span), tables
-carry row and column counts only, and an
+carry row and column counts plus their cell tree (`tableRows` of `cells`,
+each cell's `content` recursing into the same structural-element shape, so
+the text inside a cell — and inside a nested table — is targetable exactly
+like body text), and an
 element of an unknown structural kind keeps its indices and drops the rest.
+The document's header, footer, and footnote segments project the same way,
+keyed by the segmentId that writes address them with (their indices are
+segment-relative and start at 0); empty segment maps stay absent.
 Those index ranges are exactly what the editing operations target; they shift
 on every edit, so agents re-read before computing new ranges.
 
@@ -60,24 +86,42 @@ content).
   provided keys, so a field can be set but never reset to inherit (and a
   link, once set, cannot be removed); clearing requires a mask entry with no
   value, which rides with the `writeControl` work in issue #35.
-- **The other 33 `batchUpdate` request types** (tables, named ranges,
-  headers and footers, tabs, objects): issue #35 tracks the curated
-  expansion. `writeControl` (optimistic concurrency), `searchByRegex` on the
-  replace criteria, and the styling fields not yet curated (colors, font
-  families, indents, borders, shading) ride with it.
-- **Tabs and the recursive document tree**: `includeTabsContent` and
-  `suggestionsViewMode` on `documents.get` are not exposed; the legacy
-  single-tab body view is served, writes omit `tabId`/`segmentId` (Google
-  applies them to the first tab's body), and table cells, styles,
-  inline and positioned objects, footnotes, headers, and footers are not
-  projected. Issue #36.
+- **The read-only style fields.** DocumentStyle's and SectionStyle's header
+  and footer ids and `useCustomHeaderFooterMargins` are read-only (writing
+  `marginHeader` or `marginFooter` flips the latter implicitly), and
+  SectionStyle's `sectionType` is set at insertion, so none appear in the
+  curated write entities. SectionStyle's `pageNumberStart`,
+  `flipPageOrientation`, and `useFirstPageHeaderFooter`, whose updatability
+  the reference leaves ambiguous, stay with issue #35.
+- **The read-only table style fields.** TableCellStyle's `rowSpan` and
+  `columnSpan` are read-only (they are reported by merges, not set), so they
+  do not appear in the curated write entity.
+- **The other 7 `batchUpdate` request types** (smart chips and dates —
+  `insertPerson`, `insertRichLink`, `insertDate`; the tab operations —
+  `addDocumentTab`, `deleteTab`, `updateDocumentTabProperties`; and
+  `updateNamedStyle`): issue #35 tracks the curated expansion.
+  `writeControl` (optimistic concurrency), `searchByRegex` on the replace
+  criteria, and text tab stops ride with it.
+- **Tabs and the rest of the recursive document tree**: `includeTabsContent`
+  and `suggestionsViewMode` on `documents.get` are not exposed; the legacy
+  single-tab body view is served, writes omit `tabId` (Google applies them
+  to the first tab), and styles and inline and positioned objects are not
+  projected (table cell trees and the header, footer, and footnote segments
+  now are). Ranges and locations now carry `segmentId`, so writes can
+  address a header, footer, or footnote segment (whose content starts at
+  index 0, not 1) — except `insert_table`, whose location does not yet carry
+  it, so a table can be created only in the body even though the API allows
+  header and footer tables (the existing table styling operations can reach
+  one via `tableStartLocation.segmentId`). Issue #36. The `tabsCriteria` on
+  the named-range requests and the `tabId` on the image and
+  positioned-object requests ride with the same tab work.
 
 ## Deferred
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` expansion** (tables, named ranges,
-  headers/footers, remaining styling fields, regex replace, write control):
-  issue #35.
-- **Rich document structure in reads** (tabs, table cells, styles,
-  suggestions): issue #36.
+- **Curated `batchUpdate` expansion** (the remaining request types, regex
+  replace, write control, the ambiguous section fields): issue #35.
+- **Rich document structure in reads** (tabs, styles, suggestions): issue
+  #36 (table cell trees, header/footer/footnote segments, and segment
+  addressing shipped).

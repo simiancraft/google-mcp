@@ -10,7 +10,7 @@ import { schema } from './schema.js';
  */
 export const update_paragraph_style = docsOperation({
   description:
-    'Set paragraph styling (named style such as headings, alignment, line spacing) on every paragraph a range overlaps; only the provided fields change.',
+    'Set paragraph styling (named style such as headings, alignment, line spacing, direction, spacing, indents, borders, shading, pagination controls) on every paragraph a range overlaps; only the provided fields change.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

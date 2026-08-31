@@ -72,11 +72,85 @@ describe('update_paragraph_style', () => {
     });
   });
 
+  it('builds PT dimensions for spacing and indents', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D4',
+      range: { startIndex: 1, endIndex: 30 },
+      paragraphStyle: {
+        spaceAbove: 12,
+        spaceBelow: 6,
+        indentFirstLine: 18,
+        indentStart: 36,
+        indentEnd: 0,
+        spacingMode: 'COLLAPSE_LISTS',
+        direction: 'LEFT_TO_RIGHT',
+        keepWithNext: true,
+      },
+    });
+    expect(captured.params?.requestBody?.requests?.[0]?.updateParagraphStyle).toEqual({
+      range: { startIndex: 1, endIndex: 30 },
+      paragraphStyle: {
+        spaceAbove: { magnitude: 12, unit: 'PT' },
+        spaceBelow: { magnitude: 6, unit: 'PT' },
+        indentFirstLine: { magnitude: 18, unit: 'PT' },
+        indentStart: { magnitude: 36, unit: 'PT' },
+        indentEnd: { magnitude: 0, unit: 'PT' },
+        spacingMode: 'COLLAPSE_LISTS',
+        direction: 'LEFT_TO_RIGHT',
+        keepWithNext: true,
+      },
+      fields:
+        'spaceAbove,spaceBelow,indentFirstLine,indentStart,indentEnd,spacingMode,direction,keepWithNext',
+    });
+  });
+
+  it('builds borders and shading with nested PT dimensions', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D5',
+      range: { startIndex: 1, endIndex: 10 },
+      paragraphStyle: {
+        borderLeft: {
+          color: { color: { rgbColor: { red: 0.2, green: 0.2, blue: 0.2 } } },
+          width: 1.5,
+          padding: 6,
+          dashStyle: 'SOLID',
+        },
+        borderTop: { dashStyle: 'DOT' },
+        shading: { backgroundColor: { color: { rgbColor: { red: 1, green: 0.9, blue: 0.6 } } } },
+      },
+    });
+    expect(captured.params?.requestBody?.requests?.[0]?.updateParagraphStyle).toEqual({
+      range: { startIndex: 1, endIndex: 10 },
+      paragraphStyle: {
+        borderLeft: {
+          color: { color: { rgbColor: { red: 0.2, green: 0.2, blue: 0.2 } } },
+          width: { magnitude: 1.5, unit: 'PT' },
+          padding: { magnitude: 6, unit: 'PT' },
+          dashStyle: 'SOLID',
+        },
+        borderTop: { dashStyle: 'DOT' },
+        shading: { backgroundColor: { color: { rgbColor: { red: 1, green: 0.9, blue: 0.6 } } } },
+      },
+      fields: 'borderLeft,borderTop,shading',
+    });
+  });
+
   it('rejects an empty style object at the schema', () => {
     const parsed = schema.input.safeParse({
       documentId: 'D3',
       range: { startIndex: 1, endIndex: 2 },
       paragraphStyle: {},
+    });
+    expect(parsed.success).toBe(false);
+  });
+
+  it('rejects an empty border object at the schema (an empty mask value would reset the border)', () => {
+    const parsed = schema.input.safeParse({
+      documentId: 'D3',
+      range: { startIndex: 1, endIndex: 2 },
+      paragraphStyle: { borderTop: {} },
     });
     expect(parsed.success).toBe(false);
   });
