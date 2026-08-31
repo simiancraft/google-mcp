@@ -22,8 +22,10 @@ export const instructions =
   'insert_text with no index appends at the end of the ' +
   'body, and body content starts at index 1. replace_all_text and ' +
   'delete_content_range destroy the matched or ranged text irreversibly. ' +
-  'update_text_style and update_paragraph_style change only the style fields ' +
-  'you provide. delete_paragraph_bullets preserves the text; ' +
+  'The style updates (update_text_style, update_paragraph_style, ' +
+  'update_document_style, update_section_style) change only the style fields ' +
+  'you provide, and point-valued fields take plain numbers of points. ' +
+  'delete_paragraph_bullets preserves the text; ' +
   'create_paragraph_bullets consumes leading tabs to set nesting, so indices ' +
   'can shift on first application. ' +
   "The Docs API has no delete or list; removing a document is Drive's " +

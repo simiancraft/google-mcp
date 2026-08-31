@@ -10,20 +10,21 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/docs/api/reference/rest`
 - Discovery: `https://docs.googleapis.com/$discovery/rest?version=v1`
 
-## Methods: REST reference (`methods/`, 9)
+## Methods: REST reference (`methods/`, 12)
 
 The API has 3 methods; the third, `documents.batchUpdate`, is a union of 40
 request types and **is the entire editing surface**, so unlike Sheets it cannot
 be deferred whole. The shipped posture: curated request types as first-class
 operations, each wrapping `batchUpdate` with exactly one request
-(`lib/batch.ts` is the shared wrapper): the text-editing trio plus the
-styling four.
+(`lib/batch.ts` is the shared wrapper): the text-editing trio, the styling
+four, and the document-and-section-layout three.
 
 | Resource | Implemented |
 |----------|-------------|
 | documents | `get_document`, `create_document` |
 | documents.batchUpdate (text editing) | `insert_text`, `replace_all_text` ⚠️, `delete_content_range` ⚠️ |
 | documents.batchUpdate (styling) | `update_text_style`, `update_paragraph_style`, `create_paragraph_bullets`, `delete_paragraph_bullets` ⚠️ |
+| documents.batchUpdate (document and section layout) | `update_document_style`, `insert_section_break`, `update_section_style` |
 
 ⚠️ = destructive (`destructiveHint`): replaced and deleted text is gone (the
 API has no undo), and `delete_paragraph_bullets` is a removal (the unlabel
@@ -31,10 +32,14 @@ precedent; the text itself is preserved). The text-editing writes are not
 idempotent: a repeated `replace_all_text` grows the document whenever the
 replacement reintroduces the match (replace `a` with `aa`), a repeated
 `delete_content_range` deletes different content (indices shift), and
-repeated inserts and creates duplicate. The styling operations are
-idempotent: re-applying the same style, preset, or removal is a no-op, and
-the update masks are derived from the provided keys so only those fields
-change.
+repeated inserts and creates duplicate (`insert_section_break` adds another
+break, and its preceding newline, each time). The styling and layout updates
+(`update_text_style`, `update_paragraph_style`, `update_document_style`,
+`update_section_style`) are idempotent: re-applying the same style, preset,
+or removal is a no-op, and the update masks are derived from the provided
+keys so only those fields change. Point-valued style fields take plain
+numbers of points (PT is the API's only unit); the PT Dimension nesting is
+built at the request boundary.
 
 ## The Document projection
 
@@ -60,11 +65,17 @@ content).
   provided keys, so a field can be set but never reset to inherit (and a
   link, once set, cannot be removed); clearing requires a mask entry with no
   value, which rides with the `writeControl` work in issue #35.
-- **The other 33 `batchUpdate` request types** (tables, named ranges,
+- **The read-only style fields.** DocumentStyle's and SectionStyle's header
+  and footer ids and `useCustomHeaderFooterMargins` are read-only (writing
+  `marginHeader` or `marginFooter` flips the latter implicitly), and
+  SectionStyle's `sectionType` is set at insertion, so none appear in the
+  curated write entities. SectionStyle's `pageNumberStart`,
+  `flipPageOrientation`, and `useFirstPageHeaderFooter`, whose updatability
+  the reference leaves ambiguous, stay with issue #35.
+- **The other 30 `batchUpdate` request types** (tables, named ranges,
   headers and footers, tabs, objects): issue #35 tracks the curated
   expansion. `writeControl` (optimistic concurrency), `searchByRegex` on the
-  replace criteria, and the styling fields not yet curated (colors, font
-  families, indents, borders, shading) ride with it.
+  replace criteria, and text tab stops ride with it.
 - **Tabs and the recursive document tree**: `includeTabsContent` and
   `suggestionsViewMode` on `documents.get` are not exposed; the legacy
   single-tab body view is served, writes omit `tabId`/`segmentId` (Google
@@ -77,7 +88,7 @@ content).
 Tracked as issues, not missing by accident:
 
 - **Curated `batchUpdate` expansion** (tables, named ranges,
-  headers/footers, remaining styling fields, regex replace, write control):
-  issue #35.
+  headers/footers, regex replace, write control, the ambiguous section
+  fields): issue #35.
 - **Rich document structure in reads** (tabs, table cells, styles,
   suggestions): issue #36.
