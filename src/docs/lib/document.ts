@@ -1,5 +1,5 @@
 import type { docs_v1 } from '@googleapis/docs';
-import type { Document } from '../entities/Document.js';
+import type { Document, SegmentContent } from '../entities/Document.js';
 import type {
   StructuralElement,
   TableCellElement,
@@ -79,6 +79,26 @@ export function projectStructuralElement(
   return base;
 }
 
+/**
+ * Project one segment map (headers, footers, or footnotes, keyed by the id
+ * that writes address with as `segmentId`): each segment's content through
+ * the structural-element projector. An empty or absent map projects to
+ * absent, so documents without segments keep their previous shape.
+ */
+function projectSegments(
+  segments: Record<string, { content?: docs_v1.Schema$StructuralElement[] | null }> | undefined,
+): Record<string, SegmentContent> | undefined {
+  const entries = Object.entries(segments ?? {});
+  return entries.length === 0
+    ? undefined
+    : Object.fromEntries(
+        entries.map(([id, segment]) => [
+          id,
+          { content: (segment.content ?? []).map(projectStructuralElement) },
+        ]),
+      );
+}
+
 /** Project a REST document onto the text-with-indices Document shape, cleaning nulls. */
 export function projectDocument(data: docs_v1.Schema$Document): Document {
   return {
@@ -86,5 +106,8 @@ export function projectDocument(data: docs_v1.Schema$Document): Document {
     title: data.title ?? undefined,
     revisionId: data.revisionId ?? undefined,
     content: data.body?.content ? data.body.content.map(projectStructuralElement) : undefined,
+    headers: projectSegments(data.headers ?? undefined),
+    footers: projectSegments(data.footers ?? undefined),
+    footnotes: projectSegments(data.footnotes ?? undefined),
   };
 }

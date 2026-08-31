@@ -1,9 +1,13 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
 import { create_document } from './create_document/index.js';
+import { create_footer } from './create_footer/index.js';
+import { create_header } from './create_header/index.js';
 import { create_named_range } from './create_named_range/index.js';
 import { create_paragraph_bullets } from './create_paragraph_bullets/index.js';
 import { delete_content_range } from './delete_content_range/index.js';
+import { delete_footer } from './delete_footer/index.js';
+import { delete_header } from './delete_header/index.js';
 import { delete_named_range } from './delete_named_range/index.js';
 import { delete_paragraph_bullets } from './delete_paragraph_bullets/index.js';
 import { delete_table_column } from './delete_table_column/index.js';
@@ -68,4 +72,9 @@ export const methods = {
   create_named_range,
   delete_named_range,
   replace_named_range_content,
+  // headers and footers (curated batchUpdate requests)
+  create_header,
+  create_footer,
+  delete_header,
+  delete_footer,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;

@@ -10,10 +10,12 @@ describe('docs operations', () => {
     instructions,
     groups: [{ kind: 'REST Method', operations: methods }],
     methodSourcePrefix: 'https://developers.google.com/workspace/docs/api/reference/rest/v1/',
-    counts: { methods: 26 },
+    counts: { methods: 30 },
     readOnly: ['get_document'],
     destructive: [
       'delete_content_range',
+      'delete_footer',
+      'delete_header',
       'delete_named_range',
       'delete_paragraph_bullets',
       'delete_table_column',
@@ -26,6 +28,8 @@ describe('docs operations', () => {
     openWorld: [],
     nonIdempotent: [
       'create_document',
+      'create_footer',
+      'create_header',
       'create_named_range',
       'delete_content_range',
       'delete_table_column',

@@ -4,13 +4,15 @@ import { schema } from './schema.js';
 
 /**
  * Text-with-indices by design: the projection carries the body's blocks as
- * text plus UTF-16 index ranges, which is what edit targeting needs; the
- * recursive tree (tabs, table cells, styles, suggestions) is issue #36. The
- * legacy single-tab body view is served (`includeTabsContent` not exposed).
+ * text plus UTF-16 index ranges, which is what edit targeting needs, and the
+ * header, footer, and footnote segments keyed by the segmentId writes
+ * address them with; the rest of the recursive tree (tabs, styles,
+ * suggestions) is issue #36. The legacy single-tab body view is served
+ * (`includeTabsContent` not exposed).
  */
 export const get_document = docsOperation({
   description:
-    'Get a document by id: its title, revision, and body as text blocks with UTF-16 index ranges (the ranges that edits target).',
+    'Get a document by id: its title, revision, body as text blocks with UTF-16 index ranges (the ranges that edits target), and its headers, footers, and footnotes keyed by the segmentId that addresses them.',
   annotations: {
     readOnlyHint: true,
     destructiveHint: false,

@@ -131,4 +131,51 @@ describe('projectDocument', () => {
     });
     expect(projectDocument({})).toEqual({ documentId: '' });
   });
+
+  it('projects headers, footers, and footnotes keyed by their segment id', () => {
+    const projected = projectDocument({
+      documentId: 'D2',
+      headers: {
+        'kix.h1': {
+          headerId: 'kix.h1',
+          content: [
+            {
+              startIndex: 0,
+              endIndex: 12,
+              paragraph: { elements: [{ textRun: { content: 'Page header\n' } }] },
+            },
+          ],
+        },
+      },
+      footers: { 'kix.f1': { footerId: 'kix.f1', content: [] } },
+      footnotes: {
+        'kix.fn1': {
+          footnoteId: 'kix.fn1',
+          content: [
+            {
+              startIndex: 0,
+              endIndex: 2,
+              paragraph: { elements: [{ textRun: { content: ' \n' } }] },
+            },
+          ],
+        },
+      },
+    });
+    expect(projected.headers).toEqual({
+      'kix.h1': {
+        content: [{ startIndex: 0, endIndex: 12, type: 'paragraph', text: 'Page header\n' }],
+      },
+    });
+    expect(projected.footers).toEqual({ 'kix.f1': { content: [] } });
+    expect(projected.footnotes).toEqual({
+      'kix.fn1': { content: [{ startIndex: 0, endIndex: 2, type: 'paragraph', text: ' \n' }] },
+    });
+  });
+
+  it('leaves the segment maps absent when the document has none (empty maps included)', () => {
+    const projected = projectDocument({ documentId: 'D3', headers: {} });
+    expect(projected.headers).toBeUndefined();
+    expect(projected.footers).toBeUndefined();
+    expect(projected.footnotes).toBeUndefined();
+  });
 });

@@ -27,6 +27,7 @@ four, the document-and-section-layout three, and the table eleven.
 | documents.batchUpdate (document and section layout) | `update_document_style`, `insert_section_break`, `update_section_style` |
 | documents.batchUpdate (tables) | `insert_table`, `insert_table_row`, `insert_table_column`, `delete_table_row` ⚠️, `delete_table_column` ⚠️, `update_table_row_style`, `update_table_column_properties`, `update_table_cell_style`, `merge_table_cells` ⚠️, `unmerge_table_cells` ⚠️, `pin_table_header_rows` |
 | documents.batchUpdate (named ranges) | `create_named_range`, `delete_named_range` ⚠️, `replace_named_range_content` ⚠️ |
+| documents.batchUpdate (headers and footers) | `create_header`, `create_footer`, `delete_header` ⚠️, `delete_footer` ⚠️ |
 
 ⚠️ = destructive (`destructiveHint`): replaced and deleted text is gone (the
 API has no undo), and `delete_paragraph_bullets` is a removal (the unlabel
@@ -64,6 +65,9 @@ each cell's `content` recursing into the same structural-element shape, so
 the text inside a cell — and inside a nested table — is targetable exactly
 like body text), and an
 element of an unknown structural kind keeps its indices and drops the rest.
+The document's header, footer, and footnote segments project the same way,
+keyed by the segmentId that writes address them with (their indices are
+segment-relative and start at 0); empty segment maps stay absent.
 Those index ranges are exactly what the editing operations target; they shift
 on every edit, so agents re-read before computing new ranges.
 
@@ -88,9 +92,8 @@ content).
 - **The read-only table style fields.** TableCellStyle's `rowSpan` and
   `columnSpan` are read-only (they are reported by merges, not set), so they
   do not appear in the curated write entity.
-- **The other 16 `batchUpdate` request types** (headers and footers, page
-  breaks, footnotes, images, tabs, objects): issue #35 tracks the curated
-  expansion.
+- **The other 12 `batchUpdate` request types** (page breaks, footnotes,
+  images, tabs, objects): issue #35 tracks the curated expansion.
   `writeControl` (optimistic concurrency), `searchByRegex` on the replace
   criteria, and text tab stops ride with it.
 - **Tabs and the rest of the recursive document tree**: `includeTabsContent`
@@ -106,8 +109,8 @@ content).
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` expansion** (headers/footers, page breaks,
-  footnotes, images, regex replace, write control, the ambiguous section
-  fields): issue #35.
+- **Curated `batchUpdate` expansion** (page breaks, footnotes, images,
+  regex replace, write control, the ambiguous section fields): issue #35.
 - **Rich document structure in reads** (tabs, styles, suggestions): issue
-  #36 (table cell trees shipped).
+  #36 (table cell trees, header/footer/footnote segments, and segment
+  addressing shipped).
