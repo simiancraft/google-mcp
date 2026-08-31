@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+import { StructuralElement } from '../entities/StructuralElement.js';
 import { projectDocument, projectStructuralElement } from './document.js';
 
 describe('projectStructuralElement', () => {
@@ -47,6 +48,77 @@ describe('projectStructuralElement', () => {
     });
     expect(projectStructuralElement({ tableOfContents: {} })).toEqual({
       type: 'tableOfContents',
+    });
+  });
+
+  it('projects the cell tree of a table, recursing into cell content', () => {
+    const projected = projectStructuralElement({
+      startIndex: 5,
+      endIndex: 30,
+      table: {
+        rows: 1,
+        columns: 2,
+        tableRows: [
+          {
+            startIndex: 6,
+            endIndex: 29,
+            tableCells: [
+              {
+                startIndex: 7,
+                endIndex: 12,
+                content: [
+                  {
+                    startIndex: 8,
+                    endIndex: 12,
+                    paragraph: { elements: [{ textRun: { content: 'one\n' } }] },
+                  },
+                ],
+              },
+              {
+                startIndex: 12,
+                endIndex: 29,
+                content: [{ startIndex: 13, endIndex: 29, table: { rows: 1, columns: 1 } }],
+              },
+            ],
+          },
+        ],
+      },
+    });
+    expect(projected).toEqual({
+      startIndex: 5,
+      endIndex: 30,
+      type: 'table',
+      rows: 1,
+      columns: 2,
+      tableRows: [
+        {
+          startIndex: 6,
+          endIndex: 29,
+          cells: [
+            {
+              startIndex: 7,
+              endIndex: 12,
+              content: [{ startIndex: 8, endIndex: 12, type: 'paragraph', text: 'one\n' }],
+            },
+            {
+              startIndex: 12,
+              endIndex: 29,
+              // A nested table recurses through the same projector.
+              content: [{ startIndex: 13, endIndex: 29, type: 'table', rows: 1, columns: 1 }],
+            },
+          ],
+        },
+      ],
+    });
+    expect(() => StructuralElement.parse(projected)).not.toThrow();
+  });
+
+  it('projects a row with no cells and a cell with no content to empty arrays', () => {
+    expect(projectStructuralElement({ table: { rows: 1, columns: 0, tableRows: [{}] } })).toEqual({
+      type: 'table',
+      rows: 1,
+      columns: 0,
+      tableRows: [{ cells: [] }],
     });
   });
 });

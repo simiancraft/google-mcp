@@ -23,8 +23,14 @@ export const instructions =
   'body, and body content starts at index 1. replace_all_text and ' +
   'delete_content_range destroy the matched or ranged text irreversibly. ' +
   'The style updates (update_text_style, update_paragraph_style, ' +
-  'update_document_style, update_section_style) change only the style fields ' +
+  'update_document_style, update_section_style, and the table styling ' +
+  'operations) change only the style fields ' +
   'you provide, and point-valued fields take plain numbers of points. ' +
+  "A table element carries its cell tree (tableRows of cells, each cell's " +
+  'content holding the same text blocks), so target text inside a cell by ' +
+  'the paragraph indices within it, a table by its start index, and a cell ' +
+  'by table start plus zero-based row and column. delete_table_row and ' +
+  'delete_table_column remove all content the row or column holds. ' +
   'delete_paragraph_bullets preserves the text; ' +
   'create_paragraph_bullets consumes leading tabs to set nesting, so indices ' +
   'can shift on first application. ' +

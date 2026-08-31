@@ -1,6 +1,10 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { Document } from '../entities/Document.js';
-import type { StructuralElement } from '../entities/StructuralElement.js';
+import type {
+  StructuralElement,
+  TableCellElement,
+  TableRowElement,
+} from '../entities/StructuralElement.js';
 
 /**
  * Concatenate a paragraph's elements into index-faithful text: text runs
@@ -21,11 +25,31 @@ function paragraphText(paragraph: docs_v1.Schema$Paragraph): string {
     .join('');
 }
 
+/** Project one REST table cell: indices plus its content, recursively. */
+function projectTableCell(cell: docs_v1.Schema$TableCell): TableCellElement {
+  return {
+    startIndex: cell.startIndex ?? undefined,
+    endIndex: cell.endIndex ?? undefined,
+    content: (cell.content ?? []).map(projectStructuralElement),
+  };
+}
+
+/** Project one REST table row: indices plus its cells. */
+function projectTableRow(row: docs_v1.Schema$TableRow): TableRowElement {
+  return {
+    startIndex: row.startIndex ?? undefined,
+    endIndex: row.endIndex ?? undefined,
+    cells: (row.tableCells ?? []).map(projectTableCell),
+  };
+}
+
 /**
  * Project one REST structural element: indices plus kind, paragraph text, and
- * table dimensions. An element of a kind this server does not know keeps its
- * indices and drops the rest (the enum-or-drop policy applied to a
- * discriminator), so edits can still be targeted around it.
+ * for tables the dimensions and the cell tree (cell content recurses into
+ * this same projector, so nested tables project too). An element of a kind
+ * this server does not know keeps its indices and drops the rest (the
+ * enum-or-drop policy applied to a discriminator), so edits can still be
+ * targeted around it.
  */
 export function projectStructuralElement(
   element: docs_v1.Schema$StructuralElement,
@@ -43,6 +67,7 @@ export function projectStructuralElement(
       type: 'table',
       rows: element.table.rows ?? undefined,
       columns: element.table.columns ?? undefined,
+      tableRows: element.table.tableRows ? element.table.tableRows.map(projectTableRow) : undefined,
     };
   }
   if (element.sectionBreak) {
