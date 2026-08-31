@@ -4,8 +4,13 @@ import { create_document } from './create_document/index.js';
 import { create_paragraph_bullets } from './create_paragraph_bullets/index.js';
 import { delete_content_range } from './delete_content_range/index.js';
 import { delete_paragraph_bullets } from './delete_paragraph_bullets/index.js';
+import { delete_table_column } from './delete_table_column/index.js';
+import { delete_table_row } from './delete_table_row/index.js';
 import { get_document } from './get_document/index.js';
 import { insert_section_break } from './insert_section_break/index.js';
+import { insert_table } from './insert_table/index.js';
+import { insert_table_column } from './insert_table_column/index.js';
+import { insert_table_row } from './insert_table_row/index.js';
 import { insert_text } from './insert_text/index.js';
 import { replace_all_text } from './replace_all_text/index.js';
 import { update_document_style } from './update_document_style/index.js';
@@ -38,4 +43,10 @@ export const methods = {
   update_document_style,
   insert_section_break,
   update_section_style,
+  // tables (curated batchUpdate requests)
+  insert_table,
+  insert_table_row,
+  insert_table_column,
+  delete_table_row,
+  delete_table_column,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;
