@@ -1,3 +1,9 @@
+## [1.19.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.18.1...v1.19.0) (2026-08-31)
+
+### Features
+
+* **docs:** curated batchUpdate expansion: formatting, tables, and document structure ([#99](https://github.com/simiancraft/google-mcp-suite/issues/99)) ([a1c7bbd](https://github.com/simiancraft/google-mcp-suite/commit/a1c7bbdf2f96451391dc4d7d17024b7bfbf33d04)), closes [#35](https://github.com/simiancraft/google-mcp-suite/issues/35) [#36](https://github.com/simiancraft/google-mcp-suite/issues/36)
+
 ## [1.18.1](https://github.com/simiancraft/google-mcp-suite/compare/v1.18.0...v1.18.1) (2026-07-29)
 
 ### Bug Fixes
