@@ -19,7 +19,7 @@ export const SectionStyle = z.strictObject({
     .max(3)
     .optional()
     .describe(
-      'The columns the section contains, one entry per column (an empty object per column lets Docs compute equal widths). Sections can have at most three columns; when updating, omitting this field or providing an empty list restores the single-column layout.',
+      'The columns the section contains, one entry per column (an empty object per column lets Docs compute equal widths). Sections can have at most three columns; when updating, providing an empty list restores the single-column layout, and omitting the field leaves the columns unchanged (the update mask is derived from the provided keys).',
     ),
   columnSeparatorStyle: z
     .enum(['NONE', 'BETWEEN_EACH_COLUMN'])

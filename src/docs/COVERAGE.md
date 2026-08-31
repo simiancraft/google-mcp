@@ -10,14 +10,17 @@ the REST-sourced `methods/` registry is the whole wire surface.
 - REST reference: `https://developers.google.com/workspace/docs/api/reference/rest`
 - Discovery: `https://docs.googleapis.com/$discovery/rest?version=v1`
 
-## Methods: REST reference (`methods/`, 23)
+## Methods: REST reference (`methods/`, 35)
 
 The API has 3 methods; the third, `documents.batchUpdate`, is a union of 40
-request types and **is the entire editing surface**, so unlike Sheets it cannot
-be deferred whole. The shipped posture: curated request types as first-class
-operations, each wrapping `batchUpdate` with exactly one request
-(`lib/batch.ts` is the shared wrapper): the text-editing trio, the styling
-four, the document-and-section-layout three, and the table eleven.
+request types (per the Discovery doc; the reference page previews comment and
+suggestion requests beyond it) and **is the entire editing surface**, so
+unlike Sheets it cannot be deferred whole. The shipped posture: curated
+request types as first-class operations, each wrapping `batchUpdate` with
+exactly one request (`lib/batch.ts` is the shared wrapper): the text-editing
+trio, the styling four, the document-and-section-layout three, the table
+eleven, the named-range three, the header-and-footer four, and the
+break-footnote-and-object five.
 
 | Resource | Implemented |
 |----------|-------------|
@@ -102,11 +105,16 @@ content).
 - **Tabs and the rest of the recursive document tree**: `includeTabsContent`
   and `suggestionsViewMode` on `documents.get` are not exposed; the legacy
   single-tab body view is served, writes omit `tabId` (Google applies them
-  to the first tab), and styles, inline and positioned objects, footnotes,
-  headers, and footers are not projected (table cell trees now are). Ranges
-  and locations now carry `segmentId`, so writes can address a header,
-  footer, or footnote segment (whose content starts at index 0, not 1).
-  Issue #36.
+  to the first tab), and styles and inline and positioned objects are not
+  projected (table cell trees and the header, footer, and footnote segments
+  now are). Ranges and locations now carry `segmentId`, so writes can
+  address a header, footer, or footnote segment (whose content starts at
+  index 0, not 1) — except `insert_table`, whose location does not yet carry
+  it, so a table can be created only in the body even though the API allows
+  header and footer tables (the existing table styling operations can reach
+  one via `tableStartLocation.segmentId`). Issue #36. The `tabsCriteria` on
+  the named-range requests and the `tabId` on the image and
+  positioned-object requests ride with the same tab work.
 
 ## Deferred
 

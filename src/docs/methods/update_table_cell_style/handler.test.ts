@@ -122,4 +122,14 @@ describe('update_table_cell_style', () => {
       }).success,
     ).toBe(false);
   });
+
+  it('rejects an empty border object at the schema (an empty mask value would reset the border)', () => {
+    expect(
+      schema.input.safeParse({
+        documentId: 'D3',
+        tableStartLocation: { index: 5 },
+        tableCellStyle: { borderTop: {} },
+      }).success,
+    ).toBe(false);
+  });
 });

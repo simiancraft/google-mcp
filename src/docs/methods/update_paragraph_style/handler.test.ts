@@ -145,4 +145,13 @@ describe('update_paragraph_style', () => {
     });
     expect(parsed.success).toBe(false);
   });
+
+  it('rejects an empty border object at the schema (an empty mask value would reset the border)', () => {
+    const parsed = schema.input.safeParse({
+      documentId: 'D3',
+      range: { startIndex: 1, endIndex: 2 },
+      paragraphStyle: { borderTop: {} },
+    });
+    expect(parsed.success).toBe(false);
+  });
 });
