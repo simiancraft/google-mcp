@@ -1,6 +1,7 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
+import { location } from '../../lib/address.js';
 import { applyUpdate } from '../../lib/batch.js';
 import { pt } from '../../lib/dimension.js';
 import type { schema } from './schema.js';
@@ -12,7 +13,7 @@ export async function handler(
   const { tableRowStyle } = args;
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     updateTableRowStyle: forGoogle({
-      tableStartLocation: args.tableStartLocation,
+      tableStartLocation: location(args.tableStartLocation),
       rowIndices: args.rowIndices,
       // One source object feeds both mask and values: the spread carries
       // every entity field through, and only minRowHeight is overridden (to

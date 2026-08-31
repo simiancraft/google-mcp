@@ -1,5 +1,6 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
+import { tableCellLocation } from '../../lib/address.js';
 import { applyUpdate } from '../../lib/batch.js';
 import type { schema } from './schema.js';
 
@@ -8,7 +9,7 @@ export async function handler(
   args: z.infer<typeof schema.input>,
 ): Promise<z.infer<typeof schema.output>> {
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
-    deleteTableColumn: { tableCellLocation: args.tableCellLocation },
+    deleteTableColumn: { tableCellLocation: tableCellLocation(args.tableCellLocation) },
   });
   return { documentId, revisionId };
 }

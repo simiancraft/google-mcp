@@ -2,6 +2,7 @@ import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
 import type { ParagraphBorder } from '../../entities/ParagraphBorder.js';
+import { range } from '../../lib/address.js';
 import { applyUpdate } from '../../lib/batch.js';
 import { optionalColor } from '../../lib/color.js';
 import { pt } from '../../lib/dimension.js';
@@ -26,7 +27,7 @@ export async function handler(
   const { paragraphStyle } = args;
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     updateParagraphStyle: {
-      range: args.range,
+      range: range(args.range),
       // One source object feeds both mask and values: the spread carries every
       // entity field through, and only the point-valued fields (to PT
       // Dimensions) and borders (whose width and padding nest the same

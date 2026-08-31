@@ -2,6 +2,7 @@ import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
 import type { TableCellBorder } from '../../entities/TableCellBorder.js';
+import { location, tableRange } from '../../lib/address.js';
 import { applyUpdate } from '../../lib/batch.js';
 import { optionalColor } from '../../lib/color.js';
 import { pt } from '../../lib/dimension.js';
@@ -25,8 +26,8 @@ export async function handler(
   const { tableCellStyle } = args;
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     updateTableCellStyle: forGoogle({
-      tableRange: args.tableRange,
-      tableStartLocation: args.tableStartLocation,
+      tableRange: tableRange(args.tableRange),
+      tableStartLocation: location(args.tableStartLocation),
       // One source object feeds both mask and values: the spread carries
       // every entity field through, and only the color, border, and
       // point-valued fields are overridden (to their wire nesting). A future

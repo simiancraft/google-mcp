@@ -106,6 +106,29 @@ describe('update_text_style', () => {
     });
   });
 
+  it('addresses a segment when the range carries a segmentId', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D4',
+      range: { startIndex: 0, endIndex: 11, segmentId: 'kix.header1' },
+      textStyle: { bold: true },
+    });
+    expect(captured.params?.requestBody?.requests?.[0]?.updateTextStyle).toEqual({
+      range: { startIndex: 0, endIndex: 11, segmentId: 'kix.header1' },
+      textStyle: { bold: true },
+      fields: 'bold',
+    });
+  });
+
+  it('rejects a body range starting at index 0 at the schema', () => {
+    const parsed = schema.input.safeParse({
+      documentId: 'D5',
+      range: { startIndex: 0, endIndex: 2 },
+      textStyle: { bold: true },
+    });
+    expect(parsed.success).toBe(false);
+  });
+
   it('rejects an empty style object at the schema', () => {
     const parsed = schema.input.safeParse({
       documentId: 'D3',

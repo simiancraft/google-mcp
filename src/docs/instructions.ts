@@ -20,7 +20,10 @@ export const instructions =
   'per UTF-16 unit, so block text length always equals its index span; an ' +
   'emoji is two units, and ranges must not split a surrogate pair. ' +
   'insert_text with no index appends at the end of the ' +
-  'body, and body content starts at index 1. replace_all_text and ' +
+  'body, and body content starts at index 1. Ranges, locations, and ' +
+  'insert_text take an optional segmentId (a headerId, footerId, or ' +
+  'footnoteId from get_document) addressing that segment instead of the ' +
+  'body; segment content starts at index 0, not 1. replace_all_text and ' +
   'delete_content_range destroy the matched or ranged text irreversibly. ' +
   'The style updates (update_text_style, update_paragraph_style, ' +
   'update_document_style, update_section_style, and the table styling ' +

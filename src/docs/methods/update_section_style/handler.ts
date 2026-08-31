@@ -1,6 +1,7 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { z } from 'zod';
 import { forGoogle } from '../../../lib/optionality.js';
+import { range } from '../../lib/address.js';
 import { applyUpdate } from '../../lib/batch.js';
 import { pt } from '../../lib/dimension.js';
 import type { schema } from './schema.js';
@@ -12,7 +13,7 @@ export async function handler(
   const { sectionStyle } = args;
   const { documentId, revisionId } = await applyUpdate(docs, args.documentId, {
     updateSectionStyle: {
-      range: args.range,
+      range: range(args.range),
       // One source object feeds both mask and values: the spread carries
       // every entity field through, and only the point-valued fields (to PT
       // Dimensions, columnProperties nesting per column) are overridden, so

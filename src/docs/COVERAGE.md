@@ -93,10 +93,12 @@ content).
   criteria, and text tab stops ride with it.
 - **Tabs and the rest of the recursive document tree**: `includeTabsContent`
   and `suggestionsViewMode` on `documents.get` are not exposed; the legacy
-  single-tab body view is served, writes omit `tabId`/`segmentId` (Google
-  applies them to the first tab's body), and styles, inline and positioned
-  objects, footnotes, headers, and footers are not projected (table cell
-  trees now are). Issue #36.
+  single-tab body view is served, writes omit `tabId` (Google applies them
+  to the first tab), and styles, inline and positioned objects, footnotes,
+  headers, and footers are not projected (table cell trees now are). Ranges
+  and locations now carry `segmentId`, so writes can address a header,
+  footer, or footnote segment (whose content starts at index 0, not 1).
+  Issue #36.
 
 ## Deferred
 

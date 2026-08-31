@@ -50,4 +50,34 @@ describe('insert_text', () => {
     expect(result).toEqual({ documentId: 'D2' });
     expect(() => schema.output.parse(result)).not.toThrow();
   });
+
+  it('inserts into a segment at index 0 (header, footer, and footnote content starts at 0)', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D3',
+      text: 'Page header',
+      index: 0,
+      segmentId: 'kix.header1',
+    });
+    expect(captured.params?.requestBody?.requests).toEqual([
+      { insertText: { location: { index: 0, segmentId: 'kix.header1' }, text: 'Page header' } },
+    ]);
+  });
+
+  it('appends at the end of a segment when only segmentId is given', async () => {
+    const captured: Captured = {};
+    await handler(fakeDocs(captured, {}), {
+      documentId: 'D4',
+      text: ' - drafted',
+      segmentId: 'kix.footer1',
+    });
+    expect(captured.params?.requestBody?.requests).toEqual([
+      { insertText: { endOfSegmentLocation: { segmentId: 'kix.footer1' }, text: ' - drafted' } },
+    ]);
+  });
+
+  it('rejects index 0 without a segmentId at the schema (body content starts at 1)', () => {
+    const parsed = schema.input.safeParse({ documentId: 'D5', text: 'x', index: 0 });
+    expect(parsed.success).toBe(false);
+  });
 });
