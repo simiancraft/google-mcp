@@ -1,8 +1,10 @@
 import type { docs_v1 } from '@googleapis/docs';
 import type { AnyOperation } from '../../lib/operation.js';
 import { create_document } from './create_document/index.js';
+import { create_named_range } from './create_named_range/index.js';
 import { create_paragraph_bullets } from './create_paragraph_bullets/index.js';
 import { delete_content_range } from './delete_content_range/index.js';
+import { delete_named_range } from './delete_named_range/index.js';
 import { delete_paragraph_bullets } from './delete_paragraph_bullets/index.js';
 import { delete_table_column } from './delete_table_column/index.js';
 import { delete_table_row } from './delete_table_row/index.js';
@@ -15,6 +17,7 @@ import { insert_text } from './insert_text/index.js';
 import { merge_table_cells } from './merge_table_cells/index.js';
 import { pin_table_header_rows } from './pin_table_header_rows/index.js';
 import { replace_all_text } from './replace_all_text/index.js';
+import { replace_named_range_content } from './replace_named_range_content/index.js';
 import { unmerge_table_cells } from './unmerge_table_cells/index.js';
 import { update_document_style } from './update_document_style/index.js';
 import { update_paragraph_style } from './update_paragraph_style/index.js';
@@ -61,4 +64,8 @@ export const methods = {
   merge_table_cells,
   unmerge_table_cells,
   pin_table_header_rows,
+  // named ranges (curated batchUpdate requests)
+  create_named_range,
+  delete_named_range,
+  replace_named_range_content,
 } satisfies Record<string, AnyOperation<docs_v1.Docs>>;

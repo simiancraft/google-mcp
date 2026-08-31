@@ -26,6 +26,7 @@ four, the document-and-section-layout three, and the table eleven.
 | documents.batchUpdate (styling) | `update_text_style`, `update_paragraph_style`, `create_paragraph_bullets`, `delete_paragraph_bullets` ⚠️ |
 | documents.batchUpdate (document and section layout) | `update_document_style`, `insert_section_break`, `update_section_style` |
 | documents.batchUpdate (tables) | `insert_table`, `insert_table_row`, `insert_table_column`, `delete_table_row` ⚠️, `delete_table_column` ⚠️, `update_table_row_style`, `update_table_column_properties`, `update_table_cell_style`, `merge_table_cells` ⚠️, `unmerge_table_cells` ⚠️, `pin_table_header_rows` |
+| documents.batchUpdate (named ranges) | `create_named_range`, `delete_named_range` ⚠️, `replace_named_range_content` ⚠️ |
 
 ⚠️ = destructive (`destructiveHint`): replaced and deleted text is gone (the
 API has no undo), and `delete_paragraph_bullets` is a removal (the unlabel
@@ -87,8 +88,9 @@ content).
 - **The read-only table style fields.** TableCellStyle's `rowSpan` and
   `columnSpan` are read-only (they are reported by merges, not set), so they
   do not appear in the curated write entity.
-- **The other 19 `batchUpdate` request types** (named ranges, headers and
-  footers, tabs, objects): issue #35 tracks the curated expansion.
+- **The other 16 `batchUpdate` request types** (headers and footers, page
+  breaks, footnotes, images, tabs, objects): issue #35 tracks the curated
+  expansion.
   `writeControl` (optimistic concurrency), `searchByRegex` on the replace
   criteria, and text tab stops ride with it.
 - **Tabs and the rest of the recursive document tree**: `includeTabsContent`
@@ -104,7 +106,8 @@ content).
 
 Tracked as issues, not missing by accident:
 
-- **Curated `batchUpdate` expansion** (named ranges, headers/footers, regex
-  replace, write control, the ambiguous section fields): issue #35.
+- **Curated `batchUpdate` expansion** (headers/footers, page breaks,
+  footnotes, images, regex replace, write control, the ambiguous section
+  fields): issue #35.
 - **Rich document structure in reads** (tabs, styles, suggestions): issue
   #36 (table cell trees shipped).
