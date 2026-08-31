@@ -39,5 +39,9 @@ export const instructions =
   'delete_paragraph_bullets preserves the text; ' +
   'create_paragraph_bullets consumes leading tabs to set nesting, so indices ' +
   'can shift on first application. ' +
+  'insert_inline_image fetches its image once from a publicly accessible ' +
+  'URI at insertion time (PNG, JPEG, or GIF, under 50MB and 25 megapixels), ' +
+  'and create_footnote returns the footnoteId to write the footnote text ' +
+  'through insert_text. ' +
   "The Docs API has no delete or list; removing a document is Drive's " +
   'files.delete, and document creation takes only a title.';
