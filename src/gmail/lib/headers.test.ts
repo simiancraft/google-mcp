@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { headerSafe, stripBreaks } from './headers.js';
+import { headerParamSafe, headerSafe, stripBreaks } from './headers.js';
 
 const DEL = String.fromCharCode(0x7f);
 
@@ -18,5 +18,12 @@ describe('stripBreaks', () => {
   it('removes control characters and line breaks, keeping the rest', () => {
     expect(stripBreaks('a@b.com\r\nBcc: x')).toBe('a@b.comBcc: x');
     expect(stripBreaks('clean')).toBe('clean');
+  });
+});
+
+describe('headerParamSafe', () => {
+  it('strips control characters, quotes, and backslashes', () => {
+    expect(headerParamSafe('re\r\nport".pdf\\')).toBe('report.pdf');
+    expect(headerParamSafe('plain.txt')).toBe('plain.txt');
   });
 });

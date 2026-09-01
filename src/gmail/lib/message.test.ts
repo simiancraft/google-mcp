@@ -49,6 +49,26 @@ describe('buildRawMessage', () => {
     expect(out).not.toContain('Subject: 🚀 Launch');
   });
 
+  it('multipart/mixed with an attachment part, bodies intact', () => {
+    const data = Buffer.from('pdf bytes').toString('base64');
+    const out = decode(
+      buildRawMessage({
+        from,
+        to: ['a@b.com'],
+        body: 'plain',
+        htmlBody: '<b>hi</b>',
+        attachments: [{ filename: 'packet.pdf', contentType: 'application/pdf', data }],
+      }),
+    );
+    expect(out).toContain('Content-Type: multipart/mixed');
+    expect(out).toContain('Content-Type: application/pdf; name="packet.pdf"');
+    expect(out).toContain('Content-Disposition: attachment; filename="packet.pdf"');
+    expect(out).toContain('Content-Transfer-Encoding: base64');
+    expect(out).toContain(data);
+    expect(out).toContain('plain');
+    expect(out).toContain('<b>hi</b>');
+  });
+
   it('strips CR/LF from header fields to block header injection', () => {
     const out = decode(
       buildRawMessage({

@@ -5,7 +5,8 @@ import type { Optional } from '../../lib/optionality.js';
 import type { Draft } from '../entities/Draft.js';
 import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
-import { stripBreaks } from './headers.js';
+import type { MimeAttachment } from './attachment.js';
+import { headerParamSafe, stripBreaks } from './headers.js';
 
 /**
  * Lowercased header name -> value, from a message payload. Null-prototype: a
@@ -178,6 +179,7 @@ export function buildRawMessage(args: {
   body?: Optional<string>;
   htmlBody?: Optional<string>;
   inReplyTo?: Optional<string>;
+  attachments?: Optional<MimeAttachment[]>;
 }): string {
   // Strip CR/LF and control characters from every header-bound field: a line
   // break in an address or subject would otherwise inject a new header (e.g. a
@@ -206,6 +208,18 @@ export function buildRawMessage(args: {
   }
   if (args.body === undefined && args.htmlBody === undefined) {
     msg.addMessage({ contentType: 'text/plain', data: '' });
+  }
+  // Attachments arrive pre-encoded (lib/attachment.ts owns reading, sizing,
+  // and folding) and pre-sanitized, but filename and contentType are
+  // header-bound, so the choke-point guarantee applies to them too: sanitize
+  // here regardless of what the producer did. Their presence switches the
+  // builder to a multipart/mixed structure.
+  for (const attachment of args.attachments ?? []) {
+    msg.addAttachment({
+      filename: headerParamSafe(attachment.filename) || 'attachment',
+      contentType: headerParamSafe(attachment.contentType) || 'application/octet-stream',
+      data: attachment.data,
+    });
   }
   // Base64url the RFC 822 text ourselves (the format the Gmail API expects),
   // rather than the library's asEncoded(), whose output is not URL-safe base64.
