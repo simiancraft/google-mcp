@@ -23,3 +23,13 @@ export const headerSafe = z
 export function stripBreaks(value: string): string {
   return [...value].filter((ch) => !isControl(ch)).join('');
 }
+
+/**
+ * Make a value safe for a quoted MIME header parameter (`name="..."`,
+ * `filename="..."`): strip control characters (header injection) plus double
+ * quotes and backslashes, which the MIME builder interpolates unescaped into
+ * the quoted string.
+ */
+export function headerParamSafe(value: string): string {
+  return stripBreaks(value).replaceAll('"', '').replaceAll('\\', '');
+}

@@ -6,7 +6,7 @@ import type { Draft } from '../entities/Draft.js';
 import type { EmailAddress } from '../entities/EmailAddress.js';
 import type { Message } from '../entities/Message.js';
 import type { MimeAttachment } from './attachment.js';
-import { stripBreaks } from './headers.js';
+import { headerParamSafe, stripBreaks } from './headers.js';
 
 /**
  * Lowercased header name -> value, from a message payload. Null-prototype: a
@@ -209,13 +209,15 @@ export function buildRawMessage(args: {
   if (args.body === undefined && args.htmlBody === undefined) {
     msg.addMessage({ contentType: 'text/plain', data: '' });
   }
-  // Attachments arrive pre-encoded and pre-sanitized (lib/attachment.ts owns
-  // reading, sizing, folding, and header-parameter safety); their presence
-  // switches the builder to a multipart/mixed structure.
+  // Attachments arrive pre-encoded (lib/attachment.ts owns reading, sizing,
+  // and folding) and pre-sanitized, but filename and contentType are
+  // header-bound, so the choke-point guarantee applies to them too: sanitize
+  // here regardless of what the producer did. Their presence switches the
+  // builder to a multipart/mixed structure.
   for (const attachment of args.attachments ?? []) {
     msg.addAttachment({
-      filename: attachment.filename,
-      contentType: attachment.contentType,
+      filename: headerParamSafe(attachment.filename) || 'attachment',
+      contentType: headerParamSafe(attachment.contentType) || 'application/octet-stream',
       data: attachment.data,
     });
   }

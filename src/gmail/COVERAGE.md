@@ -58,6 +58,16 @@ projected **outputs** (`toRecipients`/`ccRecipients`/`bccRecipients`, `sender`)
 are structured `EmailAddress`. Inbound parsing and outbound assembly are
 different operations and intentionally do not share a type.
 
+The compose operations (`create_draft`, `update_draft`, `send_message`) accept
+an optional `attachments` array (`AttachmentFile`: `path`, `filename?`,
+`mimeType?`), a suite-native input with no Google-page counterpart: the API
+takes attachments only inside the documented `raw` RFC 822 field, so the server
+reads each local path and assembles the MIME message itself (issue #101).
+Attachments are delivered as downloads, not inline images. The combined decoded
+payload is capped at the suite's shared 25 MiB transfer ceiling; that bounds
+what the server buffers, not what Gmail accepts (base64 inflation means sends
+near the cap can still be refused upstream).
+
 ## Deferred
 
 Tracked as issues, not missing by accident:
@@ -66,3 +76,5 @@ Tracked as issues, not missing by accident:
 - **Niche / specialized** (history, S/MIME, CSE, message insert/import): issue #5.
 - **Identity and access** (send-as aliases, forwarding addresses, delegates;
   security-sensitive): issue #6.
+- **Attachments past the compose cap** (base64 inflation band, resumable
+  `/upload` endpoint): issue #103.

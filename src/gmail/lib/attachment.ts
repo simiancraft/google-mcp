@@ -1,9 +1,9 @@
-import { readFile } from 'node:fs/promises';
+import { open } from 'node:fs/promises';
 import { basename, extname } from 'node:path';
-import { assertWithinDownloadCap, MAX_DOWNLOAD_BYTES } from '../../lib/limits.js';
+import { assertWithinDownloadCap, MIB_LABEL } from '../../lib/limits.js';
 import { ownLookup } from '../../lib/utils/lookup.js';
 import type { AttachmentFile } from '../entities/AttachmentFile.js';
-import { stripBreaks } from './headers.js';
+import { headerParamSafe } from './headers.js';
 
 /**
  * Extension -> MIME type for the attachment types agents actually send.
@@ -47,21 +47,13 @@ const FALLBACK_MIME_TYPE = 'application/octet-stream';
  */
 export const ATTACHMENTS_PARAM_DESCRIPTION =
   'Local files to attach; the server reads each path and assembles the MIME message. ' +
-  `Combined size is capped at ${MAX_DOWNLOAD_BYTES / (1024 * 1024)} MiB.`;
+  'Attachments are delivered as downloads, not inline images (no cid: references). ' +
+  `Combined size is capped at ${MIB_LABEL}.`;
 
 /** MIME type for a filename, by extension; octet-stream when unrecognized. */
-export function sniffMimeType(filename: string): string {
+export function mimeTypeForExtension(filename: string): string {
   const extension = extname(filename).slice(1).toLowerCase();
   return ownLookup(MIME_TYPES, extension) ?? FALLBACK_MIME_TYPE;
-}
-
-/**
- * Make a value safe for a MIME header parameter: strip control characters
- * (header injection) plus double quotes and backslashes, which the MIME
- * builder interpolates unescaped into `name="..."` / `filename="..."`.
- */
-export function headerParamSafe(value: string): string {
-  return stripBreaks(value).replaceAll('"', '').replaceAll('\\', '');
 }
 
 /**
@@ -78,12 +70,22 @@ export function foldBase64(base64: string): string {
   return base64.match(/.{1,76}/g)?.join('\r\n') ?? '';
 }
 
+const CAP_OPTIONS = {
+  subject: 'The combined attachment payload',
+  action: 'compose attachments',
+  deferral: 'https://github.com/simiancraft/google-mcp-suite/issues/103',
+} as const;
+
 /**
  * Read attachment specs from disk into MIME-ready parts. The combined decoded
- * size is capped at the suite ceiling (25 MiB, which is also Gmail's own
- * message maximum for the non-resumable send path); the cap is checked as a
- * running total so an oversize batch fails before every file is buffered.
- * Returns undefined when there is nothing to attach.
+ * size is capped at the suite's shared JSON-transfer ceiling; that bounds
+ * what this process buffers, not what Gmail accepts (base64 inflates the
+ * encoded message ~4/3, so sends near the cap can still be refused by
+ * Google; the band past the cap is deferred to issue #103). Each path is
+ * stat-checked first: only regular files are read (a FIFO or device file
+ * would block or grow unbounded), and an oversize total refuses before the
+ * offending file is buffered. Returns undefined when there is nothing to
+ * attach.
  */
 export async function loadAttachments(
   specs: AttachmentFile[] | undefined,
@@ -94,18 +96,34 @@ export async function loadAttachments(
   let total = 0;
   const out: MimeAttachment[] = [];
   for (const spec of specs) {
-    const bytes = await readFile(spec.path);
-    total += bytes.byteLength;
-    assertWithinDownloadCap(total, {
-      subject: 'The combined attachment payload',
-      action: 'compose attachments',
-    });
+    const file = await open(spec.path, 'r');
+    let bytes: Buffer;
+    try {
+      const stats = await file.stat();
+      if (!stats.isFile()) {
+        throw new Error(`Attachment path ${spec.path} is not a regular file.`);
+      }
+      total += stats.size;
+      assertWithinDownloadCap(total, CAP_OPTIONS);
+      bytes = await file.readFile();
+      // Re-check what actually arrived: a file that grew between stat and
+      // read must not slip past the ceiling the stat check enforced.
+      total += bytes.byteLength - stats.size;
+      assertWithinDownloadCap(total, CAP_OPTIONS);
+    } finally {
+      await file.close();
+    }
     // A name that sanitizes to nothing still needs a header value; 'attachment'
     // keeps the part well-formed and the recipient's client offers a download.
     const filename = headerParamSafe(spec.filename ?? basename(spec.path)) || 'attachment';
     out.push({
       filename,
-      contentType: headerParamSafe(spec.mimeType ?? sniffMimeType(filename)),
+      // The type is inferred from the path's extension (the recipient-facing
+      // filename may legitimately carry none), falling back after sanitization
+      // so the builder never sees an empty content type.
+      contentType:
+        headerParamSafe(spec.mimeType ?? mimeTypeForExtension(basename(spec.path))) ||
+        FALLBACK_MIME_TYPE,
       data: foldBase64(bytes.toString('base64')),
     });
   }
