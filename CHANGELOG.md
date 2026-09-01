@@ -1,3 +1,9 @@
+## [1.20.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.19.0...v1.20.0) (2026-09-01)
+
+### Features
+
+* **gmail:** add attachment support to compose operations ([#102](https://github.com/simiancraft/google-mcp-suite/issues/102)) ([a58adf1](https://github.com/simiancraft/google-mcp-suite/commit/a58adf1185d7d695aaa79d844e59f08dfb4e219f)), closes [#101](https://github.com/simiancraft/google-mcp-suite/issues/101) [#103](https://github.com/simiancraft/google-mcp-suite/issues/103)
+
 ## [1.19.0](https://github.com/simiancraft/google-mcp-suite/compare/v1.18.1...v1.19.0) (2026-08-31)
 
 ### Features
