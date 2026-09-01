@@ -236,12 +236,16 @@ already carries the true value, prefer it over a sentinel
 
 **Doc comments are sourced too.** Give the entity a TSDoc comment from the API
 guides **Concepts** page (Google's own definition of the noun) with an `@see`
-link. A **suite-native** entity (a noun the suite invents where Google's
-surface has none, like Gmail's `AttachmentFile` over the `raw` field) cannot
-cite a Concepts page; instead its TSDoc must say plainly that it is a suite
+link.
+
+A **suite-native** entity (a noun the suite invents where Google's surface
+has none, like Gmail's `AttachmentFile` over the `raw` field) cannot cite a
+Concepts page. Instead its TSDoc must say plainly that it is a suite
 extension, cite the tracking issue that motivated it, and `@see` the nearest
-documented API field it targets, and the extension must be recorded in the
-service's COVERAGE.md extension section. Put **field-level** docs in `.describe()`, not JSDoc: the server emits the
+documented API field it targets; record the extension in the service's
+COVERAGE.md extension section.
+
+Put **field-level** docs in `.describe()`, not JSDoc: the server emits the
 schema with `z.toJSONSchema`, which carries `.describe()` text into the wire JSON
 Schema, so an MCP client (and the LLM reading it at tool-selection time) sees the
 field docs; JSDoc on a field never reaches the wire. Source the field text from
