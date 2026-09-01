@@ -4,10 +4,11 @@ import { schema } from './schema.js';
 
 /**
  * Replaces the draft's content with a freshly assembled message, then re-fetches
- * it `full` for projection.
+ * it `full` for projection. When `attachments` is given, the named local files
+ * are read and assembled into the raw message (issue #101).
  */
 export const update_draft = gmailOperation({
-  description: 'Replace the content of an existing draft.',
+  description: 'Replace the content of an existing draft, optionally attaching local files.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

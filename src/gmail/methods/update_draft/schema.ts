@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { AttachmentFile } from '../../entities/AttachmentFile.js';
 import { Draft } from '../../entities/Draft.js';
+import { ATTACHMENTS_PARAM_DESCRIPTION } from '../../lib/attachment.js';
 import { headerSafe } from '../../lib/headers.js';
 
 export const schema = {
@@ -14,6 +16,7 @@ export const schema = {
     subject: headerSafe.optional().describe('The subject line.'),
     body: z.string().optional().describe('Plain-text content.'),
     htmlBody: z.string().optional().describe('HTML content.'),
+    attachments: z.array(AttachmentFile).optional().describe(ATTACHMENTS_PARAM_DESCRIPTION),
   }),
   output: Draft,
 };

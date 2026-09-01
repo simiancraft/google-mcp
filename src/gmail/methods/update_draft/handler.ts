@@ -1,5 +1,6 @@
 import type { gmail_v1 } from '@googleapis/gmail';
 import type { z } from 'zod';
+import { loadAttachments } from '../../lib/attachment.js';
 import { buildRawMessage, projectDraft } from '../../lib/message.js';
 import { senderAddress } from '../../lib/profile.js';
 import type { schema } from './schema.js';
@@ -16,6 +17,7 @@ export async function handler(
     subject: args.subject,
     body: args.body,
     htmlBody: args.htmlBody,
+    attachments: await loadAttachments(args.attachments),
   });
   await gmail.users.drafts.update({
     userId: 'me',

@@ -5,10 +5,11 @@ import { schema } from './schema.js';
 /**
  * Irreversible: assembles an RFC 822 message and sends it immediately. When
  * `replyToMessageId` is given, the original is fetched for its thread and
- * Message-ID so the reply threads correctly.
+ * Message-ID so the reply threads correctly. When `attachments` is given, the
+ * named local files are read and assembled into the raw message (issue #101).
  */
 export const send_message = gmailOperation({
-  description: 'Send an email immediately.',
+  description: 'Send an email immediately, optionally attaching local files.',
   annotations: {
     readOnlyHint: false,
     destructiveHint: true,
